@@ -1,0 +1,2 @@
+# All application dependencies are maintained in pyproject.toml.
+-e .
