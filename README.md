@@ -1,146 +1,336 @@
 # Hirava API
 
-One Python FastAPI backend containing **Hiravah Core, RMS, and HRMS**. This implementation translates the Unified Master Plan into a runnable local application, with persistent database records and connected approval workflows.
+FastAPI backend for **Hirava** — a unified Recruitment Management System (RMS) and Human Resource Management System (HRMS), serving Core, RMS and HRMS from a single deployable service.
 
-## What works
+The frontend is a separate Next.js application (`hirava-webapp`) that consumes this API. There is no other backend service; an earlier Node backend has been removed.
 
-| Area | Implemented APIs |
+```
+┌──────────────────┐        ┌──────────────────┐        ┌──────────────────┐
+│  Next.js webapp  │ ─────▶ │    Hirava API    │ ─────▶ │   PostgreSQL     │
+│   (port 3000)    │  HTTPS │  FastAPI :8000   │        │  hirava_core +   │
+└──────────────────┘        └──────────────────┘        │  public schemas  │
+         │                           │                  └──────────────────┘
+         │                           ├────────────────▶ ┌──────────────────┐
+         └─── Auth0 (OIDC) ──────────┘   RS256 verify   │   S3 (private)   │
+                                                        └──────────────────┘
+```
+
+---
+
+## Table of contents
+
+- [Architecture](#architecture)
+- [Capabilities](#capabilities)
+- [Requirements](#requirements)
+- [Quick start](#quick-start)
+- [Configuration](#configuration)
+- [Authentication and authorization](#authentication-and-authorization)
+- [Database and migrations](#database-and-migrations)
+- [File storage](#file-storage)
+- [Background work](#background-work)
+- [API surface](#api-surface)
+- [Testing](#testing)
+- [Project layout](#project-layout)
+- [Deployment](#deployment)
+- [Troubleshooting](#troubleshooting)
+- [Status and scope](#status-and-scope)
+
+---
+
+## Architecture
+
+Python 3.11+, FastAPI, SQLAlchemy 2.0 and Alembic. Roughly 425 route handlers are organised into domain modules mounted under a single versioned router at `/api/v1`, plus a compatibility surface at `/api/*` used by screens inherited from the earlier system.
+
+**Two schemas, one database.** Native Hirava tables live in `hirava_core`. Tables inherited from the imported HRMS product live in `public` and retain their original PostgreSQL enum types. Both are reached through one connection whose `search_path` spans `hirava_core,public`. This split is deliberate: it let the native product move forward without rewriting or migrating the imported data model in a single step.
+
+**Customer isolation.** Every native record carries a `customer_id`, and all queries filter on the configured `CUSTOMER_ID`. Imported HRMS tables have no customer column, so **each configured customer requires its own isolated database or schema**. This is the single most important constraint to understand before deploying for more than one tenant.
+
+**Authentication is not authorization.** Auth0 establishes *who* the caller is. Role, assignment, ownership and customer checks in this service determine *what* they may do. An Auth0 role assignment or a job title alone grants nothing.
+
+---
+
+## Capabilities
+
+| Area | Implemented |
 | --- | --- |
-| Identity | Local password login, expiring JWTs, logout, user provisioning/deactivation; Auth0 RS256 validation and local account mapping |
-| Core | Organization units, positions/headcount, module configuration, policies/acknowledgements, audit, documents, notifications |
-| RMS | Requisitions and separate-person approvals, publication, candidate consent, applications and stage transitions |
-| Candidate self-service | Published jobs, local registration, profile, own application status/withdrawal, approved offer view and acceptance |
+| Identity | Local password login with expiring JWTs; Auth0 RS256 validation; account provisioning, invitation and deactivation |
+| Core | Organization units, positions and headcount, module configuration, policies and acknowledgements, audit trail, documents, notifications |
+| RMS | Requisitions with separate-person approval, publication, candidate consent, applications and stage transitions |
+| Candidate self-service | Published jobs, registration, profile, own application status and withdrawal, offer view and acceptance |
 | Interviews | Assigned interviews, cancellation, structured scorecards restricted to the assigned interviewer |
-| Offers | Salary/currency/start date, separate-person approval, acceptance evidence, decline |
+| Offers | Salary, currency and start date; separate-person approval; acceptance evidence; decline |
 | Hire-to-onboard | Allowlisted preview, HR approval, idempotent conversion, duplicate-worker prevention, atomic position reservation |
-| Workforce | Direct hires, workers, separate employment records, account linkage, onboarding tasks, commencement, prehire cancellation |
-| Employee self-service | Scoped worker/employment views, HR-reviewed name changes, policy acknowledgement |
-| Leave | Types, annual balance grants, weekday calculations, overlap checks, approval/rejection, cancellation and balance restoration |
-| HR service | Requester-owned cases, HR assignment/status, restricted HR notes |
-| Offboarding | Approved exit, evidence tasks, closure, position release, application-account deactivation |
-| Performance | Goals, completion, human-authored reviews and worker acknowledgement |
+| Workforce | Direct hires, workers, employment records, account linkage, onboarding tasks, commencement, prehire cancellation |
+| Employee self-service | Scoped worker and employment views, HR-reviewed name changes, policy acknowledgement |
+| Leave | Types, annual balance grants, weekday calculation, overlap checks, approval and rejection, cancellation with balance restoration |
+| HR service | Requester-owned cases, HR assignment and status, restricted HR notes |
+| Offboarding | Approved exit, evidence tasks, closure, position release, account deactivation |
+| Performance | Goals, completion, human-authored reviews, worker acknowledgement |
 | Learning | Course references, scoped assignments, completion evidence |
 | Reporting | Separate RMS and HRMS status counts |
-| Operations | Alembic migrations, transactional audit/outbox, local notification worker, bounded poison-event retries, repair endpoint |
+| Operations | Alembic migrations, transactional audit and outbox, notification worker, bounded poison-event retries, repair endpoint |
 
-This is a local functional baseline, **not completion of every production requirement in the master plan**. See [implementation status](docs/implementation-status.md) for the remaining integration and product work.
+Human approval is required for employment transitions; the API does not automate them.
 
-## Start on this machine
+---
 
-The local `.env`, `.venv`, and migrated SQLite database have been created. From PowerShell:
+## Requirements
 
-```powershell
-cd C:\Users\ahfi7\Desktop\Hirava\hirava-api
-.\.venv\Scripts\python.exe -m app.cli create-admin --email admin@example.com --name "Local Administrator"
-.\.venv\Scripts\python.exe -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
-```
+- **Python 3.11+**
+- **PostgreSQL 14+** for any real deployment (SQLite is supported only for isolated local experiments and tests)
+- **Auth0 tenant** when `AUTH_MODE=auth0`
+- **AWS S3 bucket** (private) for uploaded files
+- Optional: Docker, for the bundled `Dockerfile` and `compose.yaml`
 
-The admin command prompts for your password; there is no hardcoded/default administrator password. Run it once. Keep local mode on loopback and use synthetic data.
+---
 
-- Swagger: http://127.0.0.1:8000/docs
-- ReDoc: http://127.0.0.1:8000/redoc
-- OpenAPI: http://127.0.0.1:8000/openapi.json
-- Liveness: http://127.0.0.1:8000/api/v1/health
-- Database/schema readiness: http://127.0.0.1:8000/api/v1/ready
+## Quick start
 
-Use `POST /api/v1/auth/login` with JSON `{"email":"admin@example.com","password":"your password"}`. Copy the returned `access_token` into Swagger's **Authorize** dialog. Use `POST /api/v1/users` to create recruiter, HR, manager, interviewer, and employee accounts. Each user has one role in this baseline.
+```bash
+git clone https://github.com/kdigitalos/hirava-api.git
+cd hirava-api
 
-## Fresh installation
-
-Python 3.11+. For the reproducible locked environment, run `uv sync --locked --extra dev`, then the setup, migration, and administrator commands below. A standard pip installation is also supported:
-
-```powershell
 python -m venv .venv
-.\.venv\Scripts\python.exe -m pip install -e ".[dev]"
+# Windows:        .\.venv\Scripts\python.exe -m pip install -e ".[dev]"
+# macOS / Linux:  ./.venv/bin/python -m pip install -e ".[dev]"
+
+cp .env.example .env        # then edit - see Configuration
 python scripts/setup_local.py
-.\.venv\Scripts\python.exe -m alembic upgrade head
-.\.venv\Scripts\python.exe -m app.cli create-admin --email admin@example.com
-.\.venv\Scripts\python.exe -m uvicorn app.main:app --reload
+python -m alembic upgrade head
+python -m app.cli create-admin --email admin@example.com
+python -m uvicorn app.main:app --host 127.0.0.1 --port 8000
 ```
 
-`setup_local.py` creates `.env` from `.env.example`, generates random signing/database secrets, and preserves an existing `.env`. Configuration is loaded from the backend root. Run commands from that root because the example SQLite and storage paths are relative.
+For the exact locked dependency set, use `uv sync --locked --extra dev` instead of pip.
 
-If Python's bundled `ensurepip` fails under Anaconda, `uv venv .venv` followed by `uv pip install --python .venv/Scripts/python.exe -e ".[dev]"` is an alternative. This machine's isolated `.venv` is installed from `uv.lock`. Docker also installs from that lockfile.
+### Running both services together
+
+When working alongside the `hirava-webapp` frontend in a sibling directory:
+
+```bash
+python scripts/dev.py
+```
+
+This starts the API on 8000 and the frontend on 3000, and terminates both on Ctrl+C. It refuses to start if either port is occupied and never stops a process it does not own.
+
+### Endpoints once running
+
+| | |
+| --- | --- |
+| Swagger UI | http://127.0.0.1:8000/docs |
+| ReDoc | http://127.0.0.1:8000/redoc |
+| OpenAPI JSON | http://127.0.0.1:8000/openapi.json |
+| Liveness | http://127.0.0.1:8000/api/v1/health |
+| Readiness (DB + schema) | http://127.0.0.1:8000/api/v1/ready |
+
+In local mode, `POST /api/v1/auth/login` with `{"email": "...", "password": "..."}` returns an `access_token` to paste into Swagger's **Authorize** dialog.
+
+---
 
 ## Configuration
 
-| Variable | Purpose |
+Settings load from `.env` via pydantic-settings. **Environment variables take precedence over the file** — an exported `AUTH_MODE` or `DATABASE_URL` silently overrides `.env`, which is a common source of confusing behaviour. See [Troubleshooting](#troubleshooting).
+
+Copy `.env.example` and fill it in. Never commit `.env`; it is git-ignored.
+
+### Core
+
+| Variable | Default | Notes |
+| --- | --- | --- |
+| `ENVIRONMENT` | `local` | `local`, `test` or `production` |
+| `CUSTOMER_ID` | `local-customer` | Tenant key on every native record. Changing it on a populated database orphans existing data |
+| `DATABASE_URL` | local SQLite | For PostgreSQL: `postgresql+psycopg://user:password@host:5432/db` |
+| `AUTH_MODE` | `local` | `local` (HS256, password login) or `auth0` (RS256 verification) |
+| `JWT_SECRET` | — | Required when `AUTH_MODE=local`; minimum 32 characters |
+| `TOKEN_MINUTES` | `30` | Local token lifetime, 1–120 |
+| `CORS_ORIGINS` | localhost:3000 | Frontend origins |
+| `EXPOSE_DOCS` | `true` | Set `false` in production to hide `/docs` |
+| `RMS_ENABLED` / `HRMS_ENABLED` | `true` | Module toggles; disabled modules return 403 |
+| `MAX_UPLOAD_BYTES` | 10 MB | Hard cap, 1–50 MB |
+
+### Auth0 (`AUTH_MODE=auth0`)
+
+| Variable | Notes |
 | --- | --- |
-| `ENVIRONMENT` | `local`, `test`, or `production` |
-| `DATABASE_URL` | Local SQLite or `postgresql+psycopg://user:password@host:5432/database` |
-| `CUSTOMER_ID` | Fixed instance identity; never accepted from request headers or bodies |
-| `AUTH_MODE` | `local` or `auth0` |
-| `JWT_SECRET` | Local signing secret, generated by setup; at least 32 characters |
-| `TOKEN_MINUTES` | Local token lifetime, default 30 |
-| `AUTH0_DOMAIN` / `AUTH0_AUDIENCE` | Bare Auth0 hostname and API audience |
-| `RMS_ENABLED` / `HRMS_ENABLED` | Independent module entitlements; the conversion API requires both |
-| `CORS_ORIGINS` | JSON array of explicitly permitted frontend origins |
-| `STORAGE_PATH` | Private local file storage directory; not a public static mount |
-| `MAX_UPLOAD_BYTES` | Maximum document content size, default 10 MiB |
-| `EXPOSE_DOCS` | Enables Swagger/ReDoc/OpenAPI in local development |
+| `AUTH0_DOMAIN` | e.g. `your-tenant.us.auth0.com` |
+| `AUTH0_AUDIENCE` | API identifier; must match the audience the frontend requests |
+| `AUTH0_WEB_CLIENT_ID` | Web application client ID |
+| `AUTH0_MGMT_CLIENT_ID` / `AUTH0_MGMT_CLIENT_SECRET` | Management API credentials, required only for invitations |
+| `AUTH0_CONNECTION` | Default `Username-Password-Authentication` |
 
-Production configuration rejects local authentication, SQLite, HTTP CORS origins, and exposed documentation. These checks do not establish production readiness. Use a separate database, deployment, secret set, and storage boundary per customer. Do not repurpose an existing instance by editing `CUSTOMER_ID`.
+The API verifies RS256 signatures against the tenant JWKS and **never needs the web application's client secret**.
 
-For Auth0, provision users with their exact `auth_subject` and trusted email through the admin API or CLI. Auth0 registration, verified-email policy, recovery, MFA, and frontend login setup remain outside this repository. Roles are loaded from the local account, not accepted from token role claims. `/auth/logout` revokes all local tokens; Auth0 sessions use Auth0 logout. Deactivating an application account blocks both authentication modes.
+### Storage and mail
 
-## Connected workflow
+`AWS_REGION`, `AWS_BUCKET_NAME`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_SESSION_TOKEN` for S3. Either `SENDGRID_API_KEY` + `SENDGRID_VERIFIED_SENDER`, or `SMTP_*` + `MAIL_FROM`, for outbound mail.
 
-1. HR/admin creates organization units and positions; assign a manager user when needed.
-2. Recruiter creates and submits a requisition. A different HR/admin approves it. Recruiter publishes it.
-3. Recruiter records candidates with consent and applications, or a local candidate registers and applies through `/careers`.
-4. Recruiter progresses applications through `screening`, `interviewing`, and `selected`. Interviewers submit only their assigned scorecards.
-5. Recruiter creates/submits an offer; a different HR/admin approves it. Record candidate acceptance evidence or accept as the authenticated candidate.
-6. HR reviews `/conversion/offers/{id}/preview`, then posts to `/conversion/approve` with `Idempotency-Key` and an approval reason. Reuse the same key and payload for retries.
-7. Conversion creates one **prehire**, a worker, and an onboarding case. It does not create active employment. HR completes the evidence tasks, closes onboarding, and confirms commencement on/after the start date.
-8. HRMS-only instances can create approved direct hires with `/hrms/workers`.
-9. Linked employee accounts can access self-service. A linked candidate account changes to employee only when HR confirms commencement; the user signs in again.
-10. Offboarding requires all evidence tasks to be completed before closure. Closure ends employment, releases position capacity, and deactivates the linked application account. External system revocation is evidence recorded by humans, not a claimed provider action.
+Prefer an instance role or task role over static AWS keys wherever the platform supports it.
 
-## Background worker
+---
 
-In another terminal:
+## Authentication and authorization
 
-```powershell
-.\.venv\Scripts\python.exe -m app.workers.outbox
-# Or process one batch:
-.\.venv\Scripts\python.exe -m app.workers.outbox --once
+Two modes, selected by `AUTH_MODE`:
+
+**`local`** — `POST /api/v1/auth/login` issues an HS256 JWT signed with `JWT_SECRET`, carrying `sub`, `customer_id` and a `ver` token version. Incrementing a user's `token_version` revokes all their sessions. Intended for development and isolated installs.
+
+**`auth0`** — the caller presents an Auth0 access token. The API fetches the tenant JWKS, verifies the RS256 signature, checks audience and issuer, then resolves the token's `sub` to a `users` row via `auth_subject`. The row must be active and belong to the configured `CUSTOMER_ID`, or the request is rejected with 401.
+
+> **The two modes are mutually incompatible at runtime.** A service running in `local` mode rejects every Auth0 token with a 401, and vice versa. If authenticated calls fail uniformly while login itself succeeds, verify the mode the *process* actually loaded.
+
+### Roles
+
+`admin`, `hr`, `recruiter`, `manager`, `interviewer`, `employee`, `candidate` — one role per user. `admin` passes every role check. Beyond roles, handlers enforce assignment, ownership and customer scoping; see [`docs/access-matrix.md`](docs/access-matrix.md).
+
+Some imported RMS routes deliberately deny manager, interviewer and candidate access until scoped workflows exist. Do not resolve that by widening access.
+
+---
+
+## Database and migrations
+
+```bash
+python -m alembic upgrade head          # apply
+python -m alembic revision -m "..."     # create
+python -m alembic downgrade -1          # roll back one
 ```
 
-The worker writes in-app notifications only. Event delivery and receipt commit together. Invalid events fail after three attempts and appear in `/outbox`; an admin can request retry after repair. Use one worker with SQLite. PostgreSQL workers use row locking and skip-locked selection. This is a database-backed local worker, not an Azure Durable Functions adapter.
+Migrations require a `hirava_core,public` search path.
 
-## PostgreSQL with Docker
+**Fresh installations** additionally need the imported baseline and compatibility views from `migrations/imported`:
 
-After generating `.env`, with Docker running:
-
-```powershell
-docker compose up --build -d
-docker compose exec api python -m app.cli create-admin --email admin@example.com
+```bash
+python scripts/migrate_imported.py
+python scripts/install_job_views.py
+python scripts/verify_job_views.py
 ```
 
-Compose runs PostgreSQL, one migration job, the API, and the notification worker. API/database ports bind to loopback. PostgreSQL and documents use named volumes. `docker compose down` stops the stack; data stays in the volumes. Docker execution was not verified on this machine because the daemon was unavailable.
+> **Never run the imported empty baseline against an already-populated database.** It is intended only for new installations.
 
-For an existing approved PostgreSQL database, set `DATABASE_URL` and run `python -m alembic upgrade head` before starting the app. The application never calls `create_all` at startup.
+`GET /api/v1/ready` reports whether the database is reachable and the expected schema is present — use it as a deployment gate, not just `/health`.
 
-## Tests
+---
 
-```powershell
-.\.venv\Scripts\python.exe -m pytest -q -p no:cacheprovider
-.\.venv\Scripts\python.exe -m alembic check
+## File storage
+
+Uploads go to a **private** S3 bucket; there is no persistent local file storage. Objects are served through the API, which applies the same authorization as any other resource — the bucket must never be public.
+
+Deletions are transactional: a delete is committed as an outbox event alongside the record change, and reads honour the deletion immediately even if the S3 object removal has not completed. An in-process loop retries failed object cleanup every 30 seconds (`IMPORTED_STORAGE_CLEANUP_ENABLED`, disabled during tests).
+
+Note that a Next.js frontend deployed to Vercel buffers request bodies, and Vercel's documented 4.5 MB limit applies to uploads routed through it. Large-file upload needs a direct-to-S3 path.
+
+---
+
+## Background work
+
+Domain changes write **audit** and **outbox** rows in the same transaction as the change itself, so an event is never lost when a write succeeds. A notification worker drains the outbox into in-app notifications:
+
+```bash
+python -m app.workers.outbox
 ```
 
-Tests use synthetic users and isolated databases beneath ignored `test-output/`. Coverage includes role/customer/module isolation, approval rules, candidate ownership, idempotency, headcount rollback, leave balances, sensitive documents/notes, profile changes, offboarding, outbox delivery, JWT verification, and migrations. `HIRAVA_TEST_POSTGRES_URL` can point to a **dedicated disposable test database** with permission to create schemas; business tests then use a unique schema per test. Do not point this at customer or production databases.
+The worker writes in-app notifications only — not email, and not AI processing. Poison events retry a bounded number of times and are then parked for a repair endpoint rather than blocking the queue.
 
-## Code organization
+---
 
-- `app/main.py`: application, CORS, error handling, request correlation.
-- `app/core/`: configuration, authentication, transaction routing, shared policy/document/audit APIs.
-- `app/modules/`: domain models, request schemas, API routers, and cross-domain service contracts.
-- `app/data/`: SQLAlchemy base/session infrastructure and migration model registry.
-- `app/workers/outbox.py`: local notification worker and repair semantics.
-- `migrations/`: versioned Alembic schema upgrades/downgrades.
-- `tests/`: executable integration and access checks.
-- `.env.example`, `Dockerfile`, `compose.yaml`: environment and local deployment setup.
+## API surface
 
-Lists use `offset` and `limit` (maximum 100). Requests reject unknown fields. Domain state changes use explicit action endpoints. `401` means authentication failed, `403` means role/module denied, `404` hides inaccessible records, and `409` means a state/concurrency/uniqueness conflict. Clients should reload after conflicts and preserve conversion idempotency keys.
+- `/api/v1/*` — native versioned API, the surface new work should target
+- `/api/*` — compatibility routes retained for screens inherited from the imported product
 
-The attached document is design input; the user's FastAPI choice and `hirava-api` name determine this backend. References used for implementation: [FastAPI JWT authentication](https://fastapi.tiangolo.com/tutorial/security/oauth2-jwt/), [SQLAlchemy session transactions](https://docs.sqlalchemy.org/en/20/orm/session_basics.html), and [Pydantic settings](https://docs.pydantic.dev/latest/concepts/pydantic_settings/).
+Both are served by this application. Full generated documentation is at `/docs` when `EXPOSE_DOCS=true`; the machine-readable contract is at `/openapi.json`.
+
+Public, unauthenticated routes are limited to the careers surface: published job listings, job detail, and candidate application submission.
+
+---
+
+## Testing
+
+```bash
+python -m pytest                        # full suite
+python -m pytest tests/test_backend.py  # one module
+python -m pytest -k leave               # by keyword
+```
+
+Around 40 test modules cover native flows and the imported HRMS surface. Tests run against a disposable database and never touch configured cloud resources; S3 cleanup and mail are disabled under test.
+
+---
+
+## Project layout
+
+```
+app/
+├── api/v1/          Versioned router assembly
+├── core/            Config, security, models, schemas, audit, invitations
+├── data/            Registry and imported schema metadata
+├── modules/         Domain modules
+│   ├── recruiting/      Requisitions, jobs, candidates, applications
+│   ├── interviews/      Scheduling and scorecards
+│   ├── offers/          Offer lifecycle
+│   ├── conversion/      Hire-to-onboard
+│   ├── workforce/       Workers and employment records
+│   ├── leave/           Types, balances, requests
+│   ├── hr_service/      Helpdesk cases
+│   ├── performance/     Goals and reviews
+│   ├── learning/        Courses and assignments
+│   ├── organization/    Units, positions, policies
+│   ├── claims/          Expense claims
+│   ├── improvement/     Performance improvement plans
+│   └── saas_config/     Module and customer configuration
+├── workers/         Outbox notification worker
+├── integrations/    External service clients
+└── workflows/       Multi-step process orchestration
+
+migrations/          Alembic; `imported/` holds inherited schema SQL
+scripts/             Setup, migration, verification, dev launcher
+tests/               Pytest suite
+docs/                Access matrix, Auth0 setup, migration status
+```
+
+---
+
+## Deployment
+
+A `Dockerfile` and `compose.yaml` are included. Two things the base image does **not** carry, and which an overlay must add for a TLS-verified RDS deployment:
+
+1. the `scripts/` directory, and
+2. the RDS CA bundle referenced by `sslrootcert` in `DATABASE_URL`.
+
+Production checklist:
+
+- `ENVIRONMENT=production`, `AUTH_MODE=auth0`, `EXPOSE_DOCS=false`
+- `DATABASE_URL` with `sslmode=verify-full` and a valid `sslrootcert`
+- Secrets from a secret manager — never baked into an image or committed
+- `CORS_ORIGINS` restricted to real frontend origins
+- One isolated database or schema per customer (see [Architecture](#architecture))
+- Gate readiness on `/api/v1/ready`, not `/api/v1/health`
+
+---
+
+## Troubleshooting
+
+**Every authenticated request returns 401, but signing in works.**
+The running process is almost certainly in the wrong `AUTH_MODE`. Because environment variables override `.env`, a long-lived process can drift from its own configuration file — an `AUTH_MODE` exported in the launching shell wins silently. Restart the service from a clean shell and confirm the mode it loads. A frontend that treats such a 401 as "session expired" can produce an endless sign-in redirect loop whose real cause is entirely server-side.
+
+**401 with a valid Auth0 token.** Check, in order: the token's `aud` matches `AUTH0_AUDIENCE`; its issuer matches `AUTH0_DOMAIN`; a `users` row exists whose `auth_subject` equals the token `sub`; that row is `active`; and its `customer_id` equals `CUSTOMER_ID`.
+
+**`relation "..." does not exist`.** The search path is missing `public` (or `hirava_core`). Both are required.
+
+**Readiness fails but health passes.** `/health` is liveness only. `/ready` checks database connectivity and schema — read its response body.
+
+**Port already in use.** `scripts/dev.py` deliberately refuses to start rather than killing a process it does not own. Stop the occupying process yourself.
+
+---
+
+## Status and scope
+
+This is a working functional baseline, not a finished product. Implemented API coverage is not a claim of complete frontend integration.
+
+Known remaining work: full canonical hiring and employee consolidation, form intake parity, the planned AI capabilities, country and company policy rules, payroll and leave rule completeness, and systematic role-boundary testing. Native interview scheduling does not yet replace the imported interview screens.
+
+Further reading in [`docs/`](docs/): [implementation status](docs/implementation-status.md), [access matrix](docs/access-matrix.md), [Auth0 setup](docs/auth0-team-setup.md), [account invitations](docs/account-invitations.md), [migration notes](docs/split-migration.md), [verification](docs/verification.md).
+
+---
+
+## Security
+
+Do not commit `.env`, credentials, certificates or tokens. Keep the S3 bucket private and the database on a private subnet. Report vulnerabilities privately to the maintainers rather than opening a public issue.

@@ -26,6 +26,11 @@ class UserUpdate(Input):
     active: bool
 
 
+class EmployeeLinkUpdate(Input):
+    employee_id: str | None = Field(default=None, min_length=1, max_length=100)
+    expected_version: int = Field(ge=1)
+
+
 class Decision(Input):
     reason: str = Field(min_length=3, max_length=2000)
 

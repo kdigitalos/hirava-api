@@ -6,12 +6,12 @@ from uuid import uuid4
 
 from app.core.routing import APIRouter
 from fastapi import Depends, File, HTTPException, Query, Request, UploadFile
-from fastapi.responses import FileResponse
+from fastapi.responses import StreamingResponse
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.core.models import Acknowledgement, AuditEvent, Document, Notification, OutboxEvent, Policy, User
-from app.core.schemas import Login, PolicyCreate, UserCreate, UserUpdate
+from app.core.schemas import Login, PolicyCreate, UserCreate, UserUpdate, EmployeeLinkUpdate
 from app.core.security import current_user, hash_password, issue_token, require, verify_password
 from app.core.service import audit, find, rows, view
 from app.data.database import get_db, utcnow
@@ -68,6 +68,8 @@ def create_user(body: UserCreate, request: Request, user=Depends(require("admin"
     local = request.app.state.settings.auth_mode == "local"
     if local and body.password is None:
         raise HTTPException(422, "A local user requires a password")
+    if local and body.auth_subject:
+        raise HTTPException(422, "Local accounts cannot use an Auth0 subject")
     if not local and (not body.auth_subject or body.password):
         raise HTTPException(422, "Auth0 users require auth_subject and no local password")
     record = User(customer_id=user.customer_id, email=str(body.email).lower(), name=body.name,
@@ -101,6 +103,32 @@ def configuration(request: Request, user=Depends(current_user)):
     settings = request.app.state.settings
     return {"customer_id": user.customer_id, "modules": {"rms": settings.rms_enabled, "hrms": settings.hrms_enabled},
             "auth_mode": settings.auth_mode, "ai_enabled": False, "external_writes_enabled": False}
+
+
+@router.get("/users/{record_id}/employee-link")
+def get_employee_link(record_id: str, request: Request, user=Depends(require("admin", module="hrms")), db: Session = Depends(get_db)):
+    from app.core.employee_access import employee_link
+    account = find(db, User, record_id, user.customer_id)
+    linked = employee_link(db, account)
+    return {"employee": dict(linked) if linked else None, "version": account.version}
+
+
+@router.put("/users/{record_id}/employee-link")
+def put_employee_link(record_id: str, body: EmployeeLinkUpdate, request: Request,
+                      user=Depends(require("admin", module="hrms")), db: Session = Depends(get_db)):
+    from app.core.employee_access import employee_link, set_employee_link
+    account = find(db, User, record_id, user.customer_id, lock=True)
+    if account.version != body.expected_version:
+        raise HTTPException(409, "Account changed; reload before updating the employee link")
+    if account.role == "candidate" and body.employee_id:
+        raise HTTPException(409, "Candidate accounts cannot receive employee access")
+    before = employee_link(db, account)
+    linked = set_employee_link(db, account, body.employee_id)
+    account.version += 1
+    account.token_version += 1
+    audit(db, user, "user.employee_link_changed", account, request,
+          previous_employee_id=before['id'] if before else None, employee_id=body.employee_id)
+    return {"employee": dict(linked) if linked else None, "version": account.version}
 
 
 @router.get("/audit")
@@ -172,6 +200,8 @@ def document_access(record, user, settings):
     if not getattr(settings, f"{record.domain}_enabled"):
         raise HTTPException(403, "Module disabled")
     allowed = {"rms": {"admin", "recruiter"}, "hrms": {"admin", "hr"}}
+    if record.domain == "hrms" and user.role in {"employee", "manager"} and record.owner_id == user.id:
+        return
     if user.role not in allowed[record.domain]:
         raise HTTPException(404, "Document not found")
 
@@ -179,28 +209,30 @@ def document_access(record, user, settings):
 @router.post("/documents", status_code=201)
 def upload_document(request: Request, domain: str = Query(pattern="^(rms|hrms)$"), file: UploadFile = File(...),
                     user=Depends(current_user), db: Session = Depends(get_db)):
+    from io import BytesIO
+    from app.core import object_storage
     settings = request.app.state.settings
     record = Document(customer_id=user.customer_id, owner_id=user.id, domain=domain,
                       filename=Path(file.filename or "document").name[:255], storage_key=str(uuid4()), size=0, sha256="")
     document_access(record, user, settings)
-    destination = settings.storage_path / settings.customer_id / record.storage_key
-    destination.parent.mkdir(parents=True, exist_ok=True)
-    digest = hashlib.sha256()
     try:
-        with destination.open("xb") as target:
-            while chunk := file.file.read(65536):
-                record.size += len(chunk)
-                if record.size > settings.max_upload_bytes:
-                    raise HTTPException(413, "Document is too large")
-                digest.update(chunk)
-                target.write(chunk)
-        record.sha256 = digest.hexdigest()
-        db.add(record)
-        audit(db, user, "document.uploaded", record, request)
-        db.commit()
-    except Exception:
-        destination.unlink(missing_ok=True)
-        raise
+        object_storage.require_bucket(settings)
+        content = file.file.read(settings.max_upload_bytes + 1)
+        if len(content) > settings.max_upload_bytes:
+            raise HTTPException(413, "Document is too large")
+        record.size = len(content)
+        record.sha256 = hashlib.sha256(content).hexdigest()
+        object_storage.upload(settings, record.storage_key, BytesIO(content))
+        try:
+            db.add(record)
+            audit(db, user, "document.uploaded", record, request)
+            db.commit()
+        except Exception:
+            db.rollback()
+            from app.workers.imported_storage_cleanup import queue_delete
+            queue_delete(db, user.customer_id, object_storage.object_key(settings, record.storage_key))
+            db.commit()
+            raise
     finally:
         file.file.close()
     return view(record)
@@ -211,9 +243,15 @@ def download_document(record_id: str, request: Request, user=Depends(current_use
     record = find(db, Document, record_id, user.customer_id)
     settings = request.app.state.settings
     document_access(record, user, settings)
-    path = settings.storage_path / settings.customer_id / record.storage_key
-    if not path.is_file():
-        raise HTTPException(404, "Document content unavailable")
+    from app.core.object_storage import download
+    from urllib.parse import quote
+    content = download(settings, record.storage_key)
+    def chunks():
+        try:
+            yield from content.iter_chunks(chunk_size=65536)
+        finally:
+            content.close()
     audit(db, user, "document.downloaded", record, request)
-    return FileResponse(path, filename=record.filename, media_type="application/octet-stream",
-                        headers={"X-Content-Type-Options": "nosniff", "Cache-Control": "no-store"})
+    return StreamingResponse(chunks(), media_type="application/octet-stream",
+        headers={"Content-Disposition": f"attachment; filename*=UTF-8''{quote(record.filename)}",
+                 "Cache-Control": "no-store"})

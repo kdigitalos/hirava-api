@@ -1,0 +1,856 @@
+{
+  "source_repository": "https://github.com/konadigitalai/hirava-mixed",
+  "source_branch": "dev",
+  "source_commit": "a6c97ee",
+  "status": "source split implemented; validated flows and remaining parity boundaries documented in split-migration.md",
+  "original_api_routes": [
+    {
+      "path": "src/app/api/admin/attendance-records/route.ts",
+      "sha256": "be0fc0f28ccc43d990a502dc34cf4664c7d4e49e02bae42e07cd83747a36f70e"
+    },
+    {
+      "path": "src/app/api/admin/create-user/route.ts",
+      "sha256": "feaf6d92c702021340ee9c684867547426a342314b67794ef9f4a25a46555026"
+    },
+    {
+      "path": "src/app/api/admin/dashboard/route.ts",
+      "sha256": "9885ad8ef44d6aee19a40d768c76ead5e1b9b42afa340b8d6ebfc9f7667d8056"
+    },
+    {
+      "path": "src/app/api/admin/employee-tasks/route.ts",
+      "sha256": "45682c76ac73c5741c2b355de6ee0c3478184dc7de2152be40c0861176056b33"
+    },
+    {
+      "path": "src/app/api/admin/employees-pending-access/route.ts",
+      "sha256": "88487e8c11f2b9931c6380e74e70a27b195005c27eeb7ed846598ca57e591a57"
+    },
+    {
+      "path": "src/app/api/admin/exit-dashboard/route.ts",
+      "sha256": "5cf54ca8097fc710b81da41f53f3e932284a0970985ae949d329823fad56036a"
+    },
+    {
+      "path": "src/app/api/admin/job-applications/[id]/route.ts",
+      "sha256": "8f5d2d38078cc313d647bb52981eb49526a5d82f9411041110ae6c724cc70c78"
+    },
+    {
+      "path": "src/app/api/admin/job-applications/route.ts",
+      "sha256": "1ccc83d250dc67bf47a05c0d8de49efaae175fd8a4170cfcc5b6c8e0f9826725"
+    },
+    {
+      "path": "src/app/api/admin/job-openings/[id]/route.ts",
+      "sha256": "07d75ff24588de9f4c1c5684c5c57a2b001c7c43f8c6762206fc8fad5baec6b6"
+    },
+    {
+      "path": "src/app/api/admin/job-openings/route.ts",
+      "sha256": "fe448b968f2829cb7c06c9da356e94bf6a313be57cd98d58d561e5912a26f3d9"
+    },
+    {
+      "path": "src/app/api/admin/job-referrals/[id]/route.ts",
+      "sha256": "d14ca490e46d8d993fe4fe4cd10fb3ca17970e111fdb60ec9a7dc50b87a9342e"
+    },
+    {
+      "path": "src/app/api/admin/job-referrals/route.ts",
+      "sha256": "4245af9fcc1e436a8c02f6ebb863d9a8af0e6fee14fb74fcdf3efb4eb9eec111"
+    },
+    {
+      "path": "src/app/api/admin/onboarding-dashboard/route.ts",
+      "sha256": "6f3a6b27fb163fc6ae5060c8dc964848fc35d02b05b8b2836aef527a5234a749"
+    },
+    {
+      "path": "src/app/api/admin/payroll-activities/route.ts",
+      "sha256": "9506aee18dc44dc7e595a8d13629edfd19801f21bd6f1fec3b210d6044ba128c"
+    },
+    {
+      "path": "src/app/api/admin/provision-employee-access/route.ts",
+      "sha256": "0c8132dd51ad57bec55e5e80f7d87f57d8561a727f749052946f0a2683f0fdf5"
+    },
+    {
+      "path": "src/app/api/admin/schedule-items/route.ts",
+      "sha256": "ab624ae4453e20b30f1094e9d4996f58e2e3af3e36c44dc703b07f13fbef0ddd"
+    },
+    {
+      "path": "src/app/api/admin/self-service-requests/[id]/route.ts",
+      "sha256": "e19e422f4a19f529c525d1af0377ae00be2bf28f1462e1bbdf7e090ffa11034f"
+    },
+    {
+      "path": "src/app/api/admin/self-service-requests/route.ts",
+      "sha256": "01be30914d2b8a52868ac84f2354c312ad1996db99e39e273c26d2b3e9dc1389"
+    },
+    {
+      "path": "src/app/api/admin/support-tickets/by-id/[id]/route.ts",
+      "sha256": "35314940a5b218759ff9272f661782504caaaa6e99e983f07d9f0047c6ee6251"
+    },
+    {
+      "path": "src/app/api/admin/support-tickets/route.ts",
+      "sha256": "b8a7b2b8c6345b57147e4eda3f677302a0deb87fd722daf3e7088510145e5c3f"
+    },
+    {
+      "path": "src/app/api/admin/support-tickets/stats/route.ts",
+      "sha256": "ce4a942e5e7c95be179dc95f3923e94f07c72576d0a91811c1895540de31e158"
+    },
+    {
+      "path": "src/app/api/ask-me/faqs/[id]/route.ts",
+      "sha256": "911bf74fa42a8ff071f79e067b0d74f7b767488ba0b5118d07c22d350efb4dbd"
+    },
+    {
+      "path": "src/app/api/ask-me/faqs/route.ts",
+      "sha256": "15ebed30986957eddd1cc36148d8059f87a3acac862337c0dd99d39fc09659ad"
+    },
+    {
+      "path": "src/app/api/ask-me/knowledge-base/[id]/route.ts",
+      "sha256": "d45663f3c0c886839fa46e488758392c3ada723c8064bef4c54a5e56e22ae33b"
+    },
+    {
+      "path": "src/app/api/ask-me/knowledge-base/route.ts",
+      "sha256": "acb2f7d36008886b1a226b985c0782090eb2cb766b5717e0b8a75117cb15dbe5"
+    },
+    {
+      "path": "src/app/api/ask-me/reports/export/route.ts",
+      "sha256": "d51d6fd76454d0447df52931068de4931772bda45440f00d8ac2902f9be7fd8a"
+    },
+    {
+      "path": "src/app/api/ask-me/reports/route.ts",
+      "sha256": "c378d0784357e323bc03905d683e799d7bd8038c0eb18a348f869894012b4c4f"
+    },
+    {
+      "path": "src/app/api/ask-me/settings/route.ts",
+      "sha256": "3be286e8d7f0622e1c7187e319421f5a148ea026164534304b56cb982ae7c861"
+    },
+    {
+      "path": "src/app/api/ask-me/tickets/agents/route.ts",
+      "sha256": "3f0c49eaa2aede03c1db1ec55bf10398bccdd9f59791dad2fb19c714e9792b5e"
+    },
+    {
+      "path": "src/app/api/ask-me/tickets/by-id/[id]/route.ts",
+      "sha256": "edf290b5f5a1ffe074b99319678dcafd8afbf34f2da5ebce7b48ef92aa9474d7"
+    },
+    {
+      "path": "src/app/api/ask-me/tickets/employees/route.ts",
+      "sha256": "c49bfca8894d4d0ecf01432cea69cb8982e86f9b6c8956c8f9b9e8667f0b411c"
+    },
+    {
+      "path": "src/app/api/ask-me/tickets/route.ts",
+      "sha256": "331947b51d8341e0c3380580ad1ef9cf7a27a5fcfd0204fa19c0320d6237c8c3"
+    },
+    {
+      "path": "src/app/api/ask-me/tickets/self-employee/route.ts",
+      "sha256": "b2e57273f9efddc1a44c981ea88023a52494865a9bb50d8ca1b40b4141971eca"
+    },
+    {
+      "path": "src/app/api/asset-assignments/[id]/route.ts",
+      "sha256": "b5dc3363fd2469d078231d576eaece818fa885a84c1ed028d9c488079a96f020"
+    },
+    {
+      "path": "src/app/api/asset-assignments/route.ts",
+      "sha256": "e91d54e659ce2ec5853223e17a15a0cd3c8a6ee4efb59cead8bc647e5c937676"
+    },
+    {
+      "path": "src/app/api/asset-assignments/timeline/route.ts",
+      "sha256": "0e4aa6ae9ea2880ba565b1034fa9c168577f6c9a7e9d6026bbf11390acaf070b"
+    },
+    {
+      "path": "src/app/api/asset-categories/route.ts",
+      "sha256": "7357aa373665b9d69313dc141dba8ed193e7713331b029ff7d708c9ad20c5467"
+    },
+    {
+      "path": "src/app/api/asset-return-requests/route.ts",
+      "sha256": "9df160c2dfe4f87481fb006ae1b2e7c6344e4f44a0eb0f6c8e9f7589472e6a5c"
+    },
+    {
+      "path": "src/app/api/assets/[id]/route.ts",
+      "sha256": "ec04afca0de173e66ce61bbb9bce00a5c5a9cb4748893ce2482b98b5be14d1b6"
+    },
+    {
+      "path": "src/app/api/assets/available/route.ts",
+      "sha256": "b283b445ab7226538e27fe751cc448e6782cee1d8d1ec2771d3441bdd701db5c"
+    },
+    {
+      "path": "src/app/api/assets/route.ts",
+      "sha256": "a1a5f4451036d2f603bbd5f298c19a3ccd8ba67fd63cdc64925efc031740192d"
+    },
+    {
+      "path": "src/app/api/attendance-policies/[id]/route.ts",
+      "sha256": "4089e4da5b91f747fad532d1a4cad997fa0c2a0a7ae3ee0cea1cda0f4dbf0965"
+    },
+    {
+      "path": "src/app/api/attendance-policies/route.ts",
+      "sha256": "9f1022dac8f5f5cd2ce30a503557917614d83d7051a52fdfe7273d686f980144"
+    },
+    {
+      "path": "src/app/api/attendance-policy-stats/route.ts",
+      "sha256": "72e560a8da4a84f6c60be3991a796d436c966c9e1f24af096b5f8a0ec68b1a60"
+    },
+    {
+      "path": "src/app/api/attendance-records/[id]/route.ts",
+      "sha256": "1524b5d0a49de656fc9e72f8c109670f905a94c6a099ce68d466ca5b11227f03"
+    },
+    {
+      "path": "src/app/api/attendance-records/route.ts",
+      "sha256": "bc530ea81ae3f95d93ce5b509c4017e615256febe2f069e0548cb9961b957d86"
+    },
+    {
+      "path": "src/app/api/attendance-tracker/reports/pdf/route.ts",
+      "sha256": "f38f64e7c83fc699cf096cb368cfaf16d9f328d5b743f1cca13dc64a96a16604"
+    },
+    {
+      "path": "src/app/api/attendance-tracker/reports/route.ts",
+      "sha256": "76bc54f7abf469220fb36e4324352e500122368741c5e2f1308319b8773d62a6"
+    },
+    {
+      "path": "src/app/api/attendance-tracker/route.ts",
+      "sha256": "112e6ac52698ff4e0b3576e7a744f89b79d85458f6070a10f6a3923f046f6613"
+    },
+    {
+      "path": "src/app/api/branches/[id]/route.ts",
+      "sha256": "f582b4b97508280f2816ea29a1945ac984349469c4ade37a31e7da3aa1d07ad6"
+    },
+    {
+      "path": "src/app/api/branches/route.ts",
+      "sha256": "82e1735cbdf76fcdad27ded66910d764218334c733293b0f1bd3e875ab95b250"
+    },
+    {
+      "path": "src/app/api/candidate/candidateNames/route.ts",
+      "sha256": "d5326b97e28c1d1db08d7c9ddfd8dd8635570078afa654dba72afcd19ce0f1f8"
+    },
+    {
+      "path": "src/app/api/candidate/chart/route.ts",
+      "sha256": "961d55b694761fb7a78b79359a4f951c175688307e3311242acb8e7a2c27fdeb"
+    },
+    {
+      "path": "src/app/api/candidate/count/route.ts",
+      "sha256": "7943887d3ab772479124a8cd6aa2fb9857ccc1e979dfbfddd95786c98f745e91"
+    },
+    {
+      "path": "src/app/api/candidate/hiringChart/route.ts",
+      "sha256": "9968709ed87ea92f0e98a1abedd67280a079c25ebd818c2a5bf5be7bef768138"
+    },
+    {
+      "path": "src/app/api/candidate/jobOpenings/route.ts",
+      "sha256": "6c5b245bc9ca140cbf12d438faacbb495daf6342baa7f60896d25a6d6ac37b49"
+    },
+    {
+      "path": "src/app/api/candidate/recent/route.ts",
+      "sha256": "52f6b7bd2906f6be468c3fc6ab4cb393e72dd19553dc38238c3c539ecc9e3015"
+    },
+    {
+      "path": "src/app/api/candidate/route.ts",
+      "sha256": "46796e17e9a80af871a2edc57d96cc62ba330b73bd25436b969ee5a6f5aa1f7a"
+    },
+    {
+      "path": "src/app/api/candidateFormDetails/route.ts",
+      "sha256": "eaf113770618a20cb5680d8795fe69556e47d25d9b0ea1a255cb4d13da003f35"
+    },
+    {
+      "path": "src/app/api/dashboard/chart/route.ts",
+      "sha256": "56011fd7da6e71805fd418bbaed4cc8c47b9b9696d17c4d750426dfd279f3973"
+    },
+    {
+      "path": "src/app/api/dashboard/count/route.ts",
+      "sha256": "f9cd267faf1dbd60d8820d6ec39c92f271039c471576b1ff283ebb1b9c77071f"
+    },
+    {
+      "path": "src/app/api/dashboard/detailPerformanceMetrics/route.ts",
+      "sha256": "12a120237bf9cfbfe3afb58542fb19067696bd1b18def6cdc9d2388ac746985a"
+    },
+    {
+      "path": "src/app/api/dashboard/metrics/route.ts",
+      "sha256": "533e150b37fea660407144f5e9b1ce3849a56426c17a05a74f96ee65f79a9537"
+    },
+    {
+      "path": "src/app/api/departments/[id]/designations/route.ts",
+      "sha256": "eee32cceac47d1f00c2aacf67fc454da0cb647c87406e4f530f32fdd35126742"
+    },
+    {
+      "path": "src/app/api/departments/[id]/route.ts",
+      "sha256": "cd25d9f92fc4e80eddc5870d16ba3a465ebd7a16d805b9eff343b8332aa4d8f1"
+    },
+    {
+      "path": "src/app/api/departments/route.ts",
+      "sha256": "696b731930c4b3bd17c8f1dbceb1c8b1e29b1078181949187cd9700f2d9afd72"
+    },
+    {
+      "path": "src/app/api/designations/[id]/route.ts",
+      "sha256": "ce53b808b0830263c76d612fbea8c3cf59f4b58e42e111d1b0303e4ffe843b32"
+    },
+    {
+      "path": "src/app/api/documents/[id]/download/route.ts",
+      "sha256": "7ad59bfdda34dac05b0f437495a81f5b0e1938b288e4f4a180e38cc6dfb4431a"
+    },
+    {
+      "path": "src/app/api/documents/deadlines/route.ts",
+      "sha256": "4b1d8312b94788085c9e312f594c9ffc9df74622197c16dacbc5b0e41b00bc47"
+    },
+    {
+      "path": "src/app/api/documents/recent-activity/route.ts",
+      "sha256": "efda57e1136c9c22858596d4da8101d1aedcca3442d0674bf98ef4ee2168d694"
+    },
+    {
+      "path": "src/app/api/documents/route.ts",
+      "sha256": "5e6a6c7c0a8996d4bd65d478f3b5cda9337d9b4e18cf1e9a58bbf4bd34f97342"
+    },
+    {
+      "path": "src/app/api/documents/stats/route.ts",
+      "sha256": "34cc62a2e23258e84288b77ceb1e9e7741e5b2f21974b8dafdcb70895a581316"
+    },
+    {
+      "path": "src/app/api/documents/upload/route.ts",
+      "sha256": "a75723ab33a32dbf3fc441319361c82a3d629d04fd3b545e2276232cf7d3f45b"
+    },
+    {
+      "path": "src/app/api/employee-documents/[id]/download/route.ts",
+      "sha256": "95da9b16de6996ef3818831a779b30276ec17085ec875cfa448328faaedca202"
+    },
+    {
+      "path": "src/app/api/employee-documents/[id]/route.ts",
+      "sha256": "0ace83cc244e834fbe8b25f99762eefbfae7e12186b0c98a6461379d81220c56"
+    },
+    {
+      "path": "src/app/api/employee-documents/route.ts",
+      "sha256": "df35de8ecaff4dd902d76fd56faa6baf5027782646f72dc88e5a91e86d86e5d0"
+    },
+    {
+      "path": "src/app/api/employee-self-service/dashboard/route.ts",
+      "sha256": "579bb041914a00a343ed68e08c329d99de09f8ed1b262219555b9c1709f65148"
+    },
+    {
+      "path": "src/app/api/employee-tasks/[id]/route.ts",
+      "sha256": "714ad79ff9ae696d499f116f077bcaaaab410761c3a59fc4945e91a497692ba6"
+    },
+    {
+      "path": "src/app/api/employee-tasks/route.ts",
+      "sha256": "91a91ea458d0d446539f9854008360bbb49f9c1c5bd619e67be23a2a04afb832"
+    },
+    {
+      "path": "src/app/api/employees/[id]/assets/[assignmentId]/route.ts",
+      "sha256": "486c4a26d215d163bb48a56e437148061a64139c94ba82194fb5c355722ad802"
+    },
+    {
+      "path": "src/app/api/employees/[id]/assets/route.ts",
+      "sha256": "64ec22f88c352d1c56fc056fa5faedc8e1f1eb7c121353aba514d1cef2a80cfc"
+    },
+    {
+      "path": "src/app/api/employees/[id]/attendance/route.ts",
+      "sha256": "cded79038dbce1ca963aac803efc3352505621a0033c8fcf0596dc32c9879d9d"
+    },
+    {
+      "path": "src/app/api/employees/[id]/documents/[docId]/download/route.ts",
+      "sha256": "957abd86cd030266e17dd199a106ace1bfb9f30ad16981145d3918984c514da9"
+    },
+    {
+      "path": "src/app/api/employees/[id]/documents/[docId]/route.ts",
+      "sha256": "0ef655f06ba3099a2085efb65e57df2b87cb4baea1bd5a82653a513aa40dc44b"
+    },
+    {
+      "path": "src/app/api/employees/[id]/documents/route.ts",
+      "sha256": "6ef37b1bbf3f80bbf437ff4892122ccea1c76d7b98ae174e527c70d067d3ae86"
+    },
+    {
+      "path": "src/app/api/employees/[id]/job-details/route.ts",
+      "sha256": "20ed49eeda4325a4fb966e6b0bd652f8d7b1dfbd34ace7492c62d1e325837810"
+    },
+    {
+      "path": "src/app/api/employees/[id]/lifecycle/[eventId]/route.ts",
+      "sha256": "3a8e8c2fde4561b41c8fbd6d69080a391c9c061f44f026cea3fb00aa6e61cf65"
+    },
+    {
+      "path": "src/app/api/employees/[id]/lifecycle/route.ts",
+      "sha256": "49a9d416d4bee8d40285cd7e068474736dcc81402088ce992242f152606f5ef3"
+    },
+    {
+      "path": "src/app/api/employees/[id]/payroll/route.ts",
+      "sha256": "edf2a72764108dfef9deed720aa3a1109beb9afc970e255fdacc911e48523bf5"
+    },
+    {
+      "path": "src/app/api/employees/[id]/route.ts",
+      "sha256": "81ed6dedd0ec052222877478562365c0b2f586ce4cd96f30d68c6eebb3863f15"
+    },
+    {
+      "path": "src/app/api/employees/peers/route.ts",
+      "sha256": "674abb244148c83d4100fecabaef18ea0d4fbaaba370fc26e3d87351238fb45a"
+    },
+    {
+      "path": "src/app/api/employees/route.ts",
+      "sha256": "c68240ee724dccb15fd45d69398baf469c83ce58c60c2bef96e49699510c400b"
+    },
+    {
+      "path": "src/app/api/exit-offboarding-templates/[id]/apply/route.ts",
+      "sha256": "3de1de26f600a8f1473588c888551a5301828c20b496a10402b71d6dc0f7049c"
+    },
+    {
+      "path": "src/app/api/exit-offboarding-templates/[id]/route.ts",
+      "sha256": "7b5e5ce44022eb3711fe837903be6ed34417e50aaa5d111b2d1ed761332e4a38"
+    },
+    {
+      "path": "src/app/api/exit-offboarding-templates/route.ts",
+      "sha256": "5dd85b0026cb4e3872524616334057399f79c922710f2dc92e042a98cdb5b260"
+    },
+    {
+      "path": "src/app/api/exit-requests/[id]/attachments/route.ts",
+      "sha256": "7a7992f51555f08564531b4b6ee17c38716f9234557d384b7f2b918e73cc9b9d"
+    },
+    {
+      "path": "src/app/api/exit-requests/[id]/clearance/route.ts",
+      "sha256": "a33c1c60c3c635e7dce917aab560cdab32a3a0bdcbe6cabcb32f29987c32513d"
+    },
+    {
+      "path": "src/app/api/exit-requests/[id]/route.ts",
+      "sha256": "84528c0aef9caf7e0669389cb9a5dab67ed8e12d865cbdfc46e3c68af171bf86"
+    },
+    {
+      "path": "src/app/api/exit-requests/route.ts",
+      "sha256": "6a2a6a3d28fa651ee3741349566f2711cdba50b86bb4ce840ac1cd1c2cea3db7"
+    },
+    {
+      "path": "src/app/api/feedback/route.ts",
+      "sha256": "0e60daf6a1fd76fdcad551974f8da5869a98dcc659d6bdbf4932937190a9e4a7"
+    },
+    {
+      "path": "src/app/api/fnf-settlements/[id]/route.ts",
+      "sha256": "57250f620b1f619cf90434b7ad58830c6d026dccf254edbf7349bd4f947cfc42"
+    },
+    {
+      "path": "src/app/api/fnf-settlements/route.ts",
+      "sha256": "a3cdc30b523eb2b4aecce0f6dcdd404ab2168d7e9ff8ce06762575e2581d1ec1"
+    },
+    {
+      "path": "src/app/api/health/route.ts",
+      "sha256": "284767bb1d5b39a4faf419475730dfbfd786fd47e85d600ec463b97495e88b10"
+    },
+    {
+      "path": "src/app/api/hiringFlow/route.ts",
+      "sha256": "14c25d66757b928be3dbc66622fee91b21ab071fc761d0f44db2277bf5c0c84a"
+    },
+    {
+      "path": "src/app/api/interview/levelCounts/route.ts",
+      "sha256": "b3b28ed026520dedbada9d03272a5981d3562fcfc89c058d386221ab01bdd1ed"
+    },
+    {
+      "path": "src/app/api/interview/route.ts",
+      "sha256": "9290cf083c1344632470f246a3efdaedeb3d7b062f13ad407baf6114e2b25d4d"
+    },
+    {
+      "path": "src/app/api/interview/upcomming/route.ts",
+      "sha256": "422b0301f3c24c9fdd984561422575757c053ee2dba5728e8e5b1f6e4201760c"
+    },
+    {
+      "path": "src/app/api/interviewSchedule/route.ts",
+      "sha256": "d4b6a023b68a72ae331e6ab82bc4cf3dbb75d81e18610e955570e24322028287"
+    },
+    {
+      "path": "src/app/api/job-applications/route.ts",
+      "sha256": "5b6d786f0eec6a5e104658a890534e27a8a55555c87dcdf38a755470dc4b7f00"
+    },
+    {
+      "path": "src/app/api/job-openings/route.ts",
+      "sha256": "1a5969e4f576a9c801be06ddd03529bc8cb7a5aeb3f5af99ce8eab493fa308ca"
+    },
+    {
+      "path": "src/app/api/job-referrals/route.ts",
+      "sha256": "b8fa3c7b161eddc35dd00b143f6e6049729125e2dc1e2d55f211ec1f4a800c6a"
+    },
+    {
+      "path": "src/app/api/job-titles/[id]/route.ts",
+      "sha256": "a7b42857f8a7fa0345eace068fef28c6138172419f335777ea78e80070d5d3f5"
+    },
+    {
+      "path": "src/app/api/job-titles/route.ts",
+      "sha256": "39a9729bd41a176bb33e972a619d650ccdda1e67e75cc3695ea93d2aa6cc13dc"
+    },
+    {
+      "path": "src/app/api/jobOpenings/active/route.ts",
+      "sha256": "737db3f15016e72610c1480cc61018652566293f0ba705187994cb173277d69e"
+    },
+    {
+      "path": "src/app/api/jobOpenings/candidate/route.ts",
+      "sha256": "36b1b756cc1c38ced1217a162e560f42fa74ab6049440200018ca79396609e80"
+    },
+    {
+      "path": "src/app/api/jobOpenings/chart/route.ts",
+      "sha256": "c47256445aaad58f3b6973a2ff7cc27f076358798bf8f4f9f9d50d7cc3217fa0"
+    },
+    {
+      "path": "src/app/api/jobOpenings/drops/route.ts",
+      "sha256": "8c2b6bb9256a07e2b499c1deb9ccfb58efa9c7ba951fee0ef4088f4b565183ce"
+    },
+    {
+      "path": "src/app/api/jobOpenings/interview/route.ts",
+      "sha256": "c10620332cd25855b808469b06d971a34d1b51e47e459afcf8c1b95d1422955c"
+    },
+    {
+      "path": "src/app/api/jobOpenings/route.ts",
+      "sha256": "524a85f5600d8ca8a513d6e5fe8d37912bf43b106a20bb1fa6d3d5247fd57d6b"
+    },
+    {
+      "path": "src/app/api/leave-attendance/logs/route.ts",
+      "sha256": "3862e2bcd582df0f46ecf22e913d44cc98f895220909d79459d740e73d31bd43"
+    },
+    {
+      "path": "src/app/api/leave-attendance/overview/route.ts",
+      "sha256": "8ce33f5bb81bb9174af0809cfddda87bae0d4047f60a968f9fcd6a04d8ccb80a"
+    },
+    {
+      "path": "src/app/api/leave-balances/[id]/route.ts",
+      "sha256": "6e21b743e9b3979df7574dc43ab01aa5850c374b61e7e120a9e64f8b0b0c4f35"
+    },
+    {
+      "path": "src/app/api/leave-balances/route.ts",
+      "sha256": "3eccddd3371c23346f5c5729061981e773aa16ba840fde747d81ea35282e2816"
+    },
+    {
+      "path": "src/app/api/leave-manager/route.ts",
+      "sha256": "3bbcb726653a9aa852c10ad6d2c6df901a6fb8ffdc92574bb5abbc783003ddf9"
+    },
+    {
+      "path": "src/app/api/leave-requests/[id]/route.ts",
+      "sha256": "4e045a63670e3351ac6998f9d0726214abcbcb352897693c331887c9b5654f69"
+    },
+    {
+      "path": "src/app/api/leave-requests/route.ts",
+      "sha256": "9eb2357981a865a9941cc733ce1999a68c297e8379633933072ede3819f68721"
+    },
+    {
+      "path": "src/app/api/leave-types/[id]/route.ts",
+      "sha256": "b3b628a151cec3b819b9d185d768d04d261bb7ade91bf818a29845ca3f9cd738"
+    },
+    {
+      "path": "src/app/api/leave-types/route.ts",
+      "sha256": "fb6f12328e8c8edfafc51da08fb846b087f26ee2d177ab354917783773b12383"
+    },
+    {
+      "path": "src/app/api/lost-damage-incidents/[id]/route.ts",
+      "sha256": "6210d8a1baece25cc7e20641113112cb0c18fa69c763edc5ad583fff452063b1"
+    },
+    {
+      "path": "src/app/api/lost-damage-incidents/route.ts",
+      "sha256": "8d4befe22cdf3119d51b4e24babdfa90971e7f38c312d29edc44da0a4a492861"
+    },
+    {
+      "path": "src/app/api/lost-damage-policy/route.ts",
+      "sha256": "a2c5ed3602a7af4edd10974027223e786f6604cc1d65b1d8b5fb157c7d09b738"
+    },
+    {
+      "path": "src/app/api/manager-mapping/bulk/route.ts",
+      "sha256": "126e9e82e930d9ee74c3065e450519127400397414b7f85dbcdeae9d402028af"
+    },
+    {
+      "path": "src/app/api/manager-mapping/import/route.ts",
+      "sha256": "008849a46becd1081348e8d9b8b7e764785b48d863dbf8f401e6d9e4ef506a54"
+    },
+    {
+      "path": "src/app/api/manager-mapping/route.ts",
+      "sha256": "4badf6187863ef32146092b2bc4ba8885d10d82f87085fbd36c71754bdd158a0"
+    },
+    {
+      "path": "src/app/api/manager-mapping/template/route.ts",
+      "sha256": "e26704eb76cd03417c1fe6922af742a1bb18c1a70dc4b7d703926661003c0dae"
+    },
+    {
+      "path": "src/app/api/my-profile/pending-request/route.ts",
+      "sha256": "3d1fbe93fe9e8a642a03f407a010c92b51adae65dfb211c997d9c704d5907298"
+    },
+    {
+      "path": "src/app/api/my-profile/photo/route.ts",
+      "sha256": "318ab08d107ee6c9c634e012e2038a4ca26badccec71753b0c63b1c0c81b450c"
+    },
+    {
+      "path": "src/app/api/my-profile/route.ts",
+      "sha256": "59ef9529e9052225df76bc8a49f0556740af6e00183ef1f6b9f025d6c2c7a4e9"
+    },
+    {
+      "path": "src/app/api/onboarding-candidates/[id]/route.ts",
+      "sha256": "62a05accf59439854e0b3e5fb2f30bc7143c56294b7e67655fd6ca0d9972de65"
+    },
+    {
+      "path": "src/app/api/onboarding-candidates/bulk/route.ts",
+      "sha256": "d21b3a55e73e9c53538a131d8148067c1e31741a05395e3a1a90213ece3ae37f"
+    },
+    {
+      "path": "src/app/api/onboarding-candidates/route.ts",
+      "sha256": "763da079738d9dea3fb31cbea8c8f5c1d97e3fe791224fb74284852c940ec828"
+    },
+    {
+      "path": "src/app/api/onboarding-groups/[id]/route.ts",
+      "sha256": "29450371d5614ea729669a9df3a75fd6964d5c622c52c13a62e27bdd48b3c4f7"
+    },
+    {
+      "path": "src/app/api/onboarding-groups/route.ts",
+      "sha256": "5556e9a089f368d2de99ee07b88c42ea5fc520b45c2c0eb32e5c44b17148895d"
+    },
+    {
+      "path": "src/app/api/onboarding-templates/[id]/route.ts",
+      "sha256": "dfffd9636ab97fdd04718ca680c16ff2ad7fd688e8e72af4b4f074fa11a7e64f"
+    },
+    {
+      "path": "src/app/api/onboarding-templates/route.ts",
+      "sha256": "24d90fa1f3ea920e0bf08d4c126f31d731b05849cb4e19bd7a53e3eb78bbd22e"
+    },
+    {
+      "path": "src/app/api/organization/company-profile/route.ts",
+      "sha256": "f18b23aa687186b23f6508e498e8478640b4bccfa8657a3a23be29f717ddc1bd"
+    },
+    {
+      "path": "src/app/api/organization/roles/[id]/route.ts",
+      "sha256": "353806f41055729404781d77b4c9761fc878a063eaf3345282cf2464db12d0fb"
+    },
+    {
+      "path": "src/app/api/organization/roles/route.ts",
+      "sha256": "5b6d09a22616fa2037f198ceef8a3c787d4c286283eabe8da69d317067924a62"
+    },
+    {
+      "path": "src/app/api/organization/setup-dashboard/actions/route.ts",
+      "sha256": "a37bfe5f935abb9b9c66d334e3ab040d00d9578254fd25a7bb6f427c3660a2c9"
+    },
+    {
+      "path": "src/app/api/organization/setup-dashboard/route.ts",
+      "sha256": "0885e46ba4bdef4583dd370a1c66ce7cffbd0d93d280de7e68cee4cc1ebe55eb"
+    },
+    {
+      "path": "src/app/api/parties/[id]/route.ts",
+      "sha256": "6bd72463e3ddff8d856c9d036c08e1f7ac4a183319ceef4c120901783a191b1e"
+    },
+    {
+      "path": "src/app/api/parties/route.ts",
+      "sha256": "5e8cae54b14a769c176d6eb19f49b0a11cf0d8735d94fe4f18713d85f5125c4c"
+    },
+    {
+      "path": "src/app/api/performance-feedback/route.ts",
+      "sha256": "aa7ebfa48f22421e24a5c1cec8bc5a9410b35c5b4de86f1b295589a7843048f6"
+    },
+    {
+      "path": "src/app/api/performance-hub/appraisal/route.ts",
+      "sha256": "6ee9991315783c9db4183d58c11fb7aa4f49e6e7686d6834c56b507f7d42f734"
+    },
+    {
+      "path": "src/app/api/performance-hub/goals/[id]/route.ts",
+      "sha256": "c8fd86153ec0fd3b9207a88f1ab87e2244f775af40efb9f4982cea8f38e53b52"
+    },
+    {
+      "path": "src/app/api/performance-hub/goals/route.ts",
+      "sha256": "5830a0e17a832ea5d07aad79b2a886753eadb3c42a576a314cbc9429c502b49f"
+    },
+    {
+      "path": "src/app/api/performance-hub/route.ts",
+      "sha256": "7de2ae3b01d1898c5863d207c4378ca99ea48f35cbf8e631611084a39150790b"
+    },
+    {
+      "path": "src/app/api/privacy-policies/[id]/route.ts",
+      "sha256": "f7915d7068e1cf90cd37a3fc21443c35b0850014d758e670deac6899f9637733"
+    },
+    {
+      "path": "src/app/api/privacy-policies/route.ts",
+      "sha256": "e44079f8b496055ebb2961dcd90d302f05e23a2b4c128fe66fefb79b7e2f8cef"
+    },
+    {
+      "path": "src/app/api/probation-records/[id]/route.ts",
+      "sha256": "5b1c66c0a854b3365f64a3002e26816d8bb9537c83bd232ebc6aee68d124df40"
+    },
+    {
+      "path": "src/app/api/probation-records/filter-options/route.ts",
+      "sha256": "74066fdede8096a0bbf9eb0a4df88df9a211d43543b1ad617ac2f40bcb27611e"
+    },
+    {
+      "path": "src/app/api/probation-records/route.ts",
+      "sha256": "20c15623ce36497b73b16cbccbbd6c60ff3257edf6675aa090caf1fcac44a88e"
+    },
+    {
+      "path": "src/app/api/probation-settings/route.ts",
+      "sha256": "964aeee72b106b1e4dce95092712897064b0e72f011b1f3f14f8f740b76314ee"
+    },
+    {
+      "path": "src/app/api/question/route.ts",
+      "sha256": "543b5c213583c9acb55f9c9e2c8f1926b392cf1a58817677ededa7ab2c91eca1"
+    },
+    {
+      "path": "src/app/api/reporting-hierarchy/employees/[id]/route.ts",
+      "sha256": "19f67e2279cd1dc791af61958e729344c7972fc7f10f138c7ae556aa2b41a334"
+    },
+    {
+      "path": "src/app/api/reporting-hierarchy/employees/route.ts",
+      "sha256": "77d0b1a762cb4a9ac66ef5f5a5367b73a4d9ccc4df5f0accdc18ac37b830de65"
+    },
+    {
+      "path": "src/app/api/reporting-hierarchy/reorder/route.ts",
+      "sha256": "29bd126a32f794c2fe97f1226962eec99bb39bdbc69d29efc913872b67e9165b"
+    },
+    {
+      "path": "src/app/api/reporting-hierarchy/route.ts",
+      "sha256": "a33b9a28804906f5e9c0380743c3cb5416231b6e36a89c93c02c361ff1626801"
+    },
+    {
+      "path": "src/app/api/search/route.ts",
+      "sha256": "91eb8e6236da9b371e16ae131b14a26c813cfcb74728fc4925307b6fad2ddb54"
+    },
+    {
+      "path": "src/app/api/secttionValue/route.ts",
+      "sha256": "781f3c4fed051946305d279b424086142fc23bdda5d0657b172b65e19453b0ba"
+    },
+    {
+      "path": "src/app/api/sendEmails/route.ts",
+      "sha256": "87e6bc6f483c54d0cf116b4e725a6eac67bf8fdc8e0d19c1ba289851406fa8f2"
+    },
+    {
+      "path": "src/app/api/session/employee/route.ts",
+      "sha256": "bab6ae2bfa18f791bb53aba261d473aa61cbe85afc8710b83c34ec03e0141dd1"
+    },
+    {
+      "path": "src/app/api/subscription-requests/route.ts",
+      "sha256": "b8f8d56009ad168f062732ee83a557179a29eb60461442a4a3b88759e3026aac"
+    },
+    {
+      "path": "src/app/api/support-tickets/route.ts",
+      "sha256": "edbb88c8254a8efcc1fb22a9bef7f3deba920c4f559c66cd8228d9c76a02c9a8"
+    },
+    {
+      "path": "src/app/api/template/route.ts",
+      "sha256": "51c084d923eb966de550be33f8cf5290f98ab0c605bb261f58faa497ebbad3ee"
+    },
+    {
+      "path": "src/app/api/upload/route.ts",
+      "sha256": "16698582126800c62b26c5f35443db1d933abfe4c3dab8703b63e6d22ff68c07"
+    },
+    {
+      "path": "src/app/api/uploads/[...path]/route.ts",
+      "sha256": "be15c05db62e5cf2f2c00f779a7f72bc2156f67f43c84c6cbee4a74df40c0cf9"
+    },
+    {
+      "path": "src/app/api/users/[id]/route.ts",
+      "sha256": "dba2d655931083b9787a0c2fcee4038f0a24d0807a25533398b9b4867f7ccfa1"
+    },
+    {
+      "path": "src/app/api/users/me/route.ts",
+      "sha256": "7e29ab15058370c9be060215f7f64f2c7aa4c3538497e4445595a85f16cdda64"
+    },
+    {
+      "path": "src/app/api/users/route.ts",
+      "sha256": "1e22a2509db41d19f106c82a3daa2b4dce16f1e69f7ddcf322b1d3d453d951b2"
+    },
+    {
+      "path": "src/app/api/vendors/route.ts",
+      "sha256": "5b1b8c2bb3ecc89de06a13a9eddc52e641c36eb9d177b2fe1a6bb487b0b6c549"
+    }
+  ],
+  "original_pages": [
+    "src/app/HRMS/(aliases)/admin/dashboard/page.tsx",
+    "src/app/HRMS/(aliases)/admin/page.tsx",
+    "src/app/HRMS/(aliases)/employee/page.tsx",
+    "src/app/HRMS/Admin/AskMe/dashboard/page.tsx",
+    "src/app/HRMS/Admin/AskMe/knowledge-base/page.tsx",
+    "src/app/HRMS/Admin/AskMe/page.tsx",
+    "src/app/HRMS/Admin/AskMe/reports/page.tsx",
+    "src/app/HRMS/Admin/AskMe/roles-permissions/page.tsx",
+    "src/app/HRMS/Admin/AskMe/settings/page.tsx",
+    "src/app/HRMS/Admin/AskMe/tickets/new/page.tsx",
+    "src/app/HRMS/Admin/AskMe/tickets/page.tsx",
+    "src/app/HRMS/Admin/AssetManagement/add-asset/page.tsx",
+    "src/app/HRMS/Admin/AssetManagement/allocation-returns/page.tsx",
+    "src/app/HRMS/Admin/AssetManagement/asset-categories/page.tsx",
+    "src/app/HRMS/Admin/AssetManagement/lost-damage-assets/page.tsx",
+    "src/app/HRMS/Admin/AssetManagement/page.tsx",
+    "src/app/HRMS/Admin/AttendanceLeave/approval-queue/page.tsx",
+    "src/app/HRMS/Admin/AttendanceLeave/leave-manager/page.tsx",
+    "src/app/HRMS/Admin/AttendanceLeave/page.tsx",
+    "src/app/HRMS/Admin/AttendanceLeave/policy-configuration/page.tsx",
+    "src/app/HRMS/Admin/AttendanceLeave/times-attendance-tracker/page.tsx",
+    "src/app/HRMS/Admin/AttendanceLeave/times-attendance-tracker/reports/page.tsx",
+    "src/app/HRMS/Admin/dashboard/page.tsx",
+    "src/app/HRMS/Admin/EmployeeManagement/document-repository/page.tsx",
+    "src/app/HRMS/Admin/EmployeeManagement/employee-directory/page.tsx",
+    "src/app/HRMS/Admin/EmployeeManagement/probation-management/[recordId]/page.tsx",
+    "src/app/HRMS/Admin/EmployeeManagement/probation-management/page.tsx",
+    "src/app/HRMS/Admin/EmployeeManagement/profile-management/[employeeId]/page.tsx",
+    "src/app/HRMS/Admin/EmployeeManagement/profile-management/page.tsx",
+    "src/app/HRMS/Admin/EmployeeManagement/self-service-requests/page.tsx",
+    "src/app/HRMS/Admin/EmployeeSelfService/dashboard/page.tsx",
+    "src/app/HRMS/Admin/EmployeeSelfService/job-openings/page.tsx",
+    "src/app/HRMS/Admin/EmployeeSelfService/leaves-management/[leaveId]/edit/page.tsx",
+    "src/app/HRMS/Admin/EmployeeSelfService/leaves-management/attendance/[logId]/edit/page.tsx",
+    "src/app/HRMS/Admin/EmployeeSelfService/leaves-management/page.tsx",
+    "src/app/HRMS/Admin/EmployeeSelfService/my-profile/edit/page.tsx",
+    "src/app/HRMS/Admin/EmployeeSelfService/my-profile/page.tsx",
+    "src/app/HRMS/Admin/EmployeeSelfService/my-tasks/[taskId]/page.tsx",
+    "src/app/HRMS/Admin/EmployeeSelfService/my-tasks/page.tsx",
+    "src/app/HRMS/Admin/EmployeeSelfService/payslips-docs/[payslipId]/edit/page.tsx",
+    "src/app/HRMS/Admin/EmployeeSelfService/payslips-docs/[payslipId]/page.tsx",
+    "src/app/HRMS/Admin/EmployeeSelfService/payslips-docs/page.tsx",
+    "src/app/HRMS/Admin/EmployeeSelfService/performance-hub/page.tsx",
+    "src/app/HRMS/Admin/EmployeeSelfService/reimbursements-claims/page.tsx",
+    "src/app/HRMS/Admin/ExitManagement/dashboard/page.tsx",
+    "src/app/HRMS/Admin/ExitManagement/exit-employees/page.tsx",
+    "src/app/HRMS/Admin/ExitManagement/full-final-settlement/page.tsx",
+    "src/app/HRMS/Admin/ExitManagement/templates/create/page.tsx",
+    "src/app/HRMS/Admin/ExitManagement/templates/page.tsx",
+    "src/app/HRMS/Admin/Onboarding/candidates/page.tsx",
+    "src/app/HRMS/Admin/Onboarding/dashboard/page.tsx",
+    "src/app/HRMS/Admin/Onboarding/groups/create/page.tsx",
+    "src/app/HRMS/Admin/Onboarding/groups/page.tsx",
+    "src/app/HRMS/Admin/Onboarding/page.tsx",
+    "src/app/HRMS/Admin/Onboarding/templates/create/page.tsx",
+    "src/app/HRMS/Admin/Onboarding/templates/page.tsx",
+    "src/app/HRMS/Admin/OrganizationSetup/branches/page.tsx",
+    "src/app/HRMS/Admin/OrganizationSetup/company-profile/page.tsx",
+    "src/app/HRMS/Admin/OrganizationSetup/dashboard/page.tsx",
+    "src/app/HRMS/Admin/OrganizationSetup/departments/page.tsx",
+    "src/app/HRMS/Admin/OrganizationSetup/manager-mapping/page.tsx",
+    "src/app/HRMS/Admin/OrganizationSetup/page.tsx",
+    "src/app/HRMS/Admin/OrganizationSetup/privacy-policy/[id]/edit/page.tsx",
+    "src/app/HRMS/Admin/OrganizationSetup/privacy-policy/new/page.tsx",
+    "src/app/HRMS/Admin/OrganizationSetup/privacy-policy/page.tsx",
+    "src/app/HRMS/Admin/OrganizationSetup/reporting-hierarchy/page.tsx",
+    "src/app/HRMS/Admin/OrganizationSetup/roles-permissions/page.tsx",
+    "src/app/HRMS/Admin/OrganizationSetup/user-access/page.tsx",
+    "src/app/HRMS/Admin/page.tsx",
+    "src/app/HRMS/Admin/PartyManagement/page.tsx",
+    "src/app/HRMS/Admin/Recruitment/job-openings/page.tsx",
+    "src/app/HRMS/dashboard/page.tsx",
+    "src/app/HRMS/Employee/ask-me/dashboard/page.tsx",
+    "src/app/HRMS/Employee/ask-me/knowledge-base/page.tsx",
+    "src/app/HRMS/Employee/ask-me/page.tsx",
+    "src/app/HRMS/Employee/ask-me/reports/page.tsx",
+    "src/app/HRMS/Employee/ask-me/roles-permissions/page.tsx",
+    "src/app/HRMS/Employee/ask-me/settings/page.tsx",
+    "src/app/HRMS/Employee/ask-me/tickets/page.tsx",
+    "src/app/HRMS/Employee/Dashboard/page.tsx",
+    "src/app/HRMS/Employee/job-openings/page.tsx",
+    "src/app/HRMS/Employee/leaves-management/[leaveId]/edit/page.tsx",
+    "src/app/HRMS/Employee/leaves-management/attendance/[logId]/edit/page.tsx",
+    "src/app/HRMS/Employee/leaves-management/page.tsx",
+    "src/app/HRMS/Employee/my-profile/edit/page.tsx",
+    "src/app/HRMS/Employee/my-profile/page.tsx",
+    "src/app/HRMS/Employee/my-tasks/[taskId]/page.tsx",
+    "src/app/HRMS/Employee/my-tasks/page.tsx",
+    "src/app/HRMS/Employee/page.tsx",
+    "src/app/HRMS/Employee/payslips-docs/[payslipId]/edit/page.tsx",
+    "src/app/HRMS/Employee/payslips-docs/[payslipId]/page.tsx",
+    "src/app/HRMS/Employee/payslips-docs/page.tsx",
+    "src/app/HRMS/Employee/performance-hub/page.tsx",
+    "src/app/HRMS/Employee/performance-improvement-plan/page.tsx",
+    "src/app/HRMS/Employee/reimbursements-claims/page.tsx",
+    "src/app/HRMS/payroll/page.tsx",
+    "src/app/page.tsx",
+    "src/app/RMS/analytics/page.tsx",
+    "src/app/RMS/candidate/apply/[id]/page.tsx",
+    "src/app/RMS/candidate/apply/page.tsx",
+    "src/app/RMS/candidate/page.tsx",
+    "src/app/RMS/candidates/[details]/[id]/page.tsx",
+    "src/app/RMS/candidates/[details]/page.tsx",
+    "src/app/RMS/candidates/create/page.tsx",
+    "src/app/RMS/candidates/page.tsx",
+    "src/app/RMS/dashboard/page.tsx",
+    "src/app/RMS/feedback/apply/[id]/page.tsx",
+    "src/app/RMS/feedback/apply/page.tsx",
+    "src/app/RMS/feedback/page.tsx",
+    "src/app/RMS/interviews/[details]/[id]/page.tsx",
+    "src/app/RMS/interviews/[details]/page.tsx",
+    "src/app/RMS/interviews/create/page.tsx",
+    "src/app/RMS/interviews/page.tsx",
+    "src/app/RMS/job-openings/[id]/page.tsx",
+    "src/app/RMS/job-openings/new/page.tsx",
+    "src/app/RMS/job-openings/page.tsx",
+    "src/app/subscription/page.tsx",
+    "src/app/systems/page.tsx"
+  ],
+  "imported_route_count": 182,
+  "added_database_models": [
+    "OrganizationRoleSetting"
+  ]
+}

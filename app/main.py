@@ -1,6 +1,7 @@
 """ASGI entry point: uvicorn app.main:app --reload."""
 
 import logging
+import asyncio
 import threading
 from contextlib import asynccontextmanager
 from uuid import uuid4
@@ -23,8 +24,18 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     @asynccontextmanager
     async def lifespan(application):
-        yield
-        engine.dispose()
+        stop = asyncio.Event()
+        task = None
+        if settings.imported_storage_cleanup_enabled and settings.environment != 'test':
+            from app.workers.imported_storage_cleanup import run_cleanup
+            task = asyncio.create_task(run_cleanup(application, stop))
+        try:
+            yield
+        finally:
+            stop.set()
+            if task:
+                await task
+            engine.dispose()
 
     application = FastAPI(
         title="Hirava API",
@@ -40,7 +51,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     application.state.login_attempts = {}
     application.state.login_lock = threading.Lock()
     application.add_middleware(CORSMiddleware, allow_origins=settings.cors_origins,
-                               allow_methods=["GET", "POST", "PATCH", "DELETE"],
+                               allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE"],
                                allow_headers=["Authorization", "Content-Type", "Idempotency-Key"],
                                expose_headers=["X-Request-ID"])
 
@@ -55,7 +66,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     @application.exception_handler(IntegrityError)
     async def integrity_error(request, exc):
-        return JSONResponse(status_code=409, content={"detail": "Duplicate record or conflicting relationship"})
+        message = "Duplicate record or conflicting relationship"
+        return JSONResponse(status_code=409, content={"detail": message, "error": message, "message": message})
 
     @application.exception_handler(StaleDataError)
     async def stale_error(request, exc):
@@ -67,6 +79,98 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         return JSONResponse(status_code=503, content={"detail": "Database unavailable or busy; retry later"})
 
     application.include_router(api_router, prefix="/api/v1")
+    from app.modules.recruiting.pipeline_api import router as pipeline_router
+    application.include_router(pipeline_router)
+    from app.modules.recruiting.pipeline_interviews import router as interview_pipeline_router
+    application.include_router(interview_pipeline_router)
+    from app.modules.recruiting.pipeline_feedback import router as feedback_pipeline_router
+    application.include_router(feedback_pipeline_router)
+    from app.modules.recruiting.pipeline_jobs import router as jobs_compat_router
+    from app.modules.recruiting.pipeline_analytics import router as analytics_compat_router
+    from app.modules.recruiting.pipeline_configuration import router as configuration_compat_router
+    application.include_router(jobs_compat_router)
+    application.include_router(analytics_compat_router)
+    application.include_router(configuration_compat_router)
+    from app.modules.workforce.imported_assets import router as asset_compat_router
+    from app.modules.workforce.imported_asset_returns import router as asset_return_router
+    application.include_router(asset_return_router)
+    application.include_router(asset_compat_router)
+    from app.modules.workforce.imported_shared import router as shared_compat_router
+    application.include_router(shared_compat_router)
+    from app.modules.workforce.imported_organization import router as org_compat_router
+    application.include_router(org_compat_router)
+    from app.modules.workforce.imported_employees import router as employee_compat_router
+    application.include_router(employee_compat_router)
+    from app.modules.workforce.imported_employee_profile import router as employee_profile_router
+    application.include_router(employee_profile_router)
+    from app.modules.workforce.imported_documents import router as document_compat_router
+    application.include_router(document_compat_router)
+    from app.modules.workforce.imported_asset_incidents import router as asset_incident_router
+    application.include_router(asset_incident_router)
+    from app.modules.workforce.imported_employee_assets import router as employee_asset_router
+    application.include_router(employee_asset_router)
+    from app.modules.workforce.imported_leave import router as leave_compat_router
+    from app.modules.workforce.imported_attendance import router as attendance_compat_router
+    application.include_router(leave_compat_router)
+    application.include_router(attendance_compat_router)
+    from app.modules.workforce.imported_attendance_views import router as attendance_view_router
+    application.include_router(attendance_view_router)
+    from app.modules.workforce.imported_leave_calendar import router as leave_calendar_router
+    from app.modules.workforce.imported_attendance_reports import router as attendance_report_router
+    application.include_router(leave_calendar_router)
+    application.include_router(attendance_report_router)
+    from app.modules.workforce.imported_self_service import router as self_service_router
+    application.include_router(self_service_router)
+    from app.modules.workforce.imported_photo import router as photo_router
+    application.include_router(photo_router)
+    from app.modules.workforce.imported_onboarding import router as imported_onboarding_router
+    application.include_router(imported_onboarding_router)
+    from app.modules.workforce.imported_probation import router as imported_probation_router
+    application.include_router(imported_probation_router)
+    from app.modules.workforce.imported_tasks import router as imported_tasks_router
+    from app.modules.workforce.imported_privacy import router as imported_privacy_router
+    application.include_router(imported_tasks_router)
+    application.include_router(imported_privacy_router)
+    from app.modules.workforce.imported_exits import router as imported_exits_router
+    from app.modules.workforce.imported_exit_clearance import router as imported_exit_clearance_router
+    application.include_router(imported_exits_router)
+    application.include_router(imported_exit_clearance_router)
+    from app.modules.workforce.imported_settlements import router as imported_settlements_router
+    application.include_router(imported_settlements_router)
+    from app.modules.workforce.imported_recruitment import router as employee_recruitment_router
+    application.include_router(employee_recruitment_router)
+    from app.modules.workforce.imported_performance import router as imported_performance_router
+    application.include_router(imported_performance_router)
+    from app.modules.workforce.imported_dashboards import router as imported_dashboards_router
+    application.include_router(imported_dashboards_router)
+    from app.modules.workforce.imported_support import router as imported_support_router
+    application.include_router(imported_support_router)
+    from app.modules.workforce.imported_knowledge import router as imported_knowledge_router
+    application.include_router(imported_knowledge_router)
+    from app.modules.workforce.imported_helpdesk_settings import router as imported_helpdesk_settings_router
+    application.include_router(imported_helpdesk_settings_router)
+    from app.modules.workforce.imported_helpdesk_reports import router as imported_helpdesk_reports_router
+    application.include_router(imported_helpdesk_reports_router)
+    from app.modules.workforce.imported_hierarchy import router as imported_hierarchy_router
+    application.include_router(imported_hierarchy_router)
+    from app.modules.workforce.imported_accounts import router as imported_accounts_router
+    application.include_router(imported_accounts_router)
+    from app.modules.workforce.imported_company import router as imported_company_router
+    application.include_router(imported_company_router)
+    from app.modules.workforce.imported_misc import router as imported_misc_router
+    application.include_router(imported_misc_router)
+    from app.modules.workforce.imported_parties import router as imported_parties_router
+    application.include_router(imported_parties_router)
+    from app.modules.workforce.imported_roles import router as imported_roles_router
+    from app.modules.workforce.imported_views import router as imported_views_router
+    application.include_router(imported_roles_router)
+    application.include_router(imported_views_router)
+    from app.modules.interviews.imported_email import router as imported_email_router
+    application.include_router(imported_email_router)
+    from app.modules.workforce.imported_subscriptions import router as imported_subscriptions_router
+    application.include_router(imported_subscriptions_router)
+    from app.modules.workforce.imported_setup import router as imported_setup_router
+    application.include_router(imported_setup_router)
     return application
 
 

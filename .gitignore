@@ -18,3 +18,7 @@ storage/
 test-output/
 .uv-cache/
 pytest-cache-files-*/
+node_modules/
+.next/
+*.tsbuildinfo
+uploads/

@@ -20,6 +20,15 @@ class User(Record):
     locked_until: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
 
+class AccountInvitation(Record):
+    __tablename__ = "account_invitations"
+    user_id: Mapped[str] = mapped_column(ForeignKey("users.id"), unique=True)
+    employee_id: Mapped[str | None] = mapped_column(String(100))
+    status: Mapped[str] = mapped_column(String(30), default="pending")
+    attempted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    error_code: Mapped[str | None] = mapped_column(String(100))
+
+
 class AuditEvent(Record):
     __tablename__ = "audit_events"
     actor_id: Mapped[str | None] = mapped_column(ForeignKey("users.id"))

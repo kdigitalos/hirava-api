@@ -14,3 +14,7 @@ pytest-cache-files-*
 *.egg-info
 build
 dist
+**/node_modules
+**/.next
+**/.env
+**/.env.*

@@ -1,0 +1,1413 @@
+[
+  {
+    "path": "/api/admin/attendance-records",
+    "methods": [
+      "GET"
+    ],
+    "source": "legacy-service/src/app/api/admin/attendance-records/route.ts"
+  },
+  {
+    "path": "/api/admin/create-user",
+    "methods": [
+      "POST"
+    ],
+    "source": "legacy-service/src/app/api/admin/create-user/route.ts"
+  },
+  {
+    "path": "/api/admin/dashboard",
+    "methods": [
+      "GET"
+    ],
+    "source": "legacy-service/src/app/api/admin/dashboard/route.ts"
+  },
+  {
+    "path": "/api/admin/employee-tasks",
+    "methods": [
+      "POST"
+    ],
+    "source": "legacy-service/src/app/api/admin/employee-tasks/route.ts"
+  },
+  {
+    "path": "/api/admin/employees-pending-access",
+    "methods": [
+      "GET"
+    ],
+    "source": "legacy-service/src/app/api/admin/employees-pending-access/route.ts"
+  },
+  {
+    "path": "/api/admin/exit-dashboard",
+    "methods": [
+      "GET"
+    ],
+    "source": "legacy-service/src/app/api/admin/exit-dashboard/route.ts"
+  },
+  {
+    "path": "/api/admin/job-applications/{id}",
+    "methods": [
+      "PATCH"
+    ],
+    "source": "legacy-service/src/app/api/admin/job-applications/[id]/route.ts"
+  },
+  {
+    "path": "/api/admin/job-applications",
+    "methods": [
+      "GET"
+    ],
+    "source": "legacy-service/src/app/api/admin/job-applications/route.ts"
+  },
+  {
+    "path": "/api/admin/job-openings/{id}",
+    "methods": [
+      "PATCH",
+      "DELETE"
+    ],
+    "source": "legacy-service/src/app/api/admin/job-openings/[id]/route.ts"
+  },
+  {
+    "path": "/api/admin/job-openings",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "source": "legacy-service/src/app/api/admin/job-openings/route.ts"
+  },
+  {
+    "path": "/api/admin/job-referrals/{id}",
+    "methods": [
+      "PATCH"
+    ],
+    "source": "legacy-service/src/app/api/admin/job-referrals/[id]/route.ts"
+  },
+  {
+    "path": "/api/admin/job-referrals",
+    "methods": [
+      "GET"
+    ],
+    "source": "legacy-service/src/app/api/admin/job-referrals/route.ts"
+  },
+  {
+    "path": "/api/admin/onboarding-dashboard",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "source": "legacy-service/src/app/api/admin/onboarding-dashboard/route.ts"
+  },
+  {
+    "path": "/api/admin/payroll-activities",
+    "methods": [
+      "GET"
+    ],
+    "source": "legacy-service/src/app/api/admin/payroll-activities/route.ts"
+  },
+  {
+    "path": "/api/admin/provision-employee-access",
+    "methods": [
+      "POST"
+    ],
+    "source": "legacy-service/src/app/api/admin/provision-employee-access/route.ts"
+  },
+  {
+    "path": "/api/admin/schedule-items",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "source": "legacy-service/src/app/api/admin/schedule-items/route.ts"
+  },
+  {
+    "path": "/api/admin/self-service-requests/{id}",
+    "methods": [
+      "GET",
+      "PATCH"
+    ],
+    "source": "legacy-service/src/app/api/admin/self-service-requests/[id]/route.ts"
+  },
+  {
+    "path": "/api/admin/self-service-requests",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "source": "legacy-service/src/app/api/admin/self-service-requests/route.ts"
+  },
+  {
+    "path": "/api/admin/support-tickets/by-id/{id}",
+    "methods": [
+      "GET",
+      "PATCH"
+    ],
+    "source": "legacy-service/src/app/api/admin/support-tickets/by-id/[id]/route.ts"
+  },
+  {
+    "path": "/api/admin/support-tickets",
+    "methods": [
+      "GET"
+    ],
+    "source": "legacy-service/src/app/api/admin/support-tickets/route.ts"
+  },
+  {
+    "path": "/api/admin/support-tickets/stats",
+    "methods": [
+      "GET"
+    ],
+    "source": "legacy-service/src/app/api/admin/support-tickets/stats/route.ts"
+  },
+  {
+    "path": "/api/ask-me/faqs/{id}",
+    "methods": [
+      "PATCH",
+      "DELETE"
+    ],
+    "source": "legacy-service/src/app/api/ask-me/faqs/[id]/route.ts"
+  },
+  {
+    "path": "/api/ask-me/faqs",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "source": "legacy-service/src/app/api/ask-me/faqs/route.ts"
+  },
+  {
+    "path": "/api/ask-me/knowledge-base/{id}",
+    "methods": [
+      "PATCH",
+      "DELETE"
+    ],
+    "source": "legacy-service/src/app/api/ask-me/knowledge-base/[id]/route.ts"
+  },
+  {
+    "path": "/api/ask-me/knowledge-base",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "source": "legacy-service/src/app/api/ask-me/knowledge-base/route.ts"
+  },
+  {
+    "path": "/api/ask-me/reports/export",
+    "methods": [
+      "GET"
+    ],
+    "source": "legacy-service/src/app/api/ask-me/reports/export/route.ts"
+  },
+  {
+    "path": "/api/ask-me/reports",
+    "methods": [
+      "GET"
+    ],
+    "source": "legacy-service/src/app/api/ask-me/reports/route.ts"
+  },
+  {
+    "path": "/api/ask-me/settings",
+    "methods": [
+      "GET",
+      "PUT"
+    ],
+    "source": "legacy-service/src/app/api/ask-me/settings/route.ts"
+  },
+  {
+    "path": "/api/ask-me/tickets/agents",
+    "methods": [
+      "GET"
+    ],
+    "source": "legacy-service/src/app/api/ask-me/tickets/agents/route.ts"
+  },
+  {
+    "path": "/api/ask-me/tickets/by-id/{id}",
+    "methods": [
+      "GET",
+      "PATCH",
+      "DELETE"
+    ],
+    "source": "legacy-service/src/app/api/ask-me/tickets/by-id/[id]/route.ts"
+  },
+  {
+    "path": "/api/ask-me/tickets/employees",
+    "methods": [
+      "GET"
+    ],
+    "source": "legacy-service/src/app/api/ask-me/tickets/employees/route.ts"
+  },
+  {
+    "path": "/api/ask-me/tickets",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "source": "legacy-service/src/app/api/ask-me/tickets/route.ts"
+  },
+  {
+    "path": "/api/ask-me/tickets/self-employee",
+    "methods": [
+      "GET"
+    ],
+    "source": "legacy-service/src/app/api/ask-me/tickets/self-employee/route.ts"
+  },
+  {
+    "path": "/api/asset-assignments/{id}",
+    "methods": [
+      "GET",
+      "PATCH",
+      "DELETE"
+    ],
+    "source": "legacy-service/src/app/api/asset-assignments/[id]/route.ts"
+  },
+  {
+    "path": "/api/asset-assignments",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "source": "legacy-service/src/app/api/asset-assignments/route.ts"
+  },
+  {
+    "path": "/api/asset-assignments/timeline",
+    "methods": [
+      "GET"
+    ],
+    "source": "legacy-service/src/app/api/asset-assignments/timeline/route.ts"
+  },
+  {
+    "path": "/api/asset-categories",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "source": "legacy-service/src/app/api/asset-categories/route.ts"
+  },
+  {
+    "path": "/api/asset-return-requests",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "source": "legacy-service/src/app/api/asset-return-requests/route.ts"
+  },
+  {
+    "path": "/api/assets/{id}",
+    "methods": [
+      "GET",
+      "PATCH",
+      "DELETE"
+    ],
+    "source": "legacy-service/src/app/api/assets/[id]/route.ts"
+  },
+  {
+    "path": "/api/assets/available",
+    "methods": [
+      "GET"
+    ],
+    "source": "legacy-service/src/app/api/assets/available/route.ts"
+  },
+  {
+    "path": "/api/assets",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "source": "legacy-service/src/app/api/assets/route.ts"
+  },
+  {
+    "path": "/api/attendance-policies/{id}",
+    "methods": [
+      "GET",
+      "PATCH",
+      "DELETE"
+    ],
+    "source": "legacy-service/src/app/api/attendance-policies/[id]/route.ts"
+  },
+  {
+    "path": "/api/attendance-policies",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "source": "legacy-service/src/app/api/attendance-policies/route.ts"
+  },
+  {
+    "path": "/api/attendance-policy-stats",
+    "methods": [
+      "GET"
+    ],
+    "source": "legacy-service/src/app/api/attendance-policy-stats/route.ts"
+  },
+  {
+    "path": "/api/attendance-records/{id}",
+    "methods": [
+      "GET",
+      "PATCH",
+      "DELETE"
+    ],
+    "source": "legacy-service/src/app/api/attendance-records/[id]/route.ts"
+  },
+  {
+    "path": "/api/attendance-records",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "source": "legacy-service/src/app/api/attendance-records/route.ts"
+  },
+  {
+    "path": "/api/attendance-tracker/reports/pdf",
+    "methods": [
+      "GET"
+    ],
+    "source": "legacy-service/src/app/api/attendance-tracker/reports/pdf/route.ts"
+  },
+  {
+    "path": "/api/attendance-tracker/reports",
+    "methods": [
+      "GET"
+    ],
+    "source": "legacy-service/src/app/api/attendance-tracker/reports/route.ts"
+  },
+  {
+    "path": "/api/attendance-tracker",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "source": "legacy-service/src/app/api/attendance-tracker/route.ts"
+  },
+  {
+    "path": "/api/branches/{id}",
+    "methods": [
+      "PATCH",
+      "DELETE"
+    ],
+    "source": "legacy-service/src/app/api/branches/[id]/route.ts"
+  },
+  {
+    "path": "/api/branches",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "source": "legacy-service/src/app/api/branches/route.ts"
+  },
+  {
+    "path": "/api/candidate/candidateNames",
+    "methods": [
+      "GET"
+    ],
+    "source": "legacy-service/src/app/api/candidate/candidateNames/route.ts"
+  },
+  {
+    "path": "/api/candidate/chart",
+    "methods": [
+      "GET"
+    ],
+    "source": "legacy-service/src/app/api/candidate/chart/route.ts"
+  },
+  {
+    "path": "/api/candidate/count",
+    "methods": [
+      "GET"
+    ],
+    "source": "legacy-service/src/app/api/candidate/count/route.ts"
+  },
+  {
+    "path": "/api/candidate/hiringChart",
+    "methods": [
+      "GET"
+    ],
+    "source": "legacy-service/src/app/api/candidate/hiringChart/route.ts"
+  },
+  {
+    "path": "/api/candidate/jobOpenings",
+    "methods": [
+      "GET"
+    ],
+    "source": "legacy-service/src/app/api/candidate/jobOpenings/route.ts"
+  },
+  {
+    "path": "/api/candidate/recent",
+    "methods": [
+      "GET"
+    ],
+    "source": "legacy-service/src/app/api/candidate/recent/route.ts"
+  },
+  {
+    "path": "/api/candidate",
+    "methods": [
+      "GET",
+      "POST",
+      "PUT",
+      "DELETE"
+    ],
+    "source": "legacy-service/src/app/api/candidate/route.ts"
+  },
+  {
+    "path": "/api/candidateFormDetails",
+    "methods": [
+      "GET",
+      "POST",
+      "PUT",
+      "DELETE"
+    ],
+    "source": "legacy-service/src/app/api/candidateFormDetails/route.ts"
+  },
+  {
+    "path": "/api/dashboard/chart",
+    "methods": [
+      "GET",
+      "GET"
+    ],
+    "source": "legacy-service/src/app/api/dashboard/chart/route.ts"
+  },
+  {
+    "path": "/api/dashboard/count",
+    "methods": [
+      "GET"
+    ],
+    "source": "legacy-service/src/app/api/dashboard/count/route.ts"
+  },
+  {
+    "path": "/api/dashboard/detailPerformanceMetrics",
+    "methods": [
+      "GET",
+      "GET"
+    ],
+    "source": "legacy-service/src/app/api/dashboard/detailPerformanceMetrics/route.ts"
+  },
+  {
+    "path": "/api/dashboard/metrics",
+    "methods": [
+      "GET"
+    ],
+    "source": "legacy-service/src/app/api/dashboard/metrics/route.ts"
+  },
+  {
+    "path": "/api/departments/{id}/designations",
+    "methods": [
+      "POST"
+    ],
+    "source": "legacy-service/src/app/api/departments/[id]/designations/route.ts"
+  },
+  {
+    "path": "/api/departments/{id}",
+    "methods": [
+      "GET",
+      "PATCH",
+      "DELETE"
+    ],
+    "source": "legacy-service/src/app/api/departments/[id]/route.ts"
+  },
+  {
+    "path": "/api/departments",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "source": "legacy-service/src/app/api/departments/route.ts"
+  },
+  {
+    "path": "/api/designations/{id}",
+    "methods": [
+      "PATCH",
+      "DELETE"
+    ],
+    "source": "legacy-service/src/app/api/designations/[id]/route.ts"
+  },
+  {
+    "path": "/api/documents/{id}/download",
+    "methods": [
+      "GET"
+    ],
+    "source": "legacy-service/src/app/api/documents/[id]/download/route.ts"
+  },
+  {
+    "path": "/api/documents/deadlines",
+    "methods": [
+      "GET"
+    ],
+    "source": "legacy-service/src/app/api/documents/deadlines/route.ts"
+  },
+  {
+    "path": "/api/documents/recent-activity",
+    "methods": [
+      "GET"
+    ],
+    "source": "legacy-service/src/app/api/documents/recent-activity/route.ts"
+  },
+  {
+    "path": "/api/documents",
+    "methods": [
+      "GET"
+    ],
+    "source": "legacy-service/src/app/api/documents/route.ts"
+  },
+  {
+    "path": "/api/documents/stats",
+    "methods": [
+      "GET"
+    ],
+    "source": "legacy-service/src/app/api/documents/stats/route.ts"
+  },
+  {
+    "path": "/api/documents/upload",
+    "methods": [
+      "POST"
+    ],
+    "source": "legacy-service/src/app/api/documents/upload/route.ts"
+  },
+  {
+    "path": "/api/employee-documents/{id}/download",
+    "methods": [
+      "GET"
+    ],
+    "source": "legacy-service/src/app/api/employee-documents/[id]/download/route.ts"
+  },
+  {
+    "path": "/api/employee-documents/{id}",
+    "methods": [
+      "GET",
+      "DELETE"
+    ],
+    "source": "legacy-service/src/app/api/employee-documents/[id]/route.ts"
+  },
+  {
+    "path": "/api/employee-documents",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "source": "legacy-service/src/app/api/employee-documents/route.ts"
+  },
+  {
+    "path": "/api/employee-self-service/dashboard",
+    "methods": [
+      "GET"
+    ],
+    "source": "legacy-service/src/app/api/employee-self-service/dashboard/route.ts"
+  },
+  {
+    "path": "/api/employee-tasks/{id}",
+    "methods": [
+      "PATCH"
+    ],
+    "source": "legacy-service/src/app/api/employee-tasks/[id]/route.ts"
+  },
+  {
+    "path": "/api/employee-tasks",
+    "methods": [
+      "GET"
+    ],
+    "source": "legacy-service/src/app/api/employee-tasks/route.ts"
+  },
+  {
+    "path": "/api/employees/{id}/assets/{assignmentId}",
+    "methods": [
+      "DELETE"
+    ],
+    "source": "legacy-service/src/app/api/employees/[id]/assets/[assignmentId]/route.ts"
+  },
+  {
+    "path": "/api/employees/{id}/assets",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "source": "legacy-service/src/app/api/employees/[id]/assets/route.ts"
+  },
+  {
+    "path": "/api/employees/{id}/attendance",
+    "methods": [
+      "GET"
+    ],
+    "source": "legacy-service/src/app/api/employees/[id]/attendance/route.ts"
+  },
+  {
+    "path": "/api/employees/{id}/documents/{docId}/download",
+    "methods": [
+      "GET"
+    ],
+    "source": "legacy-service/src/app/api/employees/[id]/documents/[docId]/download/route.ts"
+  },
+  {
+    "path": "/api/employees/{id}/documents/{docId}",
+    "methods": [
+      "PATCH",
+      "DELETE"
+    ],
+    "source": "legacy-service/src/app/api/employees/[id]/documents/[docId]/route.ts"
+  },
+  {
+    "path": "/api/employees/{id}/documents",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "source": "legacy-service/src/app/api/employees/[id]/documents/route.ts"
+  },
+  {
+    "path": "/api/employees/{id}/job-details",
+    "methods": [
+      "GET",
+      "PATCH"
+    ],
+    "source": "legacy-service/src/app/api/employees/[id]/job-details/route.ts"
+  },
+  {
+    "path": "/api/employees/{id}/lifecycle/{eventId}",
+    "methods": [
+      "PATCH",
+      "DELETE"
+    ],
+    "source": "legacy-service/src/app/api/employees/[id]/lifecycle/[eventId]/route.ts"
+  },
+  {
+    "path": "/api/employees/{id}/lifecycle",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "source": "legacy-service/src/app/api/employees/[id]/lifecycle/route.ts"
+  },
+  {
+    "path": "/api/employees/{id}/payroll",
+    "methods": [
+      "GET",
+      "PATCH"
+    ],
+    "source": "legacy-service/src/app/api/employees/[id]/payroll/route.ts"
+  },
+  {
+    "path": "/api/employees/{id}",
+    "methods": [
+      "GET",
+      "PATCH",
+      "DELETE"
+    ],
+    "source": "legacy-service/src/app/api/employees/[id]/route.ts"
+  },
+  {
+    "path": "/api/employees/peers",
+    "methods": [
+      "GET"
+    ],
+    "source": "legacy-service/src/app/api/employees/peers/route.ts"
+  },
+  {
+    "path": "/api/employees",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "source": "legacy-service/src/app/api/employees/route.ts"
+  },
+  {
+    "path": "/api/exit-offboarding-templates/{id}/apply",
+    "methods": [
+      "POST"
+    ],
+    "source": "legacy-service/src/app/api/exit-offboarding-templates/[id]/apply/route.ts"
+  },
+  {
+    "path": "/api/exit-offboarding-templates/{id}",
+    "methods": [
+      "GET"
+    ],
+    "source": "legacy-service/src/app/api/exit-offboarding-templates/[id]/route.ts"
+  },
+  {
+    "path": "/api/exit-offboarding-templates",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "source": "legacy-service/src/app/api/exit-offboarding-templates/route.ts"
+  },
+  {
+    "path": "/api/exit-requests/{id}/attachments",
+    "methods": [
+      "POST"
+    ],
+    "source": "legacy-service/src/app/api/exit-requests/[id]/attachments/route.ts"
+  },
+  {
+    "path": "/api/exit-requests/{id}/clearance",
+    "methods": [
+      "GET",
+      "PATCH"
+    ],
+    "source": "legacy-service/src/app/api/exit-requests/[id]/clearance/route.ts"
+  },
+  {
+    "path": "/api/exit-requests/{id}",
+    "methods": [
+      "GET",
+      "PATCH",
+      "DELETE"
+    ],
+    "source": "legacy-service/src/app/api/exit-requests/[id]/route.ts"
+  },
+  {
+    "path": "/api/exit-requests",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "source": "legacy-service/src/app/api/exit-requests/route.ts"
+  },
+  {
+    "path": "/api/feedback",
+    "methods": [
+      "GET",
+      "POST",
+      "PUT",
+      "DELETE"
+    ],
+    "source": "legacy-service/src/app/api/feedback/route.ts"
+  },
+  {
+    "path": "/api/fnf-settlements/{id}",
+    "methods": [
+      "GET",
+      "PATCH",
+      "DELETE"
+    ],
+    "source": "legacy-service/src/app/api/fnf-settlements/[id]/route.ts"
+  },
+  {
+    "path": "/api/fnf-settlements",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "source": "legacy-service/src/app/api/fnf-settlements/route.ts"
+  },
+  {
+    "path": "/api/health",
+    "methods": [
+      "GET"
+    ],
+    "source": "legacy-service/src/app/api/health/route.ts"
+  },
+  {
+    "path": "/api/hiringFlow",
+    "methods": [
+      "GET",
+      "POST",
+      "PUT",
+      "DELETE"
+    ],
+    "source": "legacy-service/src/app/api/hiringFlow/route.ts"
+  },
+  {
+    "path": "/api/interview/levelCounts",
+    "methods": [
+      "GET"
+    ],
+    "source": "legacy-service/src/app/api/interview/levelCounts/route.ts"
+  },
+  {
+    "path": "/api/interview",
+    "methods": [
+      "GET",
+      "POST",
+      "PUT",
+      "DELETE"
+    ],
+    "source": "legacy-service/src/app/api/interview/route.ts"
+  },
+  {
+    "path": "/api/interview/upcomming",
+    "methods": [
+      "GET"
+    ],
+    "source": "legacy-service/src/app/api/interview/upcomming/route.ts"
+  },
+  {
+    "path": "/api/interviewSchedule",
+    "methods": [
+      "GET",
+      "POST",
+      "PUT",
+      "DELETE"
+    ],
+    "source": "legacy-service/src/app/api/interviewSchedule/route.ts"
+  },
+  {
+    "path": "/api/job-applications",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "source": "legacy-service/src/app/api/job-applications/route.ts"
+  },
+  {
+    "path": "/api/job-openings",
+    "methods": [
+      "GET"
+    ],
+    "source": "legacy-service/src/app/api/job-openings/route.ts"
+  },
+  {
+    "path": "/api/job-referrals",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "source": "legacy-service/src/app/api/job-referrals/route.ts"
+  },
+  {
+    "path": "/api/job-titles/{id}",
+    "methods": [
+      "GET",
+      "PATCH",
+      "DELETE"
+    ],
+    "source": "legacy-service/src/app/api/job-titles/[id]/route.ts"
+  },
+  {
+    "path": "/api/job-titles",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "source": "legacy-service/src/app/api/job-titles/route.ts"
+  },
+  {
+    "path": "/api/jobOpenings/active",
+    "methods": [
+      "GET"
+    ],
+    "source": "legacy-service/src/app/api/jobOpenings/active/route.ts"
+  },
+  {
+    "path": "/api/jobOpenings/candidate",
+    "methods": [
+      "GET"
+    ],
+    "source": "legacy-service/src/app/api/jobOpenings/candidate/route.ts"
+  },
+  {
+    "path": "/api/jobOpenings/chart",
+    "methods": [
+      "GET"
+    ],
+    "source": "legacy-service/src/app/api/jobOpenings/chart/route.ts"
+  },
+  {
+    "path": "/api/jobOpenings/drops",
+    "methods": [
+      "GET"
+    ],
+    "source": "legacy-service/src/app/api/jobOpenings/drops/route.ts"
+  },
+  {
+    "path": "/api/jobOpenings/interview",
+    "methods": [
+      "GET"
+    ],
+    "source": "legacy-service/src/app/api/jobOpenings/interview/route.ts"
+  },
+  {
+    "path": "/api/jobOpenings",
+    "methods": [
+      "GET",
+      "POST",
+      "PUT",
+      "DELETE"
+    ],
+    "source": "legacy-service/src/app/api/jobOpenings/route.ts"
+  },
+  {
+    "path": "/api/leave-attendance/logs",
+    "methods": [
+      "GET"
+    ],
+    "source": "legacy-service/src/app/api/leave-attendance/logs/route.ts"
+  },
+  {
+    "path": "/api/leave-attendance/overview",
+    "methods": [
+      "GET"
+    ],
+    "source": "legacy-service/src/app/api/leave-attendance/overview/route.ts"
+  },
+  {
+    "path": "/api/leave-balances/{id}",
+    "methods": [
+      "GET",
+      "PATCH",
+      "DELETE"
+    ],
+    "source": "legacy-service/src/app/api/leave-balances/[id]/route.ts"
+  },
+  {
+    "path": "/api/leave-balances",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "source": "legacy-service/src/app/api/leave-balances/route.ts"
+  },
+  {
+    "path": "/api/leave-manager",
+    "methods": [
+      "GET"
+    ],
+    "source": "legacy-service/src/app/api/leave-manager/route.ts"
+  },
+  {
+    "path": "/api/leave-requests/{id}",
+    "methods": [
+      "GET",
+      "PATCH",
+      "DELETE"
+    ],
+    "source": "legacy-service/src/app/api/leave-requests/[id]/route.ts"
+  },
+  {
+    "path": "/api/leave-requests",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "source": "legacy-service/src/app/api/leave-requests/route.ts"
+  },
+  {
+    "path": "/api/leave-types/{id}",
+    "methods": [
+      "GET",
+      "PATCH",
+      "DELETE"
+    ],
+    "source": "legacy-service/src/app/api/leave-types/[id]/route.ts"
+  },
+  {
+    "path": "/api/leave-types",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "source": "legacy-service/src/app/api/leave-types/route.ts"
+  },
+  {
+    "path": "/api/lost-damage-incidents/{id}",
+    "methods": [
+      "GET",
+      "PATCH"
+    ],
+    "source": "legacy-service/src/app/api/lost-damage-incidents/[id]/route.ts"
+  },
+  {
+    "path": "/api/lost-damage-incidents",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "source": "legacy-service/src/app/api/lost-damage-incidents/route.ts"
+  },
+  {
+    "path": "/api/lost-damage-policy",
+    "methods": [
+      "GET"
+    ],
+    "source": "legacy-service/src/app/api/lost-damage-policy/route.ts"
+  },
+  {
+    "path": "/api/manager-mapping/bulk",
+    "methods": [
+      "POST"
+    ],
+    "source": "legacy-service/src/app/api/manager-mapping/bulk/route.ts"
+  },
+  {
+    "path": "/api/manager-mapping/import",
+    "methods": [
+      "POST"
+    ],
+    "source": "legacy-service/src/app/api/manager-mapping/import/route.ts"
+  },
+  {
+    "path": "/api/manager-mapping",
+    "methods": [
+      "GET"
+    ],
+    "source": "legacy-service/src/app/api/manager-mapping/route.ts"
+  },
+  {
+    "path": "/api/manager-mapping/template",
+    "methods": [
+      "GET"
+    ],
+    "source": "legacy-service/src/app/api/manager-mapping/template/route.ts"
+  },
+  {
+    "path": "/api/my-profile/pending-request",
+    "methods": [
+      "GET"
+    ],
+    "source": "legacy-service/src/app/api/my-profile/pending-request/route.ts"
+  },
+  {
+    "path": "/api/my-profile/photo",
+    "methods": [
+      "POST",
+      "DELETE"
+    ],
+    "source": "legacy-service/src/app/api/my-profile/photo/route.ts"
+  },
+  {
+    "path": "/api/my-profile",
+    "methods": [
+      "GET",
+      "POST",
+      "PATCH",
+      "PUT",
+      "DELETE"
+    ],
+    "source": "legacy-service/src/app/api/my-profile/route.ts"
+  },
+  {
+    "path": "/api/onboarding-candidates/{id}",
+    "methods": [
+      "GET",
+      "PATCH",
+      "DELETE"
+    ],
+    "source": "legacy-service/src/app/api/onboarding-candidates/[id]/route.ts"
+  },
+  {
+    "path": "/api/onboarding-candidates/bulk",
+    "methods": [
+      "POST"
+    ],
+    "source": "legacy-service/src/app/api/onboarding-candidates/bulk/route.ts"
+  },
+  {
+    "path": "/api/onboarding-candidates",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "source": "legacy-service/src/app/api/onboarding-candidates/route.ts"
+  },
+  {
+    "path": "/api/onboarding-groups/{id}",
+    "methods": [
+      "GET",
+      "PATCH",
+      "DELETE"
+    ],
+    "source": "legacy-service/src/app/api/onboarding-groups/[id]/route.ts"
+  },
+  {
+    "path": "/api/onboarding-groups",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "source": "legacy-service/src/app/api/onboarding-groups/route.ts"
+  },
+  {
+    "path": "/api/onboarding-templates/{id}",
+    "methods": [
+      "GET",
+      "PATCH",
+      "DELETE"
+    ],
+    "source": "legacy-service/src/app/api/onboarding-templates/[id]/route.ts"
+  },
+  {
+    "path": "/api/onboarding-templates",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "source": "legacy-service/src/app/api/onboarding-templates/route.ts"
+  },
+  {
+    "path": "/api/organization/company-profile",
+    "methods": [
+      "GET",
+      "PATCH",
+      "POST"
+    ],
+    "source": "legacy-service/src/app/api/organization/company-profile/route.ts"
+  },
+  {
+    "path": "/api/organization/roles/{id}",
+    "methods": [
+      "GET",
+      "PATCH",
+      "DELETE"
+    ],
+    "source": "legacy-service/src/app/api/organization/roles/[id]/route.ts"
+  },
+  {
+    "path": "/api/organization/roles",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "source": "legacy-service/src/app/api/organization/roles/route.ts"
+  },
+  {
+    "path": "/api/organization/setup-dashboard/actions",
+    "methods": [
+      "POST"
+    ],
+    "source": "legacy-service/src/app/api/organization/setup-dashboard/actions/route.ts"
+  },
+  {
+    "path": "/api/organization/setup-dashboard",
+    "methods": [
+      "GET"
+    ],
+    "source": "legacy-service/src/app/api/organization/setup-dashboard/route.ts"
+  },
+  {
+    "path": "/api/parties/{id}",
+    "methods": [
+      "GET",
+      "PUT",
+      "DELETE"
+    ],
+    "source": "legacy-service/src/app/api/parties/[id]/route.ts"
+  },
+  {
+    "path": "/api/parties",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "source": "legacy-service/src/app/api/parties/route.ts"
+  },
+  {
+    "path": "/api/performance-feedback",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "source": "legacy-service/src/app/api/performance-feedback/route.ts"
+  },
+  {
+    "path": "/api/performance-hub/appraisal",
+    "methods": [
+      "GET",
+      "PATCH"
+    ],
+    "source": "legacy-service/src/app/api/performance-hub/appraisal/route.ts"
+  },
+  {
+    "path": "/api/performance-hub/goals/{id}",
+    "methods": [
+      "PATCH"
+    ],
+    "source": "legacy-service/src/app/api/performance-hub/goals/[id]/route.ts"
+  },
+  {
+    "path": "/api/performance-hub/goals",
+    "methods": [
+      "POST"
+    ],
+    "source": "legacy-service/src/app/api/performance-hub/goals/route.ts"
+  },
+  {
+    "path": "/api/performance-hub",
+    "methods": [
+      "GET"
+    ],
+    "source": "legacy-service/src/app/api/performance-hub/route.ts"
+  },
+  {
+    "path": "/api/privacy-policies/{id}",
+    "methods": [
+      "GET",
+      "PATCH",
+      "DELETE"
+    ],
+    "source": "legacy-service/src/app/api/privacy-policies/[id]/route.ts"
+  },
+  {
+    "path": "/api/privacy-policies",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "source": "legacy-service/src/app/api/privacy-policies/route.ts"
+  },
+  {
+    "path": "/api/probation-records/{id}",
+    "methods": [
+      "GET",
+      "PATCH"
+    ],
+    "source": "legacy-service/src/app/api/probation-records/[id]/route.ts"
+  },
+  {
+    "path": "/api/probation-records/filter-options",
+    "methods": [
+      "GET"
+    ],
+    "source": "legacy-service/src/app/api/probation-records/filter-options/route.ts"
+  },
+  {
+    "path": "/api/probation-records",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "source": "legacy-service/src/app/api/probation-records/route.ts"
+  },
+  {
+    "path": "/api/probation-settings",
+    "methods": [
+      "GET",
+      "PUT"
+    ],
+    "source": "legacy-service/src/app/api/probation-settings/route.ts"
+  },
+  {
+    "path": "/api/question",
+    "methods": [
+      "GET",
+      "POST",
+      "PUT",
+      "DELETE"
+    ],
+    "source": "legacy-service/src/app/api/question/route.ts"
+  },
+  {
+    "path": "/api/reporting-hierarchy/employees/{id}",
+    "methods": [
+      "DELETE"
+    ],
+    "source": "legacy-service/src/app/api/reporting-hierarchy/employees/[id]/route.ts"
+  },
+  {
+    "path": "/api/reporting-hierarchy/employees",
+    "methods": [
+      "POST"
+    ],
+    "source": "legacy-service/src/app/api/reporting-hierarchy/employees/route.ts"
+  },
+  {
+    "path": "/api/reporting-hierarchy/reorder",
+    "methods": [
+      "POST"
+    ],
+    "source": "legacy-service/src/app/api/reporting-hierarchy/reorder/route.ts"
+  },
+  {
+    "path": "/api/reporting-hierarchy",
+    "methods": [
+      "GET"
+    ],
+    "source": "legacy-service/src/app/api/reporting-hierarchy/route.ts"
+  },
+  {
+    "path": "/api/search",
+    "methods": [
+      "GET"
+    ],
+    "source": "legacy-service/src/app/api/search/route.ts"
+  },
+  {
+    "path": "/api/secttionValue",
+    "methods": [
+      "GET",
+      "POST",
+      "PUT",
+      "DELETE"
+    ],
+    "source": "legacy-service/src/app/api/secttionValue/route.ts"
+  },
+  {
+    "path": "/api/sendEmails",
+    "methods": [
+      "POST"
+    ],
+    "source": "legacy-service/src/app/api/sendEmails/route.ts"
+  },
+  {
+    "path": "/api/session/employee",
+    "methods": [
+      "GET"
+    ],
+    "source": "legacy-service/src/app/api/session/employee/route.ts"
+  },
+  {
+    "path": "/api/subscription-requests",
+    "methods": [
+      "POST"
+    ],
+    "source": "legacy-service/src/app/api/subscription-requests/route.ts"
+  },
+  {
+    "path": "/api/support-tickets",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "source": "legacy-service/src/app/api/support-tickets/route.ts"
+  },
+  {
+    "path": "/api/template",
+    "methods": [
+      "GET",
+      "POST",
+      "PUT",
+      "DELETE"
+    ],
+    "source": "legacy-service/src/app/api/template/route.ts"
+  },
+  {
+    "path": "/api/upload",
+    "methods": [
+      "POST"
+    ],
+    "source": "legacy-service/src/app/api/upload/route.ts"
+  },
+  {
+    "path": "/api/uploads/{path}",
+    "methods": [
+      "GET"
+    ],
+    "source": "legacy-service/src/app/api/uploads/[...path]/route.ts"
+  },
+  {
+    "path": "/api/users/{id}",
+    "methods": [
+      "GET",
+      "PATCH"
+    ],
+    "source": "legacy-service/src/app/api/users/[id]/route.ts"
+  },
+  {
+    "path": "/api/users/me",
+    "methods": [
+      "GET"
+    ],
+    "source": "legacy-service/src/app/api/users/me/route.ts"
+  },
+  {
+    "path": "/api/users",
+    "methods": [
+      "GET"
+    ],
+    "source": "legacy-service/src/app/api/users/route.ts"
+  },
+  {
+    "path": "/api/vendors",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "source": "legacy-service/src/app/api/vendors/route.ts"
+  },
+  {
+    "path": "/api/views/{name}",
+    "methods": [
+      "GET"
+    ],
+    "source": "legacy-service/src/app/api/views/[name]/route.ts"
+  }
+]

@@ -10,10 +10,13 @@ from app.core.security import hash_password, issue_token, require
 from app.core.service import audit, find, rows, state_is
 from app.data.database import get_db, utcnow
 from app.modules.offers.service import candidate_accept_offer, candidate_offers
-from app.modules.recruiting.models import Application, Candidate, Requisition
+from app.modules.recruiting.models import Application, Candidate, Requisition, JobReference
 from app.modules.recruiting.schemas import CandidateCreate
 
 router = APIRouter(prefix="/careers", tags=["candidate self-service"])
+from app.modules.recruiting.public_intake import submit_public, staff_resume
+router.add_api_route("/jobs/{alias}/apply", submit_public, methods=["POST"])
+router.add_api_route("/resumes/{receipt}", staff_resume, methods=["GET"])
 candidate_role = require("candidate", module="rms")
 
 
@@ -41,6 +44,18 @@ def own_candidate(db, user):
 def public_jobs(request: Request, offset: int = Query(0, ge=0), limit: int = Query(50, ge=1, le=100), db: Session = Depends(get_db)):
     records = rows(db, Requisition, request.app.state.settings.customer_id, offset, limit, Requisition.status == "published")
     return [{"id": row.id, "title": row.title, "description": row.description} for row in records]
+
+
+@router.get("/jobs/{alias}", dependencies=[Depends(require_rms)])
+def public_job(alias: int, request: Request, db: Session = Depends(get_db)):
+    record = db.scalar(select(Requisition).join(JobReference, JobReference.requisition_id == Requisition.id)
+        .where(JobReference.id == alias, Requisition.customer_id == request.app.state.settings.customer_id,
+               Requisition.status == "published"))
+    if not record:
+        raise HTTPException(404, "This job is not available for applications")
+    details = record.job_details or {}
+    return {"id": record.id, "title": record.title, "description": record.description,
+            "company": details.get("company_name", ""), "location": details.get("location", "")}
 
 
 @router.post("/register", status_code=201, dependencies=[Depends(require_rms)])

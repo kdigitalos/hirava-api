@@ -1,0 +1,2277 @@
+[
+  {
+    "path": "/api/admin/attendance-records",
+    "methods": [
+      "GET"
+    ],
+    "lines": 105,
+    "fastapi_methods": [
+      "GET"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/admin/create-user",
+    "methods": [
+      "POST"
+    ],
+    "lines": 254,
+    "fastapi_methods": [
+      "POST"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/admin/dashboard",
+    "methods": [
+      "GET"
+    ],
+    "lines": 507,
+    "fastapi_methods": [
+      "GET"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/admin/employee-tasks",
+    "methods": [
+      "POST"
+    ],
+    "lines": 84,
+    "fastapi_methods": [
+      "POST"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/admin/employees-pending-access",
+    "methods": [
+      "GET"
+    ],
+    "lines": 64,
+    "fastapi_methods": [
+      "GET"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/admin/exit-dashboard",
+    "methods": [
+      "GET"
+    ],
+    "lines": 276,
+    "fastapi_methods": [
+      "GET"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/admin/job-applications/[id]",
+    "methods": [
+      "PATCH"
+    ],
+    "lines": 50,
+    "fastapi_methods": [
+      "PATCH"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/admin/job-applications",
+    "methods": [
+      "GET"
+    ],
+    "lines": 48,
+    "fastapi_methods": [
+      "GET"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/admin/job-openings/[id]",
+    "methods": [
+      "DELETE",
+      "PATCH"
+    ],
+    "lines": 105,
+    "fastapi_methods": [
+      "DELETE",
+      "PATCH"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/admin/job-openings",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "lines": 110,
+    "fastapi_methods": [
+      "GET",
+      "POST"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/admin/job-referrals/[id]",
+    "methods": [
+      "PATCH"
+    ],
+    "lines": 51,
+    "fastapi_methods": [
+      "PATCH"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/admin/job-referrals",
+    "methods": [
+      "GET"
+    ],
+    "lines": 49,
+    "fastapi_methods": [
+      "GET"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/admin/onboarding-dashboard",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "lines": 505,
+    "fastapi_methods": [
+      "GET",
+      "POST"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/admin/payroll-activities",
+    "methods": [
+      "GET"
+    ],
+    "lines": 15,
+    "fastapi_methods": [
+      "GET"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/admin/provision-employee-access",
+    "methods": [
+      "POST"
+    ],
+    "lines": 132,
+    "fastapi_methods": [
+      "POST"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/admin/schedule-items",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "lines": 151,
+    "fastapi_methods": [
+      "GET",
+      "POST"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/admin/self-service-requests/[id]",
+    "methods": [
+      "GET",
+      "PATCH"
+    ],
+    "lines": 286,
+    "fastapi_methods": [
+      "GET",
+      "PATCH"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/admin/self-service-requests",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "lines": 282,
+    "fastapi_methods": [
+      "GET",
+      "POST"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/admin/support-tickets/by-id/[id]",
+    "methods": [
+      "GET",
+      "PATCH"
+    ],
+    "lines": 151,
+    "fastapi_methods": [
+      "GET",
+      "PATCH"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/admin/support-tickets",
+    "methods": [
+      "GET"
+    ],
+    "lines": 167,
+    "fastapi_methods": [
+      "GET"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/admin/support-tickets/stats",
+    "methods": [
+      "GET"
+    ],
+    "lines": 130,
+    "fastapi_methods": [
+      "GET"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/ask-me/faqs/[id]",
+    "methods": [
+      "DELETE",
+      "PATCH"
+    ],
+    "lines": 95,
+    "fastapi_methods": [
+      "DELETE",
+      "PATCH"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/ask-me/faqs",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "lines": 72,
+    "fastapi_methods": [
+      "GET",
+      "POST"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/ask-me/knowledge-base/[id]",
+    "methods": [
+      "DELETE",
+      "PATCH"
+    ],
+    "lines": 68,
+    "fastapi_methods": [
+      "DELETE",
+      "PATCH"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/ask-me/knowledge-base",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "lines": 84,
+    "fastapi_methods": [
+      "GET",
+      "POST"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/ask-me/reports/export",
+    "methods": [
+      "GET"
+    ],
+    "lines": 134,
+    "fastapi_methods": [
+      "GET"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/ask-me/reports",
+    "methods": [
+      "GET"
+    ],
+    "lines": 35,
+    "fastapi_methods": [
+      "GET"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/ask-me/settings",
+    "methods": [
+      "GET",
+      "PUT"
+    ],
+    "lines": 73,
+    "fastapi_methods": [
+      "GET",
+      "PUT"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/ask-me/tickets/agents",
+    "methods": [
+      "GET"
+    ],
+    "lines": 51,
+    "fastapi_methods": [
+      "GET"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/ask-me/tickets/by-id/[id]",
+    "methods": [
+      "DELETE",
+      "GET",
+      "PATCH"
+    ],
+    "lines": 99,
+    "fastapi_methods": [
+      "DELETE",
+      "GET",
+      "PATCH"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/ask-me/tickets/employees",
+    "methods": [
+      "GET"
+    ],
+    "lines": 42,
+    "fastapi_methods": [
+      "GET"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/ask-me/tickets",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "lines": 93,
+    "fastapi_methods": [
+      "GET",
+      "POST"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/ask-me/tickets/self-employee",
+    "methods": [
+      "GET"
+    ],
+    "lines": 20,
+    "fastapi_methods": [
+      "GET"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/asset-assignments/[id]",
+    "methods": [
+      "DELETE",
+      "GET",
+      "PATCH"
+    ],
+    "lines": 71,
+    "fastapi_methods": [
+      "DELETE",
+      "GET",
+      "PATCH"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/asset-assignments",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "lines": 185,
+    "fastapi_methods": [
+      "GET",
+      "POST"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/asset-assignments/timeline",
+    "methods": [
+      "GET"
+    ],
+    "lines": 182,
+    "fastapi_methods": [
+      "GET"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/asset-categories",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "lines": 126,
+    "fastapi_methods": [
+      "GET",
+      "POST"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/asset-return-requests",
+    "methods": [
+      "GET",
+      "PATCH",
+      "POST"
+    ],
+    "lines": 64,
+    "fastapi_methods": [
+      "GET",
+      "PATCH",
+      "POST"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/assets/[id]",
+    "methods": [
+      "DELETE",
+      "GET",
+      "PATCH"
+    ],
+    "lines": 123,
+    "fastapi_methods": [
+      "DELETE",
+      "GET",
+      "PATCH"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/assets/available",
+    "methods": [
+      "GET"
+    ],
+    "lines": 44,
+    "fastapi_methods": [
+      "GET"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/assets",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "lines": 475,
+    "fastapi_methods": [
+      "GET",
+      "POST"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/attendance-policies/[id]",
+    "methods": [
+      "DELETE",
+      "GET",
+      "PATCH"
+    ],
+    "lines": 114,
+    "fastapi_methods": [
+      "DELETE",
+      "GET",
+      "PATCH"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/attendance-policies",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "lines": 116,
+    "fastapi_methods": [
+      "GET",
+      "POST"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/attendance-policy-stats",
+    "methods": [
+      "GET"
+    ],
+    "lines": 130,
+    "fastapi_methods": [
+      "GET"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/attendance-records/[id]",
+    "methods": [
+      "DELETE",
+      "GET",
+      "PATCH"
+    ],
+    "lines": 122,
+    "fastapi_methods": [
+      "DELETE",
+      "GET",
+      "PATCH"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/attendance-records",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "lines": 63,
+    "fastapi_methods": [
+      "GET",
+      "POST"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/attendance-tracker/reports/pdf",
+    "methods": [
+      "GET"
+    ],
+    "lines": 96,
+    "fastapi_methods": [
+      "GET"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/attendance-tracker/reports",
+    "methods": [
+      "GET"
+    ],
+    "lines": 42,
+    "fastapi_methods": [
+      "GET"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/attendance-tracker",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "lines": 225,
+    "fastapi_methods": [
+      "GET",
+      "POST"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/branches/[id]",
+    "methods": [
+      "DELETE",
+      "PATCH"
+    ],
+    "lines": 111,
+    "fastapi_methods": [
+      "DELETE",
+      "PATCH"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/branches",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "lines": 145,
+    "fastapi_methods": [
+      "GET",
+      "POST"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/candidate/candidateNames",
+    "methods": [
+      "GET"
+    ],
+    "lines": 58,
+    "fastapi_methods": [
+      "GET"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/candidate/chart",
+    "methods": [
+      "GET"
+    ],
+    "lines": 58,
+    "fastapi_methods": [
+      "GET"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/candidate/count",
+    "methods": [
+      "GET"
+    ],
+    "lines": 61,
+    "fastapi_methods": [
+      "GET"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/candidate/hiringChart",
+    "methods": [
+      "GET"
+    ],
+    "lines": 150,
+    "fastapi_methods": [
+      "GET"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/candidate/jobOpenings",
+    "methods": [
+      "GET"
+    ],
+    "lines": 43,
+    "fastapi_methods": [
+      "GET"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/candidate/recent",
+    "methods": [
+      "GET"
+    ],
+    "lines": 67,
+    "fastapi_methods": [
+      "GET"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/candidate",
+    "methods": [
+      "DELETE",
+      "GET",
+      "POST",
+      "PUT"
+    ],
+    "lines": 197,
+    "fastapi_methods": [
+      "DELETE",
+      "GET",
+      "POST",
+      "PUT"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/candidateFormDetails",
+    "methods": [
+      "DELETE",
+      "GET",
+      "POST",
+      "PUT"
+    ],
+    "lines": 205,
+    "fastapi_methods": [
+      "DELETE",
+      "GET",
+      "POST",
+      "PUT"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/dashboard/chart",
+    "methods": [
+      "GET"
+    ],
+    "lines": 202,
+    "fastapi_methods": [
+      "GET"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/dashboard/count",
+    "methods": [
+      "GET"
+    ],
+    "lines": 96,
+    "fastapi_methods": [
+      "GET"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/dashboard/detailPerformanceMetrics",
+    "methods": [
+      "GET"
+    ],
+    "lines": 286,
+    "fastapi_methods": [
+      "GET"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/dashboard/metrics",
+    "methods": [
+      "GET"
+    ],
+    "lines": 182,
+    "fastapi_methods": [
+      "GET"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/departments/[id]/designations",
+    "methods": [
+      "POST"
+    ],
+    "lines": 81,
+    "fastapi_methods": [
+      "POST"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/departments/[id]",
+    "methods": [
+      "DELETE",
+      "GET",
+      "PATCH"
+    ],
+    "lines": 131,
+    "fastapi_methods": [
+      "DELETE",
+      "GET",
+      "PATCH"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/departments",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "lines": 101,
+    "fastapi_methods": [
+      "GET",
+      "POST"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/designations/[id]",
+    "methods": [
+      "DELETE",
+      "PATCH"
+    ],
+    "lines": 95,
+    "fastapi_methods": [
+      "DELETE",
+      "PATCH"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/documents/[id]/download",
+    "methods": [
+      "GET"
+    ],
+    "lines": 56,
+    "fastapi_methods": [
+      "GET"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/documents/deadlines",
+    "methods": [
+      "GET"
+    ],
+    "lines": 72,
+    "fastapi_methods": [
+      "GET"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/documents/recent-activity",
+    "methods": [
+      "GET"
+    ],
+    "lines": 42,
+    "fastapi_methods": [
+      "GET"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/documents",
+    "methods": [
+      "GET"
+    ],
+    "lines": 86,
+    "fastapi_methods": [
+      "GET"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/documents/stats",
+    "methods": [
+      "GET"
+    ],
+    "lines": 89,
+    "fastapi_methods": [
+      "GET"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/documents/upload",
+    "methods": [
+      "POST"
+    ],
+    "lines": 145,
+    "fastapi_methods": [
+      "POST"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/employee-documents/[id]/download",
+    "methods": [
+      "GET"
+    ],
+    "lines": 50,
+    "fastapi_methods": [
+      "GET"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/employee-documents/[id]",
+    "methods": [
+      "DELETE",
+      "GET"
+    ],
+    "lines": 56,
+    "fastapi_methods": [
+      "DELETE",
+      "GET"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/employee-documents",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "lines": 99,
+    "fastapi_methods": [
+      "GET",
+      "POST"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/employee-self-service/dashboard",
+    "methods": [
+      "GET"
+    ],
+    "lines": 294,
+    "fastapi_methods": [
+      "GET"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/employee-tasks/[id]",
+    "methods": [
+      "PATCH"
+    ],
+    "lines": 48,
+    "fastapi_methods": [
+      "PATCH"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/employee-tasks",
+    "methods": [
+      "GET"
+    ],
+    "lines": 126,
+    "fastapi_methods": [
+      "GET"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/employees/[id]/assets/[assignmentId]",
+    "methods": [
+      "DELETE"
+    ],
+    "lines": 57,
+    "fastapi_methods": [
+      "DELETE"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/employees/[id]/assets",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "lines": 257,
+    "fastapi_methods": [
+      "GET",
+      "POST"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/employees/[id]/attendance",
+    "methods": [
+      "GET"
+    ],
+    "lines": 34,
+    "fastapi_methods": [
+      "GET"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/employees/[id]/documents/[docId]/download",
+    "methods": [
+      "GET"
+    ],
+    "lines": 49,
+    "fastapi_methods": [
+      "GET"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/employees/[id]/documents/[docId]",
+    "methods": [
+      "DELETE",
+      "PATCH"
+    ],
+    "lines": 113,
+    "fastapi_methods": [
+      "DELETE",
+      "PATCH"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/employees/[id]/documents",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "lines": 98,
+    "fastapi_methods": [
+      "GET",
+      "POST"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/employees/[id]/job-details",
+    "methods": [
+      "GET",
+      "PATCH"
+    ],
+    "lines": 82,
+    "fastapi_methods": [
+      "GET",
+      "PATCH"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/employees/[id]/lifecycle/[eventId]",
+    "methods": [
+      "DELETE",
+      "PATCH"
+    ],
+    "lines": 69,
+    "fastapi_methods": [
+      "DELETE",
+      "PATCH"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/employees/[id]/lifecycle",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "lines": 66,
+    "fastapi_methods": [
+      "GET",
+      "POST"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/employees/[id]/payroll",
+    "methods": [
+      "GET",
+      "PATCH"
+    ],
+    "lines": 49,
+    "fastapi_methods": [
+      "GET",
+      "PATCH"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/employees/[id]",
+    "methods": [
+      "DELETE",
+      "GET",
+      "PATCH"
+    ],
+    "lines": 106,
+    "fastapi_methods": [
+      "DELETE",
+      "GET",
+      "PATCH"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/employees/peers",
+    "methods": [
+      "GET"
+    ],
+    "lines": 59,
+    "fastapi_methods": [
+      "GET"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/employees",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "lines": 385,
+    "fastapi_methods": [
+      "GET",
+      "POST"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/exit-offboarding-templates/[id]/apply",
+    "methods": [
+      "POST"
+    ],
+    "lines": 159,
+    "fastapi_methods": [
+      "POST"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/exit-offboarding-templates/[id]",
+    "methods": [
+      "GET"
+    ],
+    "lines": 119,
+    "fastapi_methods": [
+      "GET"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/exit-offboarding-templates",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "lines": 180,
+    "fastapi_methods": [
+      "GET",
+      "POST"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/exit-requests/[id]/attachments",
+    "methods": [
+      "POST"
+    ],
+    "lines": 115,
+    "fastapi_methods": [
+      "POST"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/exit-requests/[id]/clearance",
+    "methods": [
+      "GET",
+      "PATCH"
+    ],
+    "lines": 262,
+    "fastapi_methods": [
+      "GET",
+      "PATCH"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/exit-requests/[id]",
+    "methods": [
+      "DELETE",
+      "GET",
+      "PATCH"
+    ],
+    "lines": 163,
+    "fastapi_methods": [
+      "DELETE",
+      "GET",
+      "PATCH"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/exit-requests",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "lines": 321,
+    "fastapi_methods": [
+      "GET",
+      "POST"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/feedback",
+    "methods": [
+      "DELETE",
+      "GET",
+      "POST",
+      "PUT"
+    ],
+    "lines": 199,
+    "fastapi_methods": [
+      "DELETE",
+      "GET",
+      "POST",
+      "PUT"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/fnf-settlements/[id]",
+    "methods": [
+      "DELETE",
+      "GET",
+      "PATCH"
+    ],
+    "lines": 182,
+    "fastapi_methods": [
+      "DELETE",
+      "GET",
+      "PATCH"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/fnf-settlements",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "lines": 141,
+    "fastapi_methods": [
+      "GET",
+      "POST"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/health",
+    "methods": [
+      "GET"
+    ],
+    "lines": 14,
+    "fastapi_methods": [
+      "GET"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/hiringFlow",
+    "methods": [
+      "DELETE",
+      "GET",
+      "POST",
+      "PUT"
+    ],
+    "lines": 143,
+    "fastapi_methods": [
+      "DELETE",
+      "GET",
+      "POST",
+      "PUT"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/interview/levelCounts",
+    "methods": [
+      "GET"
+    ],
+    "lines": 99,
+    "fastapi_methods": [
+      "GET"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/interview",
+    "methods": [
+      "DELETE",
+      "GET",
+      "POST",
+      "PUT"
+    ],
+    "lines": 277,
+    "fastapi_methods": [
+      "DELETE",
+      "GET",
+      "POST",
+      "PUT"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/interview/upcomming",
+    "methods": [
+      "GET"
+    ],
+    "lines": 145,
+    "fastapi_methods": [
+      "GET"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/interviewSchedule",
+    "methods": [
+      "DELETE",
+      "GET",
+      "POST",
+      "PUT"
+    ],
+    "lines": 213,
+    "fastapi_methods": [
+      "DELETE",
+      "GET",
+      "POST",
+      "PUT"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/job-applications",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "lines": 99,
+    "fastapi_methods": [
+      "GET",
+      "POST"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/job-openings",
+    "methods": [
+      "GET"
+    ],
+    "lines": 36,
+    "fastapi_methods": [
+      "GET"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/job-referrals",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "lines": 110,
+    "fastapi_methods": [
+      "GET",
+      "POST"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/job-titles/[id]",
+    "methods": [
+      "DELETE",
+      "GET",
+      "PATCH"
+    ],
+    "lines": 57,
+    "fastapi_methods": [
+      "DELETE",
+      "GET",
+      "PATCH"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/job-titles",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "lines": 31,
+    "fastapi_methods": [
+      "GET",
+      "POST"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/jobOpenings/active",
+    "methods": [
+      "GET"
+    ],
+    "lines": 72,
+    "fastapi_methods": [
+      "GET"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/jobOpenings/candidate",
+    "methods": [
+      "GET"
+    ],
+    "lines": 120,
+    "fastapi_methods": [
+      "GET"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/jobOpenings/chart",
+    "methods": [
+      "GET"
+    ],
+    "lines": 60,
+    "fastapi_methods": [
+      "GET"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/jobOpenings/drops",
+    "methods": [
+      "GET"
+    ],
+    "lines": 30,
+    "fastapi_methods": [
+      "GET"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/jobOpenings/interview",
+    "methods": [
+      "GET"
+    ],
+    "lines": 55,
+    "fastapi_methods": [
+      "GET"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/jobOpenings",
+    "methods": [
+      "DELETE",
+      "GET",
+      "POST",
+      "PUT"
+    ],
+    "lines": 247,
+    "fastapi_methods": [
+      "DELETE",
+      "GET",
+      "PATCH",
+      "POST",
+      "PUT"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/leave-attendance/logs",
+    "methods": [
+      "GET"
+    ],
+    "lines": 22,
+    "fastapi_methods": [
+      "GET"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/leave-attendance/overview",
+    "methods": [
+      "GET"
+    ],
+    "lines": 24,
+    "fastapi_methods": [
+      "GET"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/leave-balances/[id]",
+    "methods": [
+      "DELETE",
+      "GET",
+      "PATCH"
+    ],
+    "lines": 73,
+    "fastapi_methods": [
+      "DELETE",
+      "GET",
+      "PATCH"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/leave-balances",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "lines": 69,
+    "fastapi_methods": [
+      "GET",
+      "POST"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/leave-manager",
+    "methods": [
+      "GET"
+    ],
+    "lines": 32,
+    "fastapi_methods": [
+      "GET"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/leave-requests/[id]",
+    "methods": [
+      "DELETE",
+      "GET",
+      "PATCH"
+    ],
+    "lines": 74,
+    "fastapi_methods": [
+      "DELETE",
+      "GET",
+      "PATCH"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/leave-requests",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "lines": 146,
+    "fastapi_methods": [
+      "GET",
+      "POST"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/leave-types/[id]",
+    "methods": [
+      "DELETE",
+      "GET",
+      "PATCH"
+    ],
+    "lines": 62,
+    "fastapi_methods": [
+      "DELETE",
+      "GET",
+      "PATCH"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/leave-types",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "lines": 30,
+    "fastapi_methods": [
+      "GET",
+      "POST"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/lost-damage-incidents/[id]",
+    "methods": [
+      "GET",
+      "PATCH"
+    ],
+    "lines": 117,
+    "fastapi_methods": [
+      "GET",
+      "PATCH"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/lost-damage-incidents",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "lines": 437,
+    "fastapi_methods": [
+      "GET",
+      "POST"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/lost-damage-policy",
+    "methods": [
+      "GET"
+    ],
+    "lines": 148,
+    "fastapi_methods": [
+      "GET"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/manager-mapping/bulk",
+    "methods": [
+      "POST"
+    ],
+    "lines": 77,
+    "fastapi_methods": [
+      "POST"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/manager-mapping/import",
+    "methods": [
+      "POST"
+    ],
+    "lines": 100,
+    "fastapi_methods": [
+      "POST"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/manager-mapping",
+    "methods": [
+      "GET"
+    ],
+    "lines": 27,
+    "fastapi_methods": [
+      "GET"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/manager-mapping/template",
+    "methods": [
+      "GET"
+    ],
+    "lines": 23,
+    "fastapi_methods": [
+      "GET"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/my-profile/pending-request",
+    "methods": [
+      "GET"
+    ],
+    "lines": 40,
+    "fastapi_methods": [
+      "GET"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/my-profile/photo",
+    "methods": [
+      "DELETE",
+      "POST"
+    ],
+    "lines": 104,
+    "fastapi_methods": [
+      "DELETE",
+      "POST"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/my-profile",
+    "methods": [
+      "DELETE",
+      "GET",
+      "PATCH",
+      "POST",
+      "PUT"
+    ],
+    "lines": 220,
+    "fastapi_methods": [
+      "DELETE",
+      "GET",
+      "PATCH",
+      "POST",
+      "PUT"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/onboarding-candidates/[id]",
+    "methods": [
+      "DELETE",
+      "GET",
+      "PATCH"
+    ],
+    "lines": 120,
+    "fastapi_methods": [
+      "DELETE",
+      "GET",
+      "PATCH"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/onboarding-candidates/bulk",
+    "methods": [
+      "POST"
+    ],
+    "lines": 99,
+    "fastapi_methods": [
+      "POST"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/onboarding-candidates",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "lines": 150,
+    "fastapi_methods": [
+      "GET",
+      "POST"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/onboarding-groups/[id]",
+    "methods": [
+      "DELETE",
+      "GET",
+      "PATCH"
+    ],
+    "lines": 170,
+    "fastapi_methods": [
+      "DELETE",
+      "GET",
+      "PATCH"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/onboarding-groups",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "lines": 140,
+    "fastapi_methods": [
+      "GET",
+      "POST"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/onboarding-templates/[id]",
+    "methods": [
+      "DELETE",
+      "GET",
+      "PATCH"
+    ],
+    "lines": 72,
+    "fastapi_methods": [
+      "DELETE",
+      "GET",
+      "PATCH"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/onboarding-templates",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "lines": 127,
+    "fastapi_methods": [
+      "GET",
+      "POST"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/organization/company-profile",
+    "methods": [
+      "GET",
+      "PATCH",
+      "POST"
+    ],
+    "lines": 150,
+    "fastapi_methods": [
+      "GET",
+      "PATCH",
+      "POST"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/organization/roles/[id]",
+    "methods": [
+      "DELETE",
+      "GET",
+      "PATCH"
+    ],
+    "lines": 78,
+    "fastapi_methods": [
+      "DELETE",
+      "GET",
+      "PATCH"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/organization/roles",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "lines": 46,
+    "fastapi_methods": [
+      "GET",
+      "POST"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/organization/setup-dashboard/actions",
+    "methods": [
+      "POST"
+    ],
+    "lines": 172,
+    "fastapi_methods": [
+      "POST"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/organization/setup-dashboard",
+    "methods": [
+      "GET"
+    ],
+    "lines": 29,
+    "fastapi_methods": [
+      "GET"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/parties/[id]",
+    "methods": [
+      "DELETE",
+      "GET",
+      "PUT"
+    ],
+    "lines": 179,
+    "fastapi_methods": [
+      "DELETE",
+      "GET",
+      "PUT"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/parties",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "lines": 151,
+    "fastapi_methods": [
+      "GET",
+      "POST"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/performance-feedback",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "lines": 179,
+    "fastapi_methods": [
+      "GET",
+      "POST"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/performance-hub/appraisal",
+    "methods": [
+      "GET",
+      "PATCH"
+    ],
+    "lines": 59,
+    "fastapi_methods": [
+      "GET",
+      "PATCH"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/performance-hub/goals/[id]",
+    "methods": [
+      "PATCH"
+    ],
+    "lines": 53,
+    "fastapi_methods": [
+      "PATCH"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/performance-hub/goals",
+    "methods": [
+      "POST"
+    ],
+    "lines": 42,
+    "fastapi_methods": [
+      "POST"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/performance-hub",
+    "methods": [
+      "GET"
+    ],
+    "lines": 24,
+    "fastapi_methods": [
+      "GET"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/privacy-policies/[id]",
+    "methods": [
+      "DELETE",
+      "GET",
+      "PATCH"
+    ],
+    "lines": 117,
+    "fastapi_methods": [
+      "DELETE",
+      "GET",
+      "PATCH"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/privacy-policies",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "lines": 81,
+    "fastapi_methods": [
+      "GET",
+      "POST"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/probation-records/[id]",
+    "methods": [
+      "GET",
+      "PATCH"
+    ],
+    "lines": 287,
+    "fastapi_methods": [
+      "GET",
+      "PATCH"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/probation-records/filter-options",
+    "methods": [
+      "GET"
+    ],
+    "lines": 94,
+    "fastapi_methods": [
+      "GET"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/probation-records",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "lines": 212,
+    "fastapi_methods": [
+      "GET",
+      "POST"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/probation-settings",
+    "methods": [
+      "GET",
+      "PUT"
+    ],
+    "lines": 210,
+    "fastapi_methods": [
+      "GET",
+      "PUT"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/question",
+    "methods": [
+      "DELETE",
+      "GET",
+      "POST",
+      "PUT"
+    ],
+    "lines": 170,
+    "fastapi_methods": [
+      "DELETE",
+      "GET",
+      "POST",
+      "PUT"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/reporting-hierarchy/employees/[id]",
+    "methods": [
+      "DELETE"
+    ],
+    "lines": 33,
+    "fastapi_methods": [
+      "DELETE"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/reporting-hierarchy/employees",
+    "methods": [
+      "POST"
+    ],
+    "lines": 52,
+    "fastapi_methods": [
+      "POST"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/reporting-hierarchy/reorder",
+    "methods": [
+      "POST"
+    ],
+    "lines": 43,
+    "fastapi_methods": [
+      "POST"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/reporting-hierarchy",
+    "methods": [
+      "GET"
+    ],
+    "lines": 21,
+    "fastapi_methods": [
+      "GET"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/search",
+    "methods": [
+      "GET"
+    ],
+    "lines": 20,
+    "fastapi_methods": [
+      "GET"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/secttionValue",
+    "methods": [
+      "DELETE",
+      "GET",
+      "POST",
+      "PUT"
+    ],
+    "lines": 143,
+    "fastapi_methods": [
+      "DELETE",
+      "GET",
+      "POST",
+      "PUT"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/sendEmails",
+    "methods": [
+      "POST"
+    ],
+    "lines": 91,
+    "fastapi_methods": [
+      "POST"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/session/employee",
+    "methods": [
+      "GET"
+    ],
+    "lines": 25,
+    "fastapi_methods": [
+      "GET"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/subscription-requests",
+    "methods": [
+      "POST"
+    ],
+    "lines": 65,
+    "fastapi_methods": [
+      "POST"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/support-tickets",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "lines": 194,
+    "fastapi_methods": [
+      "GET",
+      "POST"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/template",
+    "methods": [
+      "DELETE",
+      "GET",
+      "POST",
+      "PUT"
+    ],
+    "lines": 152,
+    "fastapi_methods": [
+      "DELETE",
+      "GET",
+      "POST",
+      "PUT"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/upload",
+    "methods": [
+      "POST"
+    ],
+    "lines": 38,
+    "fastapi_methods": [
+      "POST"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/uploads/[...path]",
+    "methods": [
+      "GET"
+    ],
+    "lines": 82,
+    "fastapi_methods": [
+      "GET"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/users/[id]",
+    "methods": [
+      "GET",
+      "PATCH"
+    ],
+    "lines": 47,
+    "fastapi_methods": [
+      "GET",
+      "PATCH"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/users/me",
+    "methods": [
+      "GET"
+    ],
+    "lines": 49,
+    "fastapi_methods": [
+      "GET"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/users",
+    "methods": [
+      "GET"
+    ],
+    "lines": 18,
+    "fastapi_methods": [
+      "GET"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/vendors",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "lines": 33,
+    "fastapi_methods": [
+      "GET",
+      "POST"
+    ],
+    "remaining_methods": []
+  },
+  {
+    "path": "/api/views/[name]",
+    "methods": [
+      "GET"
+    ],
+    "lines": 38,
+    "fastapi_methods": [
+      "GET"
+    ],
+    "remaining_methods": []
+  }
+]

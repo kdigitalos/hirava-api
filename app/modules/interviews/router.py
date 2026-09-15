@@ -1,8 +1,8 @@
-from datetime import timezone
+from datetime import timezone, timedelta
 from app.core.routing import APIRouter
 from fastapi import Depends, HTTPException, Query, Request
 from pydantic import AwareDatetime, Field
-from sqlalchemy import select
+from sqlalchemy import select, or_
 from sqlalchemy.orm import Session
 from app.core.models import User
 from app.core.schemas import Decision, Input
@@ -11,6 +11,7 @@ from app.core.service import audit, find, notify, rows, state_is, view
 from app.data.database import get_db, utcnow
 from app.modules.interviews.models import Interview, Scorecard
 from app.modules.recruiting.service import application_reference, interview_packet
+from app.modules.recruiting.models import Application, Candidate
 
 router = APIRouter(prefix="/rms/interviews", tags=["interviews"])
 
@@ -28,21 +29,46 @@ class ScorecardCreate(Input):
     evidence: str = Field(min_length=3, max_length=10000)
 
 
-@router.post("", status_code=201)
-def create_interview(body: InterviewCreate, request: Request, user=Depends(require("recruiter", module="rms")), db: Session = Depends(get_db)):
-    application = application_reference(db, body.application_id, user.customer_id)
-    state_is(application, "interviewing")
-    interviewer = find(db, User, body.interviewer_id, user.customer_id)
+class InterviewReschedule(Input):
+    scheduled_at: AwareDatetime
+    duration_minutes: int = Field(ge=15, le=480)
+    expected_version: int = Field(ge=1)
+    reason: str = Field(min_length=3, max_length=2000)
+
+
+def reserve_slot(db, application, interviewer_id, scheduled_at, duration_minutes, customer_id, exclude_id=None):
+    # Serialize bookings for a person across applications and for an interviewer.
+    find(db, Candidate, application.candidate_id, customer_id, lock=True)
+    interviewer = find(db, User, interviewer_id, customer_id, lock=True)
     if not interviewer.active or interviewer.role not in {"interviewer", "manager", "recruiter"}:
         raise HTTPException(422, "An active interviewer, manager, or recruiter is required")
-    if body.scheduled_at <= utcnow():
+    start = scheduled_at.astimezone(timezone.utc)
+    if start <= utcnow():
         raise HTTPException(422, "Interview must be scheduled in the future")
+    end = start + timedelta(minutes=duration_minutes)
+    matches = db.scalars(select(Interview).join(Application, Interview.application_id == Application.id).where(
+        Interview.customer_id == customer_id, Interview.status == "scheduled",
+        Interview.scheduled_at < end, Interview.scheduled_at > start - timedelta(minutes=480),
+        or_(Interview.interviewer_id == interviewer_id, Application.candidate_id == application.candidate_id))).all()
+    for existing in matches:
+        if existing.id == exclude_id:
+            continue
+        existing_start = existing.scheduled_at.replace(tzinfo=timezone.utc) if existing.scheduled_at.tzinfo is None else existing.scheduled_at.astimezone(timezone.utc)
+        if existing_start + timedelta(minutes=existing.duration_minutes) > start:
+            raise HTTPException(409, "The candidate or interviewer already has an interview in this time slot")
+    return start
+
+
+@router.post("", status_code=201)
+def create_interview(body: InterviewCreate, request: Request, user=Depends(require("recruiter", module="rms")), db: Session = Depends(get_db)):
+    application = application_reference(db, body.application_id, user.customer_id, lock=True)
+    state_is(application, "interviewing")
     fields = body.model_dump()
-    fields["scheduled_at"] = body.scheduled_at.astimezone(timezone.utc)
+    fields["scheduled_at"] = reserve_slot(db, application, body.interviewer_id, body.scheduled_at, body.duration_minutes, user.customer_id)
     record = Interview(customer_id=user.customer_id, **fields)
     db.add(record)
     audit(db, user, "interview.scheduled", record, request)
-    notify(db, user, interviewer.id, "An interview has been assigned to you")
+    notify(db, user, body.interviewer_id, "An interview has been assigned to you")
     return view(record)
 
 
@@ -88,6 +114,28 @@ def get_scorecard(record_id: str, user=Depends(require("recruiter", "interviewer
     record = db.scalar(select(Scorecard).where(Scorecard.interview_id == interview.id, Scorecard.customer_id == user.customer_id))
     if not record:
         raise HTTPException(404, "Scorecard not submitted")
+    return view(record)
+
+
+@router.post("/{record_id}/reschedule")
+def reschedule_interview(record_id: str, body: InterviewReschedule, request: Request,
+                         user=Depends(require("recruiter", module="rms")), db: Session = Depends(get_db)):
+    record = find(db, Interview, record_id, user.customer_id, lock=True)
+    state_is(record, "scheduled")
+    if record.version != body.expected_version:
+        raise HTTPException(409, "Interview changed; reload before rescheduling")
+    old_start = record.scheduled_at.replace(tzinfo=timezone.utc) if record.scheduled_at.tzinfo is None else record.scheduled_at
+    if old_start <= utcnow():
+        raise HTTPException(409, "An interview that has already started cannot be rescheduled")
+    application = application_reference(db, record.application_id, user.customer_id, lock=True)
+    state_is(application, "interviewing")
+    start = reserve_slot(db, application, record.interviewer_id, body.scheduled_at, body.duration_minutes, user.customer_id, record.id)
+    previous_duration = record.duration_minutes
+    record.scheduled_at, record.duration_minutes = start, body.duration_minutes
+    audit(db, user, "interview.rescheduled", record, request, reason=body.reason,
+          previous_start=old_start.isoformat(), previous_duration_minutes=previous_duration,
+          scheduled_at=start.isoformat(), duration_minutes=body.duration_minutes)
+    notify(db, user, record.interviewer_id, "An assigned interview has been rescheduled")
     return view(record)
 
 

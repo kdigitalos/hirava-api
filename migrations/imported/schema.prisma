@@ -1,0 +1,1870 @@
+// PostgreSQL + Prisma — HRMS modules and Auth0-backed users
+
+generator client {
+  provider = "prisma-client"
+  // Must match where the app imports it from: "@/generated/prisma/*" resolves
+  // to src/modules/hrms/generated/prisma via the tsconfig alias.
+  output   = "../src/modules/hrms/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// Persist organization role definitions that the original app kept in process memory.
+model OrganizationRoleSetting {
+  id             String   @id @default(cuid())
+  slug           String   @unique
+  name           String
+  description    String
+  isSystem       Boolean  @default(false)
+  isDefault      Boolean  @default(false)
+  permissions    Json
+  sortOrder      Int      @default(0)
+  mapsToUserRole  UserRole?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@map("organization_role_settings")
+}
+
+enum UserRole {
+  ADMIN
+  HR
+  MANAGER
+  EMPLOYEE
+}
+
+enum EmployeeStatus {
+  ACTIVE
+  ON_LEAVE
+  TERMINATED
+  PROBATION
+}
+
+enum KnowledgeBaseArticleTag {
+  HR
+  PAYROLL
+  IT
+  LEAVE
+  POLICY
+  FINANCE
+  GENERAL
+}
+
+enum LeaveRequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CANCELLED
+}
+
+enum OnboardingCandidateStatus {
+  INVITED
+  IN_PROGRESS
+  COMPLETED
+  WITHDRAWN
+}
+
+enum ExitRequestStatus {
+  /// Submitted; awaiting manager approval
+  PENDING
+  PENDING_HR
+  APPROVED
+  REJECTED
+  IN_PROGRESS
+  COMPLETED
+}
+
+/// Full & final exit settlement workflow (admin Exit Management).
+enum FnfSettlementStatus {
+  DRAFT
+  UNDER_REVIEW
+  APPROVED
+  COMPLETED
+  OVERDUE
+}
+
+enum AssetCondition {
+  NEW
+  GOOD
+  FAIR
+  POOR
+  USED
+  REFURBISHED
+}
+
+/// Inventory lifecycle (allocation uses AssetAssignment; status may be derived).
+enum AssetStatus {
+  AVAILABLE
+  ALLOCATED
+  IN_REPAIR
+  RETIRED
+  LOST
+  DISPOSED
+}
+
+/// Admin → Asset Management → Allocation & Returns → Return Requests workflow.
+enum AssetReturnRequestStatus {
+  PENDING_APPROVAL
+  APPROVED
+  REJECTED
+}
+
+enum LostDamageIncidentType {
+  LOST
+  DAMAGED
+}
+
+enum LostDamagePriority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum LostDamageCaseStatus {
+  UNDER_REVIEW
+  APPROVED
+  RESOLVED
+  REJECTED
+}
+
+/// Maps to stepper node colour + icon in Lost/Damage Policy UI.
+enum LostDamageWorkflowVisual {
+  PURPLE_DOCUMENT
+  BLUE_CHECK
+  GREEN_DOLLAR
+}
+
+enum OnboardingGroupStatus {
+  DRAFT
+  ACTIVE
+  CONVERSION_PENDING
+  ARCHIVED
+}
+
+enum OnboardingGroupProgress {
+  GOOD
+  AVERAGE
+  BAD
+}
+
+enum DocumentStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+/// Admin → Employee Management → Self-Service Requests.
+enum SelfServiceRequestType {
+  PROFILE_UPDATE
+  LEAVE_ADJUSTMENT
+  ADDRESS_CHANGE
+  EMERGENCY_CONTACT
+  DOCUMENT_REQUEST
+  BANK_DETAILS
+}
+
+enum SelfServiceRequestInitiator {
+  SELF
+  MANAGER
+  HR
+}
+
+enum SelfServiceRequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum PrivacyPolicyStatus {
+  ACTIVE
+  DRAFT
+  INACTIVE
+}
+
+/// ESS → My Tasks: where the work item came from (maps to UI labels).
+enum EmployeeTaskSource {
+  LEAVE
+  LEARNING
+  ONBOARDING
+}
+
+/// Stored workflow state; UI may show “Overdue” when still open and past due.
+enum EmployeeTaskStatus {
+  IN_PROGRESS
+  COMPLETED
+}
+
+/// Stored probation row; `OVERDUE` is derived in the API from dates when not confirmed.
+enum AdminScheduleItemType {
+  MEETING
+  EVENT
+}
+
+enum ProbationRecordStatus {
+  ACTIVE_PROBATION
+  EXTENDED
+  CONFIRMED
+}
+
+enum LifecycleEventKind {
+  JOINED
+  ONBOARDING_COMPLETED
+  PROBATION_COMPLETED
+  CONFIRMED
+  OTHER
+}
+
+/// Application user linked to Auth0 (`sub` claim).
+model User {
+  id          String    @id @default(cuid())
+  auth0Sub    String    @unique @map("auth0_sub")
+  email       String    @unique
+  name        String?
+  picture     String?
+  role        UserRole  @default(EMPLOYEE)
+  lastLoginAt DateTime? @map("last_login_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  employee                    Employee?
+  reviewedSelfServiceRequests EmployeeSelfServiceRequest[] @relation("SelfServiceRequestReviewer")
+}
+
+
+
+model Department {
+  id                       String   @id @default(cuid())
+  name                     String
+  code                     String?  @unique
+  description              String?  @db.Text
+  departmentHeadEmployeeId String?  @map("department_head_employee_id")
+  createdAt                DateTime @default(now()) @map("created_at")
+  updatedAt                DateTime @updatedAt @map("updated_at")
+
+  employees      Employee[]
+  assets         Asset[]
+  designations   Designation[]
+  departmentHead Employee?     @relation("DepartmentHead", fields: [departmentHeadEmployeeId], references: [id], onDelete: SetNull)
+
+  @@index([departmentHeadEmployeeId])
+}
+
+/// Job role / title within a department (Organization Setup → Departments & Designations).
+model Designation {
+  id             String   @id @default(cuid())
+  departmentId   String   @map("department_id")
+  title          String   @db.VarChar(255)
+  hierarchyLevel String   @map("hierarchy_level") @db.VarChar(128)
+  description    String   @default("") @db.Text
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  department Department @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  employees  Employee[] @relation("EmployeeDesignation")
+
+  @@index([departmentId])
+  @@map("department_designations")
+}
+
+/// Company branch / location (Organization Setup → Branches).
+model Branch {
+  id                   String  @id @default(cuid())
+  name                 String  @db.VarChar(255)
+  code                 String  @unique @db.VarChar(64)
+  street               String  @db.VarChar(512)
+  city                 String  @db.VarChar(255)
+  state                String  @db.VarChar(255)
+  zip                  String  @map("zip_code") @db.VarChar(32)
+  country              String  @db.VarChar(255)
+  description          String  @db.Text
+  contactEmail         String  @map("contact_email") @db.VarChar(255)
+  contactPhone         String  @map("contact_phone") @db.VarChar(64)
+  isActive             Boolean @default(true) @map("is_active")
+  branchHeadEmployeeId String? @map("branch_head_employee_id")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  branchHead Employee?  @relation("BranchHead", fields: [branchHeadEmployeeId], references: [id], onDelete: SetNull)
+  employees  Employee[] @relation("EmployeeBranch")
+
+  @@index([city])
+  @@index([isActive])
+  @@map("branches")
+}
+
+model JobTitle {
+  id        String   @id @default(cuid())
+  name      String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  employees Employee[]
+}
+
+model Employee {
+  id                  String         @id @default(cuid())
+  userId              String?        @unique @map("user_id")
+  employeeCode        String         @unique @map("employee_code")
+  firstName           String         @map("first_name")
+  lastName            String         @map("last_name")
+  email               String?
+  phone               String?
+  branchId            String?        @map("branch_id")
+  departmentId        String?        @map("department_id")
+  designationId       String?        @map("designation_id")
+  jobTitleId          String?        @map("job_title_id")
+  /// Address, bank, photo path, location, manager, userName, etc. (directory add-employee form)
+  employeeDetails     Json?          @map("employee_details")
+  status              EmployeeStatus @default(ACTIVE)
+  hireDate            DateTime?      @map("hire_date") @db.Date
+  terminationDate     DateTime?      @map("termination_date") @db.Date
+  /// e.g. Full-time, Part-time, Contract (display string).
+  employmentType      String?        @map("employment_type") @db.VarChar(64)
+  workLocation        String?        @map("work_location") @db.VarChar(255)
+  reportsToEmployeeId String?        @map("reports_to_employee_id")
+  /// Sibling display order within the Reporting Hierarchy org chart (drag-to-reorder).
+  orgSortOrder        Int            @default(0) @map("org_sort_order")
+  /// Payroll tab: pay, deductions, tax regime, bank display, enrolled benefits (JSON).
+  payrollJson         Json?          @map("payroll_json")
+  createdAt           DateTime       @default(now()) @map("created_at")
+  updatedAt           DateTime       @updatedAt @map("updated_at")
+
+  user                   User?                        @relation(fields: [userId], references: [id], onDelete: SetNull)
+  branch                 Branch?                      @relation("EmployeeBranch", fields: [branchId], references: [id], onDelete: SetNull)
+  department             Department?                  @relation(fields: [departmentId], references: [id], onDelete: SetNull)
+  designation            Designation?                 @relation("EmployeeDesignation", fields: [designationId], references: [id], onDelete: SetNull)
+  jobTitle               JobTitle?                    @relation(fields: [jobTitleId], references: [id], onDelete: SetNull)
+  reportsToEmployee      Employee?                    @relation("EmployeeReportsTo", fields: [reportsToEmployeeId], references: [id], onDelete: SetNull)
+  directReports          Employee[]                   @relation("EmployeeReportsTo")
+  leaveRequests          LeaveRequest[]
+  leaveBalances          LeaveBalance[]
+  attendanceRecords      AttendanceRecord[]
+  assetAssignments       AssetAssignment[]
+  lostDamageIncidents    LostDamageIncident[]         @relation("LostDamageReporter")
+  employeeDocuments      EmployeeDocument[]
+  onboardingCandidates   OnboardingCandidate[]
+  exitRequests           ExitRequest[]
+  fnfSettlements         FnfSettlement[]
+  probationRecords       ProbationRecord[]
+  headedBranches         Branch[]                     @relation("BranchHead")
+  headedDepartments      Department[]                 @relation("DepartmentHead")
+  profile                EmployeeProfile?
+  feedbackGiven          PerformanceFeedback[]        @relation("FeedbackFrom")
+  feedbackReceived       PerformanceFeedback[]        @relation("FeedbackTo")
+  supportTickets         SupportTicket[]              @relation("SupportTicketEmployee")
+  supportTicketsAssigned SupportTicket[]              @relation("SupportTicketAssignedTo")
+  selfServiceRequests    EmployeeSelfServiceRequest[]
+  employeeTasks          EmployeeTask[]
+  lifecycleEvents        EmployeeLifecycleEvent[]
+  performanceGoals       PerformanceGoal[]
+  performanceAppraisals  PerformanceAppraisal[]
+  shifts                 EmployeeShift[]
+  jobApplications        JobApplication[]
+  jobReferrals           JobReferral[]                @relation("JobReferralReferrer")
+
+  @@index([branchId])
+  @@index([designationId])
+  @@index([reportsToEmployeeId, orgSortOrder])
+}
+
+/// Per-employee timeline entry rendered in Profile Management → Life cycle → Timeline.
+model EmployeeLifecycleEvent {
+  id         String             @id @default(cuid())
+  employeeId String             @map("employee_id")
+  kind       LifecycleEventKind @default(OTHER)
+  title      String             @db.VarChar(200)
+  occurredOn DateTime           @map("occurred_on") @db.Date
+  /// String[] of bullet items (free-form, e.g. "IT setup done", "Salary review completed").
+  bullets    Json               @default("[]")
+  createdAt  DateTime           @default(now()) @map("created_at")
+  updatedAt  DateTime           @updatedAt @map("updated_at")
+
+  employee Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@index([employeeId])
+  @@index([employeeId, occurredOn])
+  @@map("employee_lifecycle_events")
+}
+
+/// Employee Self-Service → My Tasks (assignee = employee).
+model EmployeeTask {
+  id            String             @id @default(cuid())
+  employeeId    String             @map("employee_id")
+  title         String             @db.VarChar(512)
+  description   String             @db.Text
+  source        EmployeeTaskSource
+  dueDate       DateTime           @map("due_date") @db.Date
+  status        EmployeeTaskStatus @default(IN_PROGRESS)
+  /// Drives detail UI: `generic` | `emergency_contact`
+  detailKind    String             @default("generic") @map("detail_kind") @db.VarChar(32)
+  /// For `generic` detail: JSON string array of next-step lines.
+  nextStepsJson Json?              @map("next_steps_json")
+  createdAt     DateTime           @default(now()) @map("created_at")
+  updatedAt     DateTime           @updatedAt @map("updated_at")
+
+  employee Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@index([employeeId])
+  @@index([employeeId, dueDate])
+  @@map("employee_tasks")
+}
+
+/// Probation period for an employee; `OVERDUE` is derived in APIs from dates when not confirmed.
+model ProbationRecord {
+  id                  String                @id @default(cuid())
+  employeeId          String                @map("employee_id")
+  reportingManager    String                @map("reporting_manager")
+  joiningDate         DateTime              @map("joining_date") @db.Date
+  probationStart      DateTime              @map("probation_start") @db.Date
+  probationEnd        DateTime              @map("probation_end") @db.Date
+  extensions          Int                   @default(0)
+  status              ProbationRecordStatus @default(ACTIVE_PROBATION)
+  confirmedAt         DateTime?             @map("confirmed_at")
+  reviewsJson         Json?                 @map("reviews_json")
+  extensionEventsJson Json?                 @map("extension_events_json")
+  createdAt           DateTime              @default(now()) @map("created_at")
+  updatedAt           DateTime              @updatedAt @map("updated_at")
+
+  employee Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@index([employeeId])
+  @@index([probationEnd])
+  @@index([status])
+  @@map("probation_records")
+}
+
+/// Org-wide probation policy (single row, e.g. `id = "default"`).
+model ProbationPolicySettings {
+  id                      String   @id
+  defaultDurationMonths   Int      @map("default_duration_months")
+  maxExtensions           Int      @map("max_extensions")
+  autoConfirmationEnabled Boolean  @default(false) @map("auto_confirmation_enabled")
+  fullTimeDurationMonths  Int      @map("full_time_duration_months")
+  contractDurationMonths  Int      @map("contract_duration_months")
+  reminder30Enabled       Boolean  @default(true) @map("reminder_30_enabled")
+  reminder15Enabled       Boolean  @default(true) @map("reminder_15_enabled")
+  reminder7Enabled        Boolean  @default(true) @map("reminder_7_enabled")
+  departmentDurations     Json?    @map("department_durations")
+  approvalWorkflow        Json?    @map("approval_workflow")
+  createdAt               DateTime @default(now()) @map("created_at")
+  updatedAt               DateTime @updatedAt @map("updated_at")
+
+  @@map("probation_policy_settings")
+}
+
+model OnboardingGroup {
+  id                   String                   @id @default(cuid())
+  name                 String
+  description          String?
+  /// Job role label (e.g. Software Engineer)
+  roleLabel            String?                  @map("role_label")
+  location             String?
+  manager              String?
+  department           String?
+  autoConvert          Boolean                  @default(true) @map("auto_convert")
+  status               OnboardingGroupStatus    @default(DRAFT)
+  /// Short human-friendly code shown as "Candidate ID" in the groups list (8 digits).
+  groupCode            String?                  @unique @map("group_code")
+  /// Admin-set progress signal surfaced in the Groups table (GOOD / AVERAGE / BAD).
+  progress             OnboardingGroupProgress? @map("progress")
+  /// Admin-set progress as a 0–100 percentage shown in the Groups table.
+  progressPercent      Int?                     @map("progress_percent")
+  /// 1-based index of the stage/task the group is currently working on.
+  currentTask          Int?                     @map("current_task")
+  windowStart          DateTime?                @map("window_start") @db.Date
+  windowEnd            DateTime?                @map("window_end") @db.Date
+  probationPolicy      String?                  @map("probation_policy")
+  templateSource       String?                  @map("template_source")
+  additionalRecipients String?                  @map("additional_recipients")
+  createdAt            DateTime                 @default(now()) @map("created_at")
+  updatedAt            DateTime                 @updatedAt @map("updated_at")
+
+  templates  OnboardingTemplate[]
+  candidates OnboardingCandidate[]
+}
+
+model OnboardingTemplate {
+  id           String   @id @default(cuid())
+  name         String
+  groupId      String?  @map("group_id")
+  /// Top-level category surfaced in the templates list filters (usually = department).
+  category     String?  @map("category")
+  /// One of "role-based" | "remote" | "leadership". Optional; filter can also fall back to heuristics.
+  templateType String?  @map("template_type")
+  /// One of "beginner" | "intermediate" | "advanced".
+  complexity   String?  @map("complexity")
+  /// Owning department (Engineering, Design, HR, …). Drives the Department filter on the templates list.
+  department   String?  @map("department")
+  stagesJson   Json?    @map("stages_json")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  group      OnboardingGroup?      @relation(fields: [groupId], references: [id], onDelete: SetNull)
+  candidates OnboardingCandidate[]
+
+  @@index([category])
+  @@index([templateType])
+  @@index([complexity])
+  @@index([department])
+}
+
+model OnboardingCandidate {
+  id         String                    @id @default(cuid())
+  groupId    String                    @map("group_id")
+  templateId String?                   @map("template_id")
+  employeeId String?                   @map("employee_id")
+  email      String
+  name       String
+  /// Role / title from CSV (per candidate), optional
+  roleLabel  String?                   @map("role_label")
+  /// Extra fields from Admin Candidates form (department, dates, manager, notes, display id, etc.)
+  details    Json?                     @map("details")
+  status     OnboardingCandidateStatus @default(INVITED)
+  createdAt  DateTime                  @default(now()) @map("created_at")
+  updatedAt  DateTime                  @updatedAt @map("updated_at")
+
+  group    OnboardingGroup     @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  template OnboardingTemplate? @relation(fields: [templateId], references: [id], onDelete: SetNull)
+  employee Employee?           @relation(fields: [employeeId], references: [id], onDelete: SetNull)
+}
+
+model LeaveType {
+  id          String   @id @default(cuid())
+  name        String
+  daysPerYear Int?     @map("days_per_year")
+  /// UI dot color for calendar / tables (e.g. #3B82F6).
+  colorHex    String?  @map("color_hex") @db.VarChar(7)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  balances LeaveBalance[]
+  requests LeaveRequest[]
+}
+
+/// Org-wide public holiday (shown on Leave Manager calendar).
+model PublicHoliday {
+  id        String   @id @default(cuid())
+  name      String
+  date      DateTime @map("holiday_date") @db.Date
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([date])
+  @@map("public_holidays")
+}
+
+model LeaveBalance {
+  id          String   @id @default(cuid())
+  employeeId  String   @map("employee_id")
+  leaveTypeId String   @map("leave_type_id")
+  year        Int
+  balanceDays Float    @default(0) @map("balance_days")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  employee  Employee  @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  leaveType LeaveType @relation(fields: [leaveTypeId], references: [id], onDelete: Cascade)
+
+  @@unique([employeeId, leaveTypeId, year])
+}
+
+model LeaveRequest {
+  id          String             @id @default(cuid())
+  employeeId  String             @map("employee_id")
+  leaveTypeId String             @map("leave_type_id")
+  startDate   DateTime           @map("start_date") @db.Date
+  endDate     DateTime           @map("end_date") @db.Date
+  status      LeaveRequestStatus @default(PENDING)
+  reason      String?
+  createdAt   DateTime           @default(now()) @map("created_at")
+  updatedAt   DateTime           @updatedAt @map("updated_at")
+
+  employee  Employee  @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  leaveType LeaveType @relation(fields: [leaveTypeId], references: [id], onDelete: Restrict)
+}
+
+/// HR-defined asset category (e.g. Laptops); `idPrefix` is used for tag / serial schemes.
+model AssetCategory {
+  id          String   @id @default(cuid())
+  name        String
+  idPrefix    String   @unique @map("id_prefix") @db.VarChar(32)
+  description String   @db.Text
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  assets Asset[]
+
+  @@index([name])
+}
+
+/// Vendors for asset procurement (laptop suppliers, etc.).
+model AssetVendor {
+  id        String   @id @default(cuid())
+  name      String
+  partyId   String?  @map("party_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  assets Asset[]
+  party  Party?  @relation(fields: [partyId], references: [id], onDelete: SetNull)
+
+  @@map("asset_vendors")
+}
+
+/// Photos stored under `uploads/assets/{assetId}/…`; `storagePath` is relative to `uploads/`.
+model AssetPhoto {
+  id               String   @id @default(cuid())
+  assetId          String   @map("asset_id")
+  originalFilename String   @map("original_filename") @db.VarChar(255)
+  storagePath      String   @map("storage_path")
+  mimeType         String   @map("mime_type")
+  sizeBytes        Int      @map("size_bytes")
+  createdAt        DateTime @default(now()) @map("created_at")
+
+  asset Asset @relation(fields: [assetId], references: [id], onDelete: Cascade)
+
+  @@index([assetId])
+  @@map("asset_photos")
+}
+
+model Asset {
+  id           String         @id @default(cuid())
+  /// Unique tag used on the asset (e.g. LAP-001).
+  assetTag     String         @unique @map("asset_tag") @db.VarChar(64)
+  /// Display name (e.g. MacBook Pro M2).
+  name         String
+  /// Model / variant line (optional; may match name).
+  model        String?        @db.VarChar(255)
+  /// Manufacturer serial; unique when set.
+  serialNumber String?        @unique @map("serial_number") @db.VarChar(128)
+  categoryId   String?        @map("category_id")
+  condition    AssetCondition @default(NEW)
+  status       AssetStatus    @default(AVAILABLE)
+
+  vendorId         String?   @map("vendor_id")
+  /// Purchase / financial
+  purchaseOrder    String?   @map("purchase_order") @db.VarChar(128)
+  invoiceNumber    String?   @map("invoice_number") @db.VarChar(128)
+  purchaseDate     DateTime? @map("purchase_date") @db.Date
+  purchaseValue    Decimal?  @map("purchase_value") @db.Decimal(14, 2)
+  /// Useful life in months (e.g. 36).
+  usefulLifeMonths Int?      @map("useful_life_months")
+  warrantyEndDate  DateTime? @map("warranty_end_date") @db.Date
+
+  /// Location & assignment line (e.g. desk, site, or “Remote — Priya”).
+  location     String  @db.VarChar(512)
+  departmentId String? @map("department_id")
+  notes        String  @db.Text
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  category            AssetCategory?       @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  vendor              AssetVendor?         @relation(fields: [vendorId], references: [id], onDelete: SetNull)
+  department          Department?          @relation(fields: [departmentId], references: [id], onDelete: SetNull)
+  assignments         AssetAssignment[]
+  lostDamageIncidents LostDamageIncident[]
+  photos              AssetPhoto[]
+
+  @@index([categoryId])
+  @@index([status])
+  @@index([vendorId])
+  @@index([departmentId])
+  @@map("Asset")
+}
+
+model AssetAssignment {
+  id         String    @id @default(cuid())
+  assetId    String    @map("asset_id")
+  employeeId String    @map("employee_id")
+  assignedAt DateTime  @default(now()) @map("assigned_at")
+  returnedAt DateTime? @map("returned_at")
+  /// Optional note when allocating (e.g. desk location, project).
+  notes      String?   @db.Text
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
+
+  asset          Asset                @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  employee       Employee             @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  returnRequests AssetReturnRequest[]
+
+  @@index([assetId])
+  @@index([employeeId])
+  @@index([returnedAt])
+}
+
+/// Employee / HR request to return an allocated asset (Allocation & Returns tab).
+model AssetReturnRequest {
+  id                 String                   @id @default(cuid())
+  assetAssignmentId  String                   @map("asset_assignment_id")
+  requestedAt        DateTime                 @default(now()) @map("requested_at")
+  expectedReturnDate DateTime                 @map("expected_return_date") @db.Date
+  reason             String                   @db.Text
+  status             AssetReturnRequestStatus @default(PENDING_APPROVAL)
+  createdAt          DateTime                 @default(now()) @map("created_at")
+  updatedAt          DateTime                 @updatedAt @map("updated_at")
+
+  assetAssignment AssetAssignment @relation(fields: [assetAssignmentId], references: [id], onDelete: Cascade)
+
+  @@index([assetAssignmentId])
+  @@index([status])
+  @@map("asset_return_requests")
+}
+
+/// Lost / damaged asset incident (HR workflow: review → approve/reject → resolve).
+model LostDamageIncident {
+  id                 String                 @id @default(cuid())
+  /// Display ref e.g. INC-2026-001
+  incidentNumber     String                 @unique @map("incident_number") @db.VarChar(32)
+  assetId            String                 @map("asset_id")
+  reporterEmployeeId String                 @map("reporter_employee_id")
+  incidentType       LostDamageIncidentType @map("incident_type")
+  incidentDate       DateTime               @map("incident_date") @db.Date
+  location           String                 @db.VarChar(512)
+  description        String                 @db.Text
+  /// [{ "originalFilename": string, "storagePath": string, "mimeType": string, "sizeBytes": number }]
+  attachmentsJson    Json?                  @map("attachments_json")
+  estimatedCost      Decimal?               @map("estimated_cost") @db.Decimal(14, 2)
+  priority           LostDamagePriority     @default(MEDIUM)
+  status             LostDamageCaseStatus   @default(UNDER_REVIEW)
+  createdAt          DateTime               @default(now()) @map("created_at")
+  updatedAt          DateTime               @updatedAt @map("updated_at")
+
+  asset    Asset    @relation(fields: [assetId], references: [id], onDelete: Restrict)
+  reporter Employee @relation("LostDamageReporter", fields: [reporterEmployeeId], references: [id], onDelete: Restrict)
+
+  @@index([assetId])
+  @@index([status])
+  @@index([reporterEmployeeId])
+  @@index([createdAt])
+  @@map("lost_damage_incidents")
+}
+
+/// Policy bullets for Asset Management → Lost/Damage → Policy Guidelines (editable via API).
+model LostDamagePolicyGuideline {
+  id        String   @id @default(cuid())
+  sortOrder Int      @map("sort_order")
+  title     String   @db.VarChar(200)
+  body      String   @db.Text
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([sortOrder])
+  @@map("lost_damage_policy_guidelines")
+}
+
+/// Vertical approval workflow copy for the same module.
+model LostDamageWorkflowStep {
+  id          String                   @id @default(cuid())
+  sortOrder   Int                      @map("sort_order")
+  title       String                   @db.VarChar(200)
+  description String                   @db.Text
+  visual      LostDamageWorkflowVisual @map("visual")
+  createdAt   DateTime                 @default(now()) @map("created_at")
+  updatedAt   DateTime                 @updatedAt @map("updated_at")
+
+  @@index([sortOrder])
+  @@map("lost_damage_workflow_steps")
+}
+
+/// HR-configurable rows for Attendance & Leave → Policy Configuration (3 tabs).
+enum AttendancePolicyCategory {
+  LEAVE_TYPE
+  SHIFT
+  ENTITLEMENT
+}
+
+enum AttendancePolicyStatus {
+  ACTIVE
+  INACTIVE
+}
+
+/// JSON `config` shape by category: LEAVE_TYPE { days, carryForward }; SHIFT { startTime, endTime, breakNotes }; ENTITLEMENT { days }.
+model AttendancePolicy {
+  id        String                   @id @default(cuid())
+  category  AttendancePolicyCategory
+  name      String                   @db.VarChar(200)
+  status    AttendancePolicyStatus   @default(ACTIVE)
+  sortOrder Int                      @default(0) @map("sort_order")
+  config    Json
+  createdAt DateTime                 @default(now()) @map("created_at")
+  updatedAt DateTime                 @updatedAt @map("updated_at")
+
+  @@index([category, sortOrder])
+  @@map("attendance_policies")
+}
+
+model AttendanceRecord {
+  id         String    @id @default(cuid())
+  employeeId String    @map("employee_id")
+  workDate   DateTime  @map("work_date") @db.Date
+  checkIn    DateTime? @map("check_in")
+  checkOut   DateTime? @map("check_out")
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
+
+  employee Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@unique([employeeId, workDate])
+}
+
+model ExitRequest {
+  id                  String            @id @default(cuid())
+  employeeId          String            @map("employee_id")
+  status              ExitRequestStatus @default(PENDING)
+  /// e.g. Resignation, Termination, Retirement
+  exitType            String?           @map("exit_type")
+  resignationDate     DateTime?         @map("resignation_date") @db.Date
+  lastWorkingDate     DateTime?         @map("last_working_date") @db.Date
+  /// Primary exit reason label (dropdown)
+  reason              String?
+  additionalNotes     String?           @map("additional_notes") @db.Text
+  noticeWaived        Boolean           @default(false) @map("notice_waived")
+  /// Snapshot of editable employee info captured at filing time (Submit Resignation form)
+  employeeCodeEntered String?           @map("employee_code_entered")
+  fullNameEntered     String?           @map("full_name_entered")
+  departmentEntered   String?           @map("department_entered")
+  managerEntered      String?           @map("manager_entered")
+  contactEmail        String?           @map("contact_email")
+  policyAccepted      Boolean           @default(false) @map("policy_accepted")
+  isDraft             Boolean           @default(false) @map("is_draft")
+  /// [{ "fileName": string, "relativePath": string }]
+  attachmentsJson     Json?             @map("attachments_json")
+  /// Per-department clearance workflow state (IT / Admin / Finance / HR):
+  /// { departments: [{ key, label, status: "Pending"|"Approved"|"Rejected", items: [{id,label,done}], comments, decidedBy?, decidedAt? }] }
+  clearanceJson       Json?             @map("clearance_json")
+  /// Optional FK to the offboarding template the admin applied to this exit.
+  appliedTemplateId   String?           @map("applied_template_id")
+  /// Snapshot of the template's stages_json at the moment it was applied,
+  /// with task `done` flags initialized to false. Edits to the source
+  /// template after apply do NOT mutate this snapshot.
+  appliedTemplateJson Json?             @map("applied_template_json")
+  createdAt           DateTime          @default(now()) @map("created_at")
+  updatedAt           DateTime          @updatedAt @map("updated_at")
+
+  employee        Employee                 @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  appliedTemplate ExitOffboardingTemplate? @relation(fields: [appliedTemplateId], references: [id], onDelete: SetNull)
+  fnfSettlements  FnfSettlement[]
+}
+
+/// Full & final settlement record (payable vs recovery, net due).
+model FnfSettlement {
+  id                    String              @id @default(cuid())
+  employeeId            String              @map("employee_id")
+  exitRequestId         String?             @map("exit_request_id")
+  exitDate              DateTime            @map("exit_date") @db.Date
+  /// Department label at time of settlement (matches UI column).
+  departmentLabel       String              @map("department_label") @db.VarChar(255)
+  /// Amounts in paise (1 INR = 100 paise).
+  netAmountPaise        Int                 @map("net_amount_paise")
+  companyPayoutPaise    Int?                @map("company_payout_paise")
+  employeeRecoveryPaise Int?                @map("employee_recovery_paise")
+  status                FnfSettlementStatus @default(DRAFT)
+  notes                 String?             @db.Text
+  createdAt             DateTime            @default(now()) @map("created_at")
+  updatedAt             DateTime            @updatedAt @map("updated_at")
+
+  employee    Employee     @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  exitRequest ExitRequest? @relation(fields: [exitRequestId], references: [id], onDelete: SetNull)
+
+  @@index([employeeId])
+  @@index([status])
+  @@index([exitDate])
+  @@map("fnf_settlements")
+}
+
+/// Exit / offboarding workflow template (admin Exit Management → Templates).
+model ExitOffboardingTemplate {
+  id              String   @id @default(cuid())
+  name            String   @db.VarChar(255)
+  roleLabel       String?  @map("role_label") @db.VarChar(255)
+  departmentLabel String?  @map("department_label") @db.VarChar(255)
+  locationLabel   String?  @map("location_label") @db.VarChar(255)
+  description     String?  @db.Text
+  /// Stages with tasks: [{ id, title, days, stageDescription, isDefault?, taskItems: [{ id, title, owner, dueLabel }] }]
+  stagesJson      Json     @map("stages_json")
+  /// Denormalized for list API (avoid loading large `stages_json` on every GET).
+  stageCount      Int      @default(0) @map("stage_count")
+  taskCount       Int      @default(0) @map("task_count")
+  totalDays       Int      @default(0) @map("total_days")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  appliedToExits ExitRequest[]
+
+  @@index([name])
+  @@map("exit_offboarding_templates")
+}
+
+/// Employee-uploaded documents (driver's licence, passport, certifications, …).
+model EmployeeDocument {
+  id               String         @id @default(cuid())
+  employeeId       String         @map("employee_id")
+  /// Optional slug (driver-license / passport / ssn / bank-account / general …)
+  category         String         @default("general")
+  title            String
+  originalFilename String         @map("original_filename")
+  storagePath      String         @map("storage_path")
+  mimeType         String         @map("mime_type")
+  sizeBytes        Int            @map("size_bytes")
+  documentType     String?        @map("document_type")
+  expiresAt        DateTime?      @map("expires_at") @db.Date
+  status           DocumentStatus @default(PENDING)
+  rejectionReason  String?        @map("rejection_reason") @db.Text
+  uploadedAt       DateTime       @default(now()) @map("uploaded_at")
+  updatedAt        DateTime       @updatedAt @map("updated_at")
+
+  employee Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@index([employeeId])
+  @@index([employeeId, category])
+  @@map("employee_documents")
+}
+
+/// Singleton row (fixed `id`) for Organization Setup → Company Profile.
+model OrganizationCompanyProfile {
+  id String @id
+
+  /// Relative path under `uploads/` (served via `/api/uploads/...`).
+  logoStoragePath String? @map("logo_storage_path")
+
+  companyName String @default("") @map("company_name") @db.VarChar(255)
+  industry    String @default("") @db.VarChar(255)
+  email       String @default("") @db.VarChar(255)
+  phone       String @default("") @db.VarChar(64)
+  website     String @default("") @db.VarChar(512)
+  taxId       String @default("") @map("tax_id") @db.VarChar(128)
+  description String @default("") @db.Text
+
+  streetAddress String  @default("") @map("street_address") @db.VarChar(512)
+  city          String  @default("") @db.VarChar(255)
+  state         String? @db.VarChar(255)
+  zipCode       String? @map("zip_code") @db.VarChar(32)
+  country       String? @db.VarChar(255)
+
+  defaultCurrency String  @default("") @map("default_currency") @db.VarChar(128)
+  timezone        String? @db.VarChar(128)
+  workStartTime   String? @map("work_start_time") @db.VarChar(8)
+  workEndTime     String? @map("work_end_time") @db.VarChar(8)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("organization_company_profile")
+}
+
+/// Privacy policy records managed in the Organization Setup → Privacy Policy screen.
+model PrivacyPolicy {
+  id             String              @id @default(cuid())
+  title          String
+  policyType     String              @map("policy_type")
+  applicableTo   String              @map("applicable_to")
+  description    String              @db.Text
+  content        String              @db.Text
+  regionSpecific Boolean             @default(false) @map("region_specific")
+  status         PrivacyPolicyStatus @default(DRAFT)
+  createdAt      DateTime            @default(now()) @map("created_at")
+  updatedAt      DateTime            @updatedAt @map("updated_at")
+
+  @@map("privacy_policies")
+}
+
+/// Help-desk tickets created by employees in Ask Me → My Tickets.
+model SupportTicket {
+  id                   String    @id @default(cuid())
+  /// Public identifier shown in the UI (e.g. TKT-0001). Auto-numbered on create.
+  ticketNumber         String    @unique @map("ticket_number")
+  employeeId           String    @map("employee_id")
+  /// "Open" | "In Progress" | "Resolved" | "Closed" | "Escalated"
+  status               String    @default("Open")
+  /// "Low" | "Medium" | "High" | "Critical"
+  priority             String    @default("Medium")
+  /// Free-form category label (e.g. "HR", "Payroll", "IT Support")
+  category             String
+  /// Department bucket used for the admin distribution chart (HR / Payroll / IT / Leave / Other)
+  department           String?
+  title                String
+  description          String    @db.Text
+  /// Optional ETA timestamp shown as "Xh left" / "Xd left"
+  dueAt                DateTime? @map("due_at")
+  resolvedAt           DateTime? @map("resolved_at")
+  closedAt             DateTime? @map("closed_at")
+  /// Agent the ticket is assigned to (nullable = unassigned)
+  assignedToEmployeeId String?   @map("assigned_to_employee_id")
+  createdAt            DateTime  @default(now()) @map("created_at")
+  updatedAt            DateTime  @updatedAt @map("updated_at")
+
+  employee   Employee  @relation("SupportTicketEmployee", fields: [employeeId], references: [id], onDelete: Cascade)
+  assignedTo Employee? @relation("SupportTicketAssignedTo", fields: [assignedToEmployeeId], references: [id], onDelete: SetNull)
+
+  @@index([employeeId])
+  @@index([assignedToEmployeeId])
+  @@index([status])
+  @@map("support_tickets")
+}
+
+/// Ask Me knowledge-base content rendered in admin/employee portals.
+model KnowledgeBaseArticle {
+  id              String                  @id @default(cuid())
+  title           String                  @db.VarChar(512)
+  excerpt         String                  @db.Text
+  content         String                  @db.Text
+  tag             KnowledgeBaseArticleTag @default(GENERAL)
+  /// Granular display category shown as FAQ filter tabs, e.g. "IT - Network".
+  category        String                  @default("") @db.VarChar(128)
+  /// Free-form chips on the article card (JSON string[]), e.g. ["VPN","Network"].
+  tags            Json                    @default("[]")
+  views           Int                     @default(0)
+  helpful         Int                     @default(0)
+  readTimeMinutes Int                     @default(3) @map("read_time_minutes")
+  isPublished     Boolean                 @default(true) @map("is_published")
+  publishedAt     DateTime?               @map("published_at")
+  createdAt       DateTime                @default(now()) @map("created_at")
+  updatedAt       DateTime                @updatedAt @map("updated_at")
+
+  @@index([isPublished])
+  @@index([tag])
+  @@index([views])
+  @@map("knowledge_base_articles")
+}
+
+/// Frequently Asked Questions surfaced on the Ask Me → Knowledge Base page.
+model KnowledgeBaseFaq {
+  id          String   @id @default(cuid())
+  question    String   @db.VarChar(512)
+  answer      String   @db.Text
+  isPublished Boolean  @default(true) @map("is_published")
+  sortOrder   Int      @default(0) @map("sort_order")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@index([isPublished])
+  @@index([sortOrder])
+  @@map("knowledge_base_faqs")
+}
+
+/// Continuous feedback exchanged between employees (Performance Hub → Reviews).
+model PerformanceFeedback {
+  id             String   @id @default(cuid())
+  fromEmployeeId String   @map("from_employee_id")
+  toEmployeeId   String   @map("to_employee_id")
+  /// 1–5
+  rating         Int
+  comment        String   @db.Text
+  /// "Positive" | "Negative" | null
+  sentiment      String?
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  fromEmployee Employee @relation("FeedbackFrom", fields: [fromEmployeeId], references: [id], onDelete: Cascade)
+  toEmployee   Employee @relation("FeedbackTo", fields: [toEmployeeId], references: [id], onDelete: Cascade)
+
+  @@index([fromEmployeeId])
+  @@index([toEmployeeId])
+  @@map("performance_feedback")
+}
+
+enum PerformanceGoalStatus {
+  ACTIVE
+  COMPLETED
+  ARCHIVED
+}
+
+enum ShiftType {
+  MORNING
+  EVENING
+  NIGHT
+}
+
+/// Employee Leave & Attendance → Upcoming Shifts (per-employee scheduled shift).
+model EmployeeShift {
+  id         String    @id @default(cuid())
+  employeeId String    @map("employee_id")
+  shiftDate  DateTime  @map("shift_date") @db.Date
+  shiftType  ShiftType @default(MORNING) @map("shift_type")
+  /// Display labels, e.g. "9.00 AM" / "6.00 PM".
+  startLabel String    @map("start_label") @db.VarChar(32)
+  endLabel   String    @map("end_label") @db.VarChar(32)
+  location   String    @default("") @db.VarChar(128)
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
+
+  employee Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@unique([employeeId, shiftDate])
+  @@index([employeeId, shiftDate])
+  @@map("employee_shifts")
+}
+
+/// Employee Performance Hub → Goals (owned by and scoped to the employee).
+model PerformanceGoal {
+  id          String                @id @default(cuid())
+  employeeId  String                @map("employee_id")
+  title       String                @db.VarChar(255)
+  description String                @default("") @db.Text
+  /// 0–100
+  progress    Int                   @default(0)
+  /// Weight as a percentage (0–100).
+  weight      Int                   @default(0)
+  /// Optional measurable target shown in appraisals (e.g. "200ms", "12 sections").
+  target      String?               @db.VarChar(128)
+  dueDate     DateTime?             @map("due_date") @db.Date
+  status      PerformanceGoalStatus @default(ACTIVE)
+  /// JSON string[] of tag labels.
+  tags        Json                  @default("[]")
+  createdAt   DateTime              @default(now()) @map("created_at")
+  updatedAt   DateTime              @updatedAt @map("updated_at")
+
+  employee Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@index([employeeId])
+  @@index([employeeId, status])
+  @@map("performance_goals")
+}
+
+/// Employee Performance Hub → Appraisal (one row per employee per cycle).
+model PerformanceAppraisal {
+  id                   String    @id @default(cuid())
+  employeeId           String    @map("employee_id")
+  /// e.g. "Q4 2024"
+  cycleLabel           String    @map("cycle_label") @db.VarChar(64)
+  /// e.g. "Oct – Dec 2024"
+  periodLabel          String?   @map("period_label") @db.VarChar(64)
+  /// Overall status: "Not Started" | "Under Review" | "Completed" | …
+  status               String    @default("Not Started") @db.VarChar(64)
+  selfAssessmentStatus String    @default("Pending") @map("self_assessment_status") @db.VarChar(64)
+  selfScore            Float?    @map("self_score")
+  managerReviewStatus  String    @default("Pending") @map("manager_review_status") @db.VarChar(64)
+  managerReviewDue     DateTime? @map("manager_review_due") @db.Date
+  submittedAt          DateTime? @map("submitted_at")
+  // Self-reflection answers (Appraisal → Self Reflection section)
+  keyAchievements      String?   @map("key_achievements") @db.Text
+  challengesOvercome   String?   @map("challenges_overcome") @db.Text
+  areasForGrowth       String?   @map("areas_for_growth") @db.Text
+  supportNeed          String?   @map("support_need") @db.Text
+  /// Per-goal performance ratings: [{ goalId, rating (0–5), comment }]
+  goalRatingsJson      Json?     @map("goal_ratings_json")
+  createdAt            DateTime  @default(now()) @map("created_at")
+  updatedAt            DateTime  @updatedAt @map("updated_at")
+
+  employee Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@index([employeeId])
+  @@map("performance_appraisals")
+}
+
+/// Employee-initiated (or HR/manager) change requests surfaced on Admin → Self-Service Requests.
+model EmployeeSelfServiceRequest {
+  id            String                      @id @default(cuid())
+  employeeId    String                      @map("employee_id")
+  requestType   SelfServiceRequestType      @map("request_type")
+  initiatedBy   SelfServiceRequestInitiator @map("initiated_by")
+  status        SelfServiceRequestStatus    @default(PENDING)
+  submittedAt   DateTime                    @default(now()) @map("submitted_at")
+  notes         String?                     @db.Text
+  /// Stable search token (e.g. SSR-A1B2C3D4).
+  referenceCode String                      @unique @map("reference_code")
+  /// Proposed changes for PROFILE_UPDATE requests — the diff the employee submitted, awaiting admin approval.
+  payloadJson   Json?                       @map("payload_json")
+  /// When an admin approved or rejected the request.
+  reviewedAt    DateTime?                   @map("reviewed_at")
+  /// The admin/HR user who reviewed the request.
+  reviewedById  String?                     @map("reviewed_by_id")
+  /// Admin's reason / comment when rejecting (optional on approve).
+  reviewNote    String?                     @map("review_note") @db.Text
+  createdAt     DateTime                    @default(now()) @map("created_at")
+  updatedAt     DateTime                    @updatedAt @map("updated_at")
+
+  employee   Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  reviewedBy User?    @relation("SelfServiceRequestReviewer", fields: [reviewedById], references: [id])
+
+  @@index([employeeId])
+  @@index([status])
+  @@index([submittedAt])
+  @@index([employeeId, requestType, status])
+  @@map("employee_self_service_requests")
+}
+
+/// Self-service profile extensions (Personal tab on My Profile). 1:1 with Employee.
+model EmployeeProfile {
+  id         String @id @default(cuid())
+  employeeId String @unique @map("employee_id")
+
+  // Basic information
+  dateOfBirth       DateTime? @map("date_of_birth") @db.Date
+  nationality       String?
+  maritalStatus     String?   @map("marital_status")
+  /// Preferred display name in self-service (optional; falls back to Employee name).
+  displayName       String?   @map("display_name")
+  gender            String?
+  country           String?
+  state             String?
+  preferredLanguage String?   @map("preferred_language")
+  timeZone          String?   @map("time_zone") @db.VarChar(512)
+
+  // Contact information
+  personalEmail    String? @map("personal_email")
+  personalPhone    String? @map("personal_phone")
+  homeAddress      String? @map("home_address") @db.Text
+  permanentAddress String? @map("permanent_address") @db.Text
+
+  // Emergency contact
+  emergencyName         String? @map("emergency_name")
+  emergencyPhone        String? @map("emergency_phone")
+  emergencyEmail        String? @map("emergency_email")
+  emergencyRelationship String? @map("emergency_relationship")
+
+  // Government IDs
+  socialSecurityNumber String? @map("social_security_number")
+  driversLicense       String? @map("drivers_license")
+  passportNumber       String? @map("passport_number")
+
+  // Past experience
+  pastCompanyName      String? @map("past_company_name")
+  pastJobTitle         String? @map("past_job_title")
+  pastEmploymentType   String? @map("past_employment_type")
+  pastStartDate        String? @map("past_start_date")
+  pastEndDate          String? @map("past_end_date")
+  pastLocation         String? @map("past_location")
+  pastResponsibilities String? @map("past_responsibilities") @db.Text
+
+  // Educational details
+  degree       String?
+  fieldOfStudy String? @map("field_of_study")
+  institution  String?
+  eduStartDate String? @map("edu_start_date")
+  eduEndDate   String? @map("edu_end_date")
+  grade        String?
+  modeOfStudy  String? @map("mode_of_study")
+  eduLocation  String? @map("edu_location")
+
+  // Job details (supplements core Employee fields)
+  workSchedule      String? @map("work_schedule")
+  lastPromotionDate String? @map("last_promotion_date")
+
+  // Compensation
+  salaryBand   String? @map("salary_band")
+  payFrequency String? @map("pay_frequency")
+
+  // Bank information
+  bankName          String? @map("bank_name")
+  bankAccountNumber String? @map("bank_account_number")
+  bankRoutingNumber String? @map("bank_routing_number")
+
+  /// JSON array of benefit labels (Json for flexible list editing).
+  benefits Json?
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  employee Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@map("employee_profiles")
+}
+
+/// Org-wide announcement surfaced on the Employee Dashboard (admin-manageable later).
+model Announcement {
+  id          String   @id @default(cuid())
+  title       String   @db.VarChar(255)
+  body        String   @db.Text
+  /// Short category pill (e.g. "HR", "Events", "Development").
+  tag         String   @default("General") @db.VarChar(64)
+  /// Posting team label (e.g. "HR department").
+  department  String?  @db.VarChar(128)
+  isActive    Boolean  @default(true) @map("is_active")
+  publishedAt DateTime @default(now()) @map("published_at")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@index([isActive, publishedAt])
+  @@map("announcements")
+}
+
+/// Admin dashboard "Meetings & Events" panel: scheduled items shown in the
+/// indigo pill toggle. `itemType` discriminates meetings vs events.
+model AdminScheduleItem {
+  id        String                @id @default(cuid())
+  itemType  AdminScheduleItemType @map("item_type")
+  title     String                @db.VarChar(200)
+  location  String                @db.VarChar(200)
+  startAt   DateTime              @map("start_at")
+  endAt     DateTime              @map("end_at")
+  createdAt DateTime              @default(now()) @map("created_at")
+  updatedAt DateTime              @updatedAt @map("updated_at")
+
+  @@index([itemType, startAt])
+  @@index([startAt])
+  @@map("admin_schedule_items")
+}
+
+/// Recruitment → Job Openings (employee-facing list; admin-managed later).
+enum JobOpeningType {
+  FULL_TIME
+  PART_TIME
+  INTERNSHIP
+  CONTRACT
+}
+
+enum JobApplicationStatus {
+  APPLIED
+  IN_REVIEW
+  INTERVIEW
+  REJECTED
+  OFFERED
+}
+
+enum JobReferralStatus {
+  PENDING
+  HIRED
+  REJECTED
+}
+
+/// A published job opening shown on Employee → Job Openings.
+model JobOpening {
+  id         String         @id @default(cuid())
+  title      String         @db.VarChar(255)
+  type       JobOpeningType @default(FULL_TIME)
+  salaryMin  Float          @default(0) @map("salary_min")
+  salaryMax  Float          @default(0) @map("salary_max")
+  company    String         @default("") @db.VarChar(255)
+  location   String         @default("") @db.VarChar(255)
+  department String         @default("") @db.VarChar(128)
+  /// Display logo key rendered by the card: "google" | "facebook" | "default".
+  logo       String         @default("default") @db.VarChar(32)
+  isActive   Boolean        @default(true) @map("is_active")
+  createdAt  DateTime       @default(now()) @map("created_at")
+  updatedAt  DateTime       @updatedAt @map("updated_at")
+
+  applications JobApplication[]
+  referrals    JobReferral[]
+
+  @@index([isActive])
+  @@index([department])
+  @@map("job_openings")
+}
+
+/// An employee's application to a JobOpening (My Applications tab).
+model JobApplication {
+  id           String               @id @default(cuid())
+  jobOpeningId String               @map("job_opening_id")
+  employeeId   String               @map("employee_id")
+  status       JobApplicationStatus @default(APPLIED)
+  coverLetter  String?              @map("cover_letter") @db.Text
+  appliedAt    DateTime             @default(now()) @map("applied_at")
+  createdAt    DateTime             @default(now()) @map("created_at")
+  updatedAt    DateTime             @updatedAt @map("updated_at")
+
+  jobOpening JobOpening @relation(fields: [jobOpeningId], references: [id], onDelete: Cascade)
+  employee   Employee   @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@unique([jobOpeningId, employeeId])
+  @@index([employeeId])
+  @@index([jobOpeningId])
+  @@index([status])
+  @@map("job_applications")
+}
+
+/// A candidate referred by an employee (Referrals tab).
+model JobReferral {
+  id                   String            @id @default(cuid())
+  referredByEmployeeId String            @map("referred_by_employee_id")
+  jobOpeningId         String?           @map("job_opening_id")
+  candidateName        String            @map("candidate_name") @db.VarChar(255)
+  candidateEmail       String            @map("candidate_email") @db.VarChar(255)
+  role                 String            @db.VarChar(255)
+  status               JobReferralStatus @default(PENDING)
+  referredAt           DateTime          @default(now()) @map("referred_at")
+  createdAt            DateTime          @default(now()) @map("created_at")
+  updatedAt            DateTime          @updatedAt @map("updated_at")
+
+  referredBy Employee    @relation("JobReferralReferrer", fields: [referredByEmployeeId], references: [id], onDelete: Cascade)
+  jobOpening JobOpening? @relation(fields: [jobOpeningId], references: [id], onDelete: SetNull)
+
+  @@index([referredByEmployeeId])
+  @@index([status])
+  @@map("job_referrals")
+}
+
+// ---------------------------------------------------------------------------
+// RMS (Recruitment Management System)
+//
+// Migrated from the former Drizzle schema (since removed). Tables are
+// prefixed `rms_` to keep the recruiter-facing ATS separate from the
+// employee-facing HRMS job board above, which already owns `job_openings`.
+//
+// The Drizzle schema declared no foreign keys, so the *_id columns below are
+// intentionally plain integers rather than Prisma relations.
+// ---------------------------------------------------------------------------
+
+/// A job requisition owned by a recruiter (RMS → Job Openings).
+model RmsJobOpening {
+  id             Int       @id @default(autoincrement())
+  jobTitle       String?   @map("job_title") @db.VarChar(255)
+  companyName    String?   @map("company_name") @db.VarChar(255)
+  recruiter      String?   @db.Text
+  status         String?   @default("") @db.VarChar(50)
+  hiringDueDate  DateTime? @map("hiring_due_date") @db.Timestamp(6)
+  jobId          String?   @map("job_id") @db.VarChar(100)
+  jobType        String?   @map("job_type") @db.VarChar(100)
+  workMode       String?   @map("work_mode") @db.VarChar(100)
+  jobDescription String?   @map("job_description") @db.Text
+  jobLink        String?   @map("job_link") @db.Text
+  budget         Float?
+  noOfOpenings   Int?      @map("no_of_openings")
+  extraFields    Json?     @map("extra_fields")
+  location       String?   @db.Text
+  candidateIds   String[]  @map("candidate_ids") @db.VarChar(100)
+  hiringFlow     String?   @map("hiring_flow") @db.Text
+  requiredSkills String[]  @map("required_skills") @db.VarChar
+  createdBy      String?   @map("created_by") @db.VarChar(100)
+  createdAt      DateTime  @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt      DateTime? @default(now()) @updatedAt @map("updated_at") @db.Timestamp(6)
+
+  @@map("rms_job_openings")
+}
+
+/// Arbitrary key/value section payloads used by the job-posting form builder.
+model RmsSectionValue {
+  id        Int       @id @default(autoincrement())
+  value     String?   @db.VarChar(255)
+  object    Json?
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt DateTime? @default(now()) @updatedAt @map("updated_at") @db.Timestamp(6)
+
+  @@map("rms_section_value")
+}
+
+/// A named hiring-flow preset selectable on a job opening.
+model RmsHiringFlow {
+  id        Int       @id @default(autoincrement())
+  value     String?   @db.VarChar
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt DateTime? @default(now()) @updatedAt @map("updated_at") @db.Timestamp(6)
+
+  @@map("rms_hiring_flow")
+}
+
+/// A reusable candidate-email template (subject + body).
+model RmsTemplate {
+  id        Int      @id @default(autoincrement())
+  subject   String   @db.Text
+  body      String   @db.Text
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamp(6)
+
+  @@map("rms_template")
+}
+
+/// Structured details captured by the public candidate application form.
+model RmsCandidateFormDetail {
+  id                 Int       @id @default(autoincrement())
+  jobOpeningId       Int       @map("job_opening_id")
+  firstName          String?   @default("") @map("first_name") @db.VarChar(100)
+  lastName           String?   @default("") @map("last_name") @db.VarChar(100)
+  gender             String?   @default("") @db.VarChar(50)
+  dateOfBirth        DateTime? @map("date_of_birth") @db.Timestamp(6)
+  mobile             String?   @default("") @db.VarChar(50)
+  email              String?   @default("") @db.VarChar(255)
+  noticePeriod       String?   @default("") @map("notice_period") @db.VarChar(100)
+  currentJobTitle    String?   @default("") @map("current_job_title") @db.VarChar(255)
+  currentCTC         String?   @default("") @map("current_ctc") @db.VarChar(100)
+  expectedCTC        String?   @default("") @map("expected_ctc") @db.VarChar(100)
+  currentCompany     String?   @default("") @map("current_company") @db.VarChar(255)
+  currentLocation    String?   @default("") @map("current_location") @db.VarChar(255)
+  linkedInID         String?   @default("") @map("linkedin_id") @db.VarChar(255)
+  referredBy         String?   @default("") @map("referred_by") @db.VarChar(255)
+  availableTime      String?   @default("") @map("available_time") @db.VarChar(100)
+  locationPreference String?   @default("") @map("location_preference") @db.VarChar(255)
+  uploadResume       String?   @default("") @map("upload_resume") @db.VarChar(500)
+  extraField         Json?     @default("{}") @map("extra_field")
+  questions          Json?     @default("{}")
+  createdAt          DateTime  @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt          DateTime? @default(now()) @updatedAt @map("updated_at") @db.Timestamp(6)
+
+  @@map("rms_candidate_form_details")
+}
+
+/// A screening question attached to a candidate.
+model RmsQuestion {
+  id           Int       @id @default(autoincrement())
+  candidateId  Int       @map("candidate_id")
+  question     String?   @db.Text
+  questionType String?   @default("") @map("question_type") @db.VarChar(100)
+  createdAt    DateTime  @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt    DateTime? @default(now()) @updatedAt @map("updated_at") @db.Timestamp(6)
+
+  @@map("rms_question")
+}
+
+/// A candidate in the pipeline for a job opening. `object` holds the
+/// free-form profile payload rendered by the candidate table.
+model RmsCandidate {
+  id           Int       @id @default(autoincrement())
+  jobOpeningId Int       @map("job_opening_id")
+  object       Json?     @default("{}")
+  updatedBy    String?   @default("") @map("updated_by") @db.VarChar(255)
+  status       String?   @default("") @db.VarChar(50)
+  contacted    String?   @default("Not contacted") @db.VarChar(50)
+  questions    Json?     @default("{}")
+  createdAt    DateTime  @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt    DateTime? @default(now()) @updatedAt @map("updated_at") @db.Timestamp(6)
+
+  @@map("rms_candidate")
+}
+
+/// An interview round. Columns s2–s4 / f1–f5 track per-stage progress
+/// through the hiring flow.
+model RmsInterview {
+  id              Int       @id @default(autoincrement())
+  companyName     String?   @default("") @map("company_name") @db.VarChar(255)
+  jobId           Int       @map("job_id")
+  candidateId     Int?      @map("candidate_id")
+  interviewDate   DateTime  @map("interview_date") @db.Timestamp(6)
+  interviewTime   String?   @default("") @map("interview_time") @db.VarChar(50)
+  duration        String?   @default("") @db.VarChar(100)
+  panelMembers    String?   @default("") @map("panel_members") @db.VarChar(100)
+  candidateName   String?   @default("") @map("candidate_name") @db.VarChar(255)
+  meetingPlatform String?   @default("") @map("meeting_platform") @db.VarChar(100)
+  interviewType   String?   @default("") @map("interview_type") @db.VarChar(100)
+  email           String?   @default("") @db.Text
+  hiringFlow      Json?     @default("{}") @map("hiring_flow")
+  S2              String?   @map("s2") @db.Text
+  S3              String?   @map("s3") @db.Text
+  S4              String?   @map("s4") @db.Text
+  F1              String?   @map("f1") @db.Text
+  F2              String?   @map("f2") @db.Text
+  F3              String?   @map("f3") @db.Text
+  F4              String?   @map("f4") @db.Text
+  F5              String?   @map("f5") @db.Text
+  createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt       DateTime? @default(now()) @updatedAt @map("updated_at") @db.Timestamp(6)
+
+  @@map("rms_interview")
+}
+
+/// A scheduled slot for an interview.
+model RmsInterviewSchedule {
+  id              Int       @id @default(autoincrement())
+  interviewId     Int       @map("interview_id")
+  jobId           Int       @map("job_id")
+  candidateId     Int?      @map("candidate_id")
+  interviewDate   DateTime  @map("interview_date") @db.Timestamp(6)
+  interviewTime   String?   @default("") @map("interview_time") @db.VarChar(50)
+  duration        String?   @default("") @db.VarChar(100)
+  panelMembers    String?   @default("") @map("panel_members") @db.VarChar(100)
+  meetingPlatform String?   @default("") @map("meeting_platform") @db.VarChar(100)
+  interviewType   String?   @default("") @map("interview_type") @db.VarChar(100)
+  email           String?   @default("") @db.Text
+  createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt       DateTime? @default(now()) @updatedAt @map("updated_at") @db.Timestamp(6)
+
+  @@map("rms_interview_schedule")
+}
+
+/// Interviewer feedback submitted after an interview round.
+model RmsFeedback {
+  id                  Int       @id @default(autoincrement())
+  interviewerName     String?   @map("interviewer_name") @db.VarChar(255)
+  date                DateTime? @db.Timestamp(6)
+  time                String?   @db.VarChar(50)
+  interviewMode       String?   @map("interview_mode") @db.VarChar(100)
+  overallRating       Int?      @map("overall_rating")
+  finalRecommendation String?   @map("final_recommendation") @db.Text
+  description         String?   @db.Text
+  interviewId         Int?      @map("interview_id")
+  candidateId         Int?      @map("candidate_id")
+  level               Int?
+  jobId               Int?      @map("job_id")
+  createdAt           DateTime  @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt           DateTime? @default(now()) @updatedAt @map("updated_at") @db.Timestamp(6)
+
+  @@map("rms_feedback")
+}
+
+/// Which product(s) a prospect wants on the public subscription form.
+enum SubscriptionProduct {
+  RMS
+  HRMS
+  RMS_HRMS
+}
+
+/// Billing cadence chosen on the public subscription form.
+enum SubscriptionPlan {
+  QUARTERLY
+  HALF_YEARLY
+  ANNUAL
+}
+
+/// Sales follow-up state for an inbound subscription request.
+enum SubscriptionRequestStatus {
+  NEW
+  CONTACTED
+  IN_DISCUSSION
+  CONVERTED
+  REJECTED
+}
+
+/// Inbound "Client Subscription & Onboarding" form submitted by a visitor on the
+/// public landing page. Unauthenticated — the sales team works these leads and
+/// provisions a tenant manually, so nothing here is linked to a User yet.
+model ClientSubscriptionRequest {
+  id String @id @default(cuid())
+
+  // --- 1. Company information ---
+  companyName                String  @map("company_name") @db.VarChar(255)
+  legalEntityName            String? @map("legal_entity_name") @db.VarChar(255)
+  industry                   String? @db.VarChar(160)
+  companyRegistrationNumber  String? @map("company_registration_number") @db.VarChar(120)
+  gstNumber                  String? @map("gst_number") @db.VarChar(60)
+  panNumber                  String? @map("pan_number") @db.VarChar(30)
+  cinNumber                  String? @map("cin_number") @db.VarChar(60)
+  companyWebsite             String? @map("company_website") @db.VarChar(255)
+  yearOfEstablishment        Int?    @map("year_of_establishment")
+  numberOfEmployees          Int?    @map("number_of_employees")
+  numberOfBranches           Int?    @map("number_of_branches")
+  headquartersLocation       String? @map("headquarters_location") @db.VarChar(255)
+
+  // --- 2. Primary contact ---
+  primaryContactName        String  @map("primary_contact_name") @db.VarChar(160)
+  primaryContactDesignation String? @map("primary_contact_designation") @db.VarChar(160)
+  primaryContactEmail       String  @map("primary_contact_email") @db.VarChar(255)
+  primaryContactMobile      String  @map("primary_contact_mobile") @db.VarChar(40)
+
+  // --- 2b. Alternate contact (optional) ---
+  alternateContactName        String? @map("alternate_contact_name") @db.VarChar(160)
+  alternateContactDesignation String? @map("alternate_contact_designation") @db.VarChar(160)
+  alternateContactEmail       String? @map("alternate_contact_email") @db.VarChar(255)
+  alternateContactMobile      String? @map("alternate_contact_mobile") @db.VarChar(40)
+
+  // --- 3. Registered office ---
+  registeredAddress String? @map("registered_address") @db.Text
+  registeredCity    String? @map("registered_city") @db.VarChar(120)
+  registeredState   String? @map("registered_state") @db.VarChar(120)
+  registeredCountry String? @map("registered_country") @db.VarChar(120)
+  registeredPinCode String? @map("registered_pin_code") @db.VarChar(20)
+
+  // --- 3b. Corporate office (only stored when it differs) ---
+  corporateSameAsRegistered Boolean @default(false) @map("corporate_same_as_registered")
+  corporateAddress          String? @map("corporate_address") @db.Text
+  corporateCity             String? @map("corporate_city") @db.VarChar(120)
+  corporateState            String? @map("corporate_state") @db.VarChar(120)
+  corporateCountry          String? @map("corporate_country") @db.VarChar(120)
+  corporatePinCode          String? @map("corporate_pin_code") @db.VarChar(20)
+
+  // --- 4–8. Subscription details ---
+  productRequired    SubscriptionProduct @map("product_required")
+  subscriptionPlan   SubscriptionPlan    @map("subscription_plan")
+  /// Seats requested for RMS; null when RMS was not selected.
+  rmsUserCount       Int?                @map("rms_user_count")
+  /// Seats requested for HRMS; null when HRMS was not selected.
+  hrmsUserCount      Int?                @map("hrms_user_count")
+  expectedGoLiveDate DateTime?           @map("expected_go_live_date") @db.Date
+
+  // --- Internal triage ---
+  status        SubscriptionRequestStatus @default(NEW)
+  /// Free-form notes added by the team while following up.
+  internalNotes String?                   @map("internal_notes") @db.Text
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([status])
+  @@index([createdAt])
+  @@index([primaryContactEmail])
+  @@map("client_subscription_requests")
+}
+
+// --- Party Model & Management Domain ---
+
+enum PartyType {
+  INDIVIDUAL
+  ORGANIZATION
+}
+
+enum PartyRoleType {
+  VENDOR
+  CLIENT
+  SUPPLIER
+  CUSTOMER
+  PARTNER
+  CONTRACTOR
+}
+
+enum PartyStatus {
+  ACTIVE
+  INACTIVE
+  PROSPECT
+  ARCHIVED
+}
+
+enum AddressType {
+  BILLING
+  SHIPPING
+  OFFICE
+  HEADQUARTERS
+  MAILING
+}
+
+model Party {
+  id          String      @id @default(cuid())
+  auth0UserId String?     @unique @map("auth0_user_id")
+  code        String?     @unique @db.VarChar(64)
+  name        String      @db.VarChar(255)
+  legalName   String?     @map("legal_name") @db.VarChar(255)
+  partyType   PartyType   @default(ORGANIZATION) @map("party_type")
+  status      PartyStatus @default(ACTIVE)
+  taxId       String?     @map("tax_id") @db.VarChar(100)
+  gstin       String?     @db.VarChar(60)
+  pan         String?     @db.VarChar(30)
+  email       String?     @db.VarChar(255)
+  phone       String?     @db.VarChar(50)
+  website     String?     @db.VarChar(255)
+  currency    String      @default("USD") @db.VarChar(10)
+  notes       String?     @db.Text
+  createdAt   DateTime    @default(now()) @map("created_at")
+  updatedAt   DateTime    @updatedAt @map("updated_at")
+
+  roles          PartyRole[]
+  userRoles      PartyUserRole[]
+  contactPersons PartyContactPerson[]
+  addresses      PartyAddress[]
+  bankDetails    PartyBankDetail[]
+  assetVendors   AssetVendor[]
+
+  @@index([status])
+  @@index([partyType])
+  @@index([name])
+  @@map("parties")
+}
+
+model PartyRole {
+  id        String        @id @default(cuid())
+  partyId   String        @map("party_id")
+  roleType  PartyRoleType @map("role_type")
+  status    PartyStatus   @default(ACTIVE)
+  notes     String?       @db.Text
+  createdAt DateTime      @default(now()) @map("created_at")
+  updatedAt DateTime      @updatedAt @map("updated_at")
+
+  party Party @relation(fields: [partyId], references: [id], onDelete: Cascade)
+
+  @@unique([partyId, roleType])
+  @@map("party_roles")
+}
+
+/// System roles (SUPER_ADMIN, ADMIN, HR, TEAM_LEAD, EMPLOYEE, RMS_MANAGER, RMS_STAFF).
+model Role {
+  id          String   @id @default(cuid())
+  code        String   @unique
+  name        String
+  description String?  @db.Text
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  userRoles   PartyUserRole[]
+  roleModules RoleModule[]
+
+  @@map("roles")
+}
+
+/// Join table connecting Party to system user Roles.
+model PartyUserRole {
+  id        String   @id @default(cuid())
+  partyId   String   @map("party_id")
+  roleId    String   @map("role_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  party Party @relation(fields: [partyId], references: [id], onDelete: Cascade)
+  role  Role  @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@unique([partyId, roleId])
+  @@index([partyId])
+  @@index([roleId])
+  @@map("party_user_roles")
+}
+
+/// Top-level application modules (HRMS, RMS).
+model Module {
+  id          String   @id @default(cuid())
+  code        String   @unique
+  name        String
+  description String?  @db.Text
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  roleModules RoleModule[]
+
+  @@map("modules")
+}
+
+/// Many-to-many join table mapping Role to Module access permissions.
+model RoleModule {
+  id        String   @id @default(cuid())
+  roleId    String   @map("role_id")
+  moduleId  String   @map("module_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  role   Role   @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  module Module @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+
+  @@unique([roleId, moduleId])
+  @@index([roleId])
+  @@index([moduleId])
+  @@map("role_modules")
+}
+
+
+model PartyContactPerson {
+  id          String   @id @default(cuid())
+  partyId     String   @map("party_id")
+  name        String   @db.VarChar(160)
+  designation String?  @db.VarChar(160)
+  email       String?  @db.VarChar(255)
+  phone       String?  @db.VarChar(50)
+  isPrimary   Boolean  @default(false) @map("is_primary")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  party Party @relation(fields: [partyId], references: [id], onDelete: Cascade)
+
+  @@map("party_contact_persons")
+}
+
+model PartyAddress {
+  id           String      @id @default(cuid())
+  partyId      String      @map("party_id")
+  addressType  AddressType @default(OFFICE) @map("address_type")
+  addressLine1 String      @map("address_line1") @db.Text
+  addressLine2 String?     @map("address_line2") @db.Text
+  city         String      @db.VarChar(120)
+  state        String      @db.VarChar(120)
+  postalCode   String      @map("postal_code") @db.VarChar(30)
+  country      String      @default("USA") @db.VarChar(120)
+  isPrimary    Boolean     @default(false) @map("is_primary")
+  createdAt    DateTime    @default(now()) @map("created_at")
+  updatedAt    DateTime    @updatedAt @map("updated_at")
+
+  party Party @relation(fields: [partyId], references: [id], onDelete: Cascade)
+
+  @@map("party_addresses")
+}
+
+model PartyBankDetail {
+  id            String   @id @default(cuid())
+  partyId       String   @map("party_id")
+  bankName      String   @map("bank_name") @db.VarChar(160)
+  accountNumber String   @map("account_number") @db.VarChar(100)
+  accountName   String   @map("account_name") @db.VarChar(160)
+  ifscSwift     String?  @map("ifsc_swift") @db.VarChar(50)
+  branchName    String?  @map("branch_name") @db.VarChar(160)
+  isPrimary     Boolean  @default(false) @map("is_primary")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  party Party @relation(fields: [partyId], references: [id], onDelete: Cascade)
+
+  @@map("party_bank_details")
+}

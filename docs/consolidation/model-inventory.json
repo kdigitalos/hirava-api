@@ -1,0 +1,818 @@
+[
+  {
+    "schema": "public",
+    "table": "organization_role_settings",
+    "model": "OrganizationRoleSetting",
+    "source": "legacy-service/prisma/schema.prisma",
+    "line": 15,
+    "definition": "id             String   @id @default(cuid())\n  slug           String   @unique\n  name           String\n  description    String\n  isSystem       Boolean  @default(false)\n  isDefault      Boolean  @default(false)\n  permissions    Json\n  sortOrder      Int      @default(0)\n  mapsToUserRole  UserRole?\n  createdAt      DateTime @default(now())\n  updatedAt      DateTime @updatedAt\n\n  @@map(\"organization_role_settings\")"
+  },
+  {
+    "schema": "public",
+    "table": "User",
+    "model": "User",
+    "source": "legacy-service/prisma/schema.prisma",
+    "line": 220,
+    "definition": "id          String    @id @default(cuid())\n  auth0Sub    String    @unique @map(\"auth0_sub\")\n  email       String    @unique\n  name        String?\n  picture     String?\n  role        UserRole  @default(EMPLOYEE)\n  lastLoginAt DateTime? @map(\"last_login_at\")\n  createdAt   DateTime  @default(now()) @map(\"created_at\")\n  updatedAt   DateTime  @updatedAt @map(\"updated_at\")\n\n  employee                    Employee?\n  reviewedSelfServiceRequests EmployeeSelfServiceRequest[] @relation(\"SelfServiceRequestReviewer\")"
+  },
+  {
+    "schema": "public",
+    "table": "Department",
+    "model": "Department",
+    "source": "legacy-service/prisma/schema.prisma",
+    "line": 237,
+    "definition": "id                       String   @id @default(cuid())\n  name                     String\n  code                     String?  @unique\n  description              String?  @db.Text\n  departmentHeadEmployeeId String?  @map(\"department_head_employee_id\")\n  createdAt                DateTime @default(now()) @map(\"created_at\")\n  updatedAt                DateTime @updatedAt @map(\"updated_at\")\n\n  employees      Employee[]\n  assets         Asset[]\n  designations   Designation[]\n  departmentHead Employee?     @relation(\"DepartmentHead\", fields: [departmentHeadEmployeeId], references: [id], onDelete: SetNull)\n\n  @@index([departmentHeadEmployeeId])"
+  },
+  {
+    "schema": "public",
+    "table": "department_designations",
+    "model": "Designation",
+    "source": "legacy-service/prisma/schema.prisma",
+    "line": 255,
+    "definition": "id             String   @id @default(cuid())\n  departmentId   String   @map(\"department_id\")\n  title          String   @db.VarChar(255)\n  hierarchyLevel String   @map(\"hierarchy_level\") @db.VarChar(128)\n  description    String   @default(\"\") @db.Text\n  createdAt      DateTime @default(now()) @map(\"created_at\")\n  updatedAt      DateTime @updatedAt @map(\"updated_at\")\n\n  department Department @relation(fields: [departmentId], references: [id], onDelete: Cascade)\n  employees  Employee[] @relation(\"EmployeeDesignation\")\n\n  @@index([departmentId])\n  @@map(\"department_designations\")"
+  },
+  {
+    "schema": "public",
+    "table": "branches",
+    "model": "Branch",
+    "source": "legacy-service/prisma/schema.prisma",
+    "line": 272,
+    "definition": "id                   String  @id @default(cuid())\n  name                 String  @db.VarChar(255)\n  code                 String  @unique @db.VarChar(64)\n  street               String  @db.VarChar(512)\n  city                 String  @db.VarChar(255)\n  state                String  @db.VarChar(255)\n  zip                  String  @map(\"zip_code\") @db.VarChar(32)\n  country              String  @db.VarChar(255)\n  description          String  @db.Text\n  contactEmail         String  @map(\"contact_email\") @db.VarChar(255)\n  contactPhone         String  @map(\"contact_phone\") @db.VarChar(64)\n  isActive             Boolean @default(true) @map(\"is_active\")\n  branchHeadEmployeeId String? @map(\"branch_head_employee_id\")\n\n  createdAt DateTime @default(now()) @map(\"created_at\")\n  updatedAt DateTime @updatedAt @map(\"updated_at\")\n\n  branchHead Employee?  @relation(\"BranchHead\", fields: [branchHeadEmployeeId], references: [id], onDelete: SetNull)\n  employees  Employee[] @relation(\"EmployeeBranch\")\n\n  @@index([city])\n  @@index([isActive])\n  @@map(\"branches\")"
+  },
+  {
+    "schema": "public",
+    "table": "JobTitle",
+    "model": "JobTitle",
+    "source": "legacy-service/prisma/schema.prisma",
+    "line": 298,
+    "definition": "id        String   @id @default(cuid())\n  name      String\n  createdAt DateTime @default(now()) @map(\"created_at\")\n  updatedAt DateTime @updatedAt @map(\"updated_at\")\n\n  employees Employee[]"
+  },
+  {
+    "schema": "public",
+    "table": "Employee",
+    "model": "Employee",
+    "source": "legacy-service/prisma/schema.prisma",
+    "line": 307,
+    "definition": "id                  String         @id @default(cuid())\n  userId              String?        @unique @map(\"user_id\")\n  employeeCode        String         @unique @map(\"employee_code\")\n  firstName           String         @map(\"first_name\")\n  lastName            String         @map(\"last_name\")\n  email               String?\n  phone               String?\n  branchId            String?        @map(\"branch_id\")\n  departmentId        String?        @map(\"department_id\")\n  designationId       String?        @map(\"designation_id\")\n  jobTitleId          String?        @map(\"job_title_id\")\n  /// Address, bank, photo path, location, manager, userName, etc. (directory add-employee form)\n  employeeDetails     Json?          @map(\"employee_details\")\n  status              EmployeeStatus @default(ACTIVE)\n  hireDate            DateTime?      @map(\"hire_date\") @db.Date\n  terminationDate     DateTime?      @map(\"termination_date\") @db.Date\n  /// e.g. Full-time, Part-time, Contract (display string).\n  employmentType      String?        @map(\"employment_type\") @db.VarChar(64)\n  workLocation        String?        @map(\"work_location\") @db.VarChar(255)\n  reportsToEmployeeId String?        @map(\"reports_to_employee_id\")\n  /// Sibling display order within the Reporting Hierarchy org chart (drag-to-reorder).\n  orgSortOrder        Int            @default(0) @map(\"org_sort_order\")\n  /// Payroll tab: pay, deductions, tax regime, bank display, enrolled benefits (JSON).\n  payrollJson         Json?          @map(\"payroll_json\")\n  createdAt           DateTime       @default(now()) @map(\"created_at\")\n  updatedAt           DateTime       @updatedAt @map(\"updated_at\")\n\n  user                   User?                        @relation(fields: [userId], references: [id], onDelete: SetNull)\n  branch                 Branch?                      @relation(\"EmployeeBranch\", fields: [branchId], references: [id], onDelete: SetNull)\n  department             Department?                  @relation(fields: [departmentId], references: [id], onDelete: SetNull)\n  designation            Designation?                 @relation(\"EmployeeDesignation\", fields: [designationId], references: [id], onDelete: SetNull)\n  jobTitle               JobTitle?                    @relation(fields: [jobTitleId], references: [id], onDelete: SetNull)\n  reportsToEmployee      Employee?                    @relation(\"EmployeeReportsTo\", fields: [reportsToEmployeeId], references: [id], onDelete: SetNull)\n  directReports          Employee[]                   @relation(\"EmployeeReportsTo\")\n  leaveRequests          LeaveRequest[]\n  leaveBalances          LeaveBalance[]\n  attendanceRecords      AttendanceRecord[]\n  assetAssignments       AssetAssignment[]\n  lostDamageIncidents    LostDamageIncident[]         @relation(\"LostDamageReporter\")\n  employeeDocuments      EmployeeDocument[]\n  onboardingCandidates   OnboardingCandidate[]\n  exitRequests           ExitRequest[]\n  fnfSettlements         FnfSettlement[]\n  probationRecords       ProbationRecord[]\n  headedBranches         Branch[]                     @relation(\"BranchHead\")\n  headedDepartments      Department[]                 @relation(\"DepartmentHead\")\n  profile                EmployeeProfile?\n  feedbackGiven          PerformanceFeedback[]        @relation(\"FeedbackFrom\")\n  feedbackReceived       PerformanceFeedback[]        @relation(\"FeedbackTo\")\n  supportTickets         SupportTicket[]              @relation(\"SupportTicketEmployee\")\n  supportTicketsAssigned SupportTicket[]              @relation(\"SupportTicketAssignedTo\")\n  selfServiceRequests    EmployeeSelfServiceRequest[]\n  employeeTasks          EmployeeTask[]\n  lifecycleEvents        EmployeeLifecycleEvent[]\n  performanceGoals       PerformanceGoal[]\n  performanceAppraisals  PerformanceAppraisal[]\n  shifts                 EmployeeShift[]\n  jobApplications        JobApplication[]\n  jobReferrals           JobReferral[]                @relation(\"JobReferralReferrer\")\n\n  @@index([branchId])\n  @@index([designationId])\n  @@index([reportsToEmployeeId, orgSortOrder])"
+  },
+  {
+    "schema": "public",
+    "table": "employee_lifecycle_events",
+    "model": "EmployeeLifecycleEvent",
+    "source": "legacy-service/prisma/schema.prisma",
+    "line": 374,
+    "definition": "id         String             @id @default(cuid())\n  employeeId String             @map(\"employee_id\")\n  kind       LifecycleEventKind @default(OTHER)\n  title      String             @db.VarChar(200)\n  occurredOn DateTime           @map(\"occurred_on\") @db.Date\n  /// String[] of bullet items (free-form, e.g. \"IT setup done\", \"Salary review completed\").\n  bullets    Json               @default(\"[]\")\n  createdAt  DateTime           @default(now()) @map(\"created_at\")\n  updatedAt  DateTime           @updatedAt @map(\"updated_at\")\n\n  employee Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)\n\n  @@index([employeeId])\n  @@index([employeeId, occurredOn])\n  @@map(\"employee_lifecycle_events\")"
+  },
+  {
+    "schema": "public",
+    "table": "employee_tasks",
+    "model": "EmployeeTask",
+    "source": "legacy-service/prisma/schema.prisma",
+    "line": 393,
+    "definition": "id            String             @id @default(cuid())\n  employeeId    String             @map(\"employee_id\")\n  title         String             @db.VarChar(512)\n  description   String             @db.Text\n  source        EmployeeTaskSource\n  dueDate       DateTime           @map(\"due_date\") @db.Date\n  status        EmployeeTaskStatus @default(IN_PROGRESS)\n  /// Drives detail UI: `generic` | `emergency_contact`\n  detailKind    String             @default(\"generic\") @map(\"detail_kind\") @db.VarChar(32)\n  /// For `generic` detail: JSON string array of next-step lines.\n  nextStepsJson Json?              @map(\"next_steps_json\")\n  createdAt     DateTime           @default(now()) @map(\"created_at\")\n  updatedAt     DateTime           @updatedAt @map(\"updated_at\")\n\n  employee Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)\n\n  @@index([employeeId])\n  @@index([employeeId, dueDate])\n  @@map(\"employee_tasks\")"
+  },
+  {
+    "schema": "public",
+    "table": "probation_records",
+    "model": "ProbationRecord",
+    "source": "legacy-service/prisma/schema.prisma",
+    "line": 416,
+    "definition": "id                  String                @id @default(cuid())\n  employeeId          String                @map(\"employee_id\")\n  reportingManager    String                @map(\"reporting_manager\")\n  joiningDate         DateTime              @map(\"joining_date\") @db.Date\n  probationStart      DateTime              @map(\"probation_start\") @db.Date\n  probationEnd        DateTime              @map(\"probation_end\") @db.Date\n  extensions          Int                   @default(0)\n  status              ProbationRecordStatus @default(ACTIVE_PROBATION)\n  confirmedAt         DateTime?             @map(\"confirmed_at\")\n  reviewsJson         Json?                 @map(\"reviews_json\")\n  extensionEventsJson Json?                 @map(\"extension_events_json\")\n  createdAt           DateTime              @default(now()) @map(\"created_at\")\n  updatedAt           DateTime              @updatedAt @map(\"updated_at\")\n\n  employee Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)\n\n  @@index([employeeId])\n  @@index([probationEnd])\n  @@index([status])\n  @@map(\"probation_records\")"
+  },
+  {
+    "schema": "public",
+    "table": "probation_policy_settings",
+    "model": "ProbationPolicySettings",
+    "source": "legacy-service/prisma/schema.prisma",
+    "line": 440,
+    "definition": "id                      String   @id\n  defaultDurationMonths   Int      @map(\"default_duration_months\")\n  maxExtensions           Int      @map(\"max_extensions\")\n  autoConfirmationEnabled Boolean  @default(false) @map(\"auto_confirmation_enabled\")\n  fullTimeDurationMonths  Int      @map(\"full_time_duration_months\")\n  contractDurationMonths  Int      @map(\"contract_duration_months\")\n  reminder30Enabled       Boolean  @default(true) @map(\"reminder_30_enabled\")\n  reminder15Enabled       Boolean  @default(true) @map(\"reminder_15_enabled\")\n  reminder7Enabled        Boolean  @default(true) @map(\"reminder_7_enabled\")\n  departmentDurations     Json?    @map(\"department_durations\")\n  approvalWorkflow        Json?    @map(\"approval_workflow\")\n  createdAt               DateTime @default(now()) @map(\"created_at\")\n  updatedAt               DateTime @updatedAt @map(\"updated_at\")\n\n  @@map(\"probation_policy_settings\")"
+  },
+  {
+    "schema": "public",
+    "table": "OnboardingGroup",
+    "model": "OnboardingGroup",
+    "source": "legacy-service/prisma/schema.prisma",
+    "line": 458,
+    "definition": "id                   String                   @id @default(cuid())\n  name                 String\n  description          String?\n  /// Job role label (e.g. Software Engineer)\n  roleLabel            String?                  @map(\"role_label\")\n  location             String?\n  manager              String?\n  department           String?\n  autoConvert          Boolean                  @default(true) @map(\"auto_convert\")\n  status               OnboardingGroupStatus    @default(DRAFT)\n  /// Short human-friendly code shown as \"Candidate ID\" in the groups list (8 digits).\n  groupCode            String?                  @unique @map(\"group_code\")\n  /// Admin-set progress signal surfaced in the Groups table (GOOD / AVERAGE / BAD).\n  progress             OnboardingGroupProgress? @map(\"progress\")\n  /// Admin-set progress as a 0\u2013100 percentage shown in the Groups table.\n  progressPercent      Int?                     @map(\"progress_percent\")\n  /// 1-based index of the stage/task the group is currently working on.\n  currentTask          Int?                     @map(\"current_task\")\n  windowStart          DateTime?                @map(\"window_start\") @db.Date\n  windowEnd            DateTime?                @map(\"window_end\") @db.Date\n  probationPolicy      String?                  @map(\"probation_policy\")\n  templateSource       String?                  @map(\"template_source\")\n  additionalRecipients String?                  @map(\"additional_recipients\")\n  createdAt            DateTime                 @default(now()) @map(\"created_at\")\n  updatedAt            DateTime                 @updatedAt @map(\"updated_at\")\n\n  templates  OnboardingTemplate[]\n  candidates OnboardingCandidate[]"
+  },
+  {
+    "schema": "public",
+    "table": "OnboardingTemplate",
+    "model": "OnboardingTemplate",
+    "source": "legacy-service/prisma/schema.prisma",
+    "line": 489,
+    "definition": "id           String   @id @default(cuid())\n  name         String\n  groupId      String?  @map(\"group_id\")\n  /// Top-level category surfaced in the templates list filters (usually = department).\n  category     String?  @map(\"category\")\n  /// One of \"role-based\" | \"remote\" | \"leadership\". Optional; filter can also fall back to heuristics.\n  templateType String?  @map(\"template_type\")\n  /// One of \"beginner\" | \"intermediate\" | \"advanced\".\n  complexity   String?  @map(\"complexity\")\n  /// Owning department (Engineering, Design, HR, \u2026). Drives the Department filter on the templates list.\n  department   String?  @map(\"department\")\n  stagesJson   Json?    @map(\"stages_json\")\n  createdAt    DateTime @default(now()) @map(\"created_at\")\n  updatedAt    DateTime @updatedAt @map(\"updated_at\")\n\n  group      OnboardingGroup?      @relation(fields: [groupId], references: [id], onDelete: SetNull)\n  candidates OnboardingCandidate[]\n\n  @@index([category])\n  @@index([templateType])\n  @@index([complexity])\n  @@index([department])"
+  },
+  {
+    "schema": "public",
+    "table": "OnboardingCandidate",
+    "model": "OnboardingCandidate",
+    "source": "legacy-service/prisma/schema.prisma",
+    "line": 514,
+    "definition": "id         String                    @id @default(cuid())\n  groupId    String                    @map(\"group_id\")\n  templateId String?                   @map(\"template_id\")\n  employeeId String?                   @map(\"employee_id\")\n  email      String\n  name       String\n  /// Role / title from CSV (per candidate), optional\n  roleLabel  String?                   @map(\"role_label\")\n  /// Extra fields from Admin Candidates form (department, dates, manager, notes, display id, etc.)\n  details    Json?                     @map(\"details\")\n  status     OnboardingCandidateStatus @default(INVITED)\n  createdAt  DateTime                  @default(now()) @map(\"created_at\")\n  updatedAt  DateTime                  @updatedAt @map(\"updated_at\")\n\n  group    OnboardingGroup     @relation(fields: [groupId], references: [id], onDelete: Cascade)\n  template OnboardingTemplate? @relation(fields: [templateId], references: [id], onDelete: SetNull)\n  employee Employee?           @relation(fields: [employeeId], references: [id], onDelete: SetNull)"
+  },
+  {
+    "schema": "public",
+    "table": "LeaveType",
+    "model": "LeaveType",
+    "source": "legacy-service/prisma/schema.prisma",
+    "line": 534,
+    "definition": "id          String   @id @default(cuid())\n  name        String\n  daysPerYear Int?     @map(\"days_per_year\")\n  /// UI dot color for calendar / tables (e.g. #3B82F6).\n  colorHex    String?  @map(\"color_hex\") @db.VarChar(7)\n  createdAt   DateTime @default(now()) @map(\"created_at\")\n  updatedAt   DateTime @updatedAt @map(\"updated_at\")\n\n  balances LeaveBalance[]\n  requests LeaveRequest[]"
+  },
+  {
+    "schema": "public",
+    "table": "public_holidays",
+    "model": "PublicHoliday",
+    "source": "legacy-service/prisma/schema.prisma",
+    "line": 548,
+    "definition": "id        String   @id @default(cuid())\n  name      String\n  date      DateTime @map(\"holiday_date\") @db.Date\n  createdAt DateTime @default(now()) @map(\"created_at\")\n  updatedAt DateTime @updatedAt @map(\"updated_at\")\n\n  @@unique([date])\n  @@map(\"public_holidays\")"
+  },
+  {
+    "schema": "public",
+    "table": "LeaveBalance",
+    "model": "LeaveBalance",
+    "source": "legacy-service/prisma/schema.prisma",
+    "line": 559,
+    "definition": "id          String   @id @default(cuid())\n  employeeId  String   @map(\"employee_id\")\n  leaveTypeId String   @map(\"leave_type_id\")\n  year        Int\n  balanceDays Float    @default(0) @map(\"balance_days\")\n  createdAt   DateTime @default(now()) @map(\"created_at\")\n  updatedAt   DateTime @updatedAt @map(\"updated_at\")\n\n  employee  Employee  @relation(fields: [employeeId], references: [id], onDelete: Cascade)\n  leaveType LeaveType @relation(fields: [leaveTypeId], references: [id], onDelete: Cascade)\n\n  @@unique([employeeId, leaveTypeId, year])"
+  },
+  {
+    "schema": "public",
+    "table": "LeaveRequest",
+    "model": "LeaveRequest",
+    "source": "legacy-service/prisma/schema.prisma",
+    "line": 574,
+    "definition": "id          String             @id @default(cuid())\n  employeeId  String             @map(\"employee_id\")\n  leaveTypeId String             @map(\"leave_type_id\")\n  startDate   DateTime           @map(\"start_date\") @db.Date\n  endDate     DateTime           @map(\"end_date\") @db.Date\n  status      LeaveRequestStatus @default(PENDING)\n  reason      String?\n  createdAt   DateTime           @default(now()) @map(\"created_at\")\n  updatedAt   DateTime           @updatedAt @map(\"updated_at\")\n\n  employee  Employee  @relation(fields: [employeeId], references: [id], onDelete: Cascade)\n  leaveType LeaveType @relation(fields: [leaveTypeId], references: [id], onDelete: Restrict)"
+  },
+  {
+    "schema": "public",
+    "table": "AssetCategory",
+    "model": "AssetCategory",
+    "source": "legacy-service/prisma/schema.prisma",
+    "line": 590,
+    "definition": "id          String   @id @default(cuid())\n  name        String\n  idPrefix    String   @unique @map(\"id_prefix\") @db.VarChar(32)\n  description String   @db.Text\n  createdAt   DateTime @default(now()) @map(\"created_at\")\n  updatedAt   DateTime @updatedAt @map(\"updated_at\")\n\n  assets Asset[]\n\n  @@index([name])"
+  },
+  {
+    "schema": "public",
+    "table": "asset_vendors",
+    "model": "AssetVendor",
+    "source": "legacy-service/prisma/schema.prisma",
+    "line": 604,
+    "definition": "id        String   @id @default(cuid())\n  name      String\n  partyId   String?  @map(\"party_id\")\n  createdAt DateTime @default(now()) @map(\"created_at\")\n  updatedAt DateTime @updatedAt @map(\"updated_at\")\n\n  assets Asset[]\n  party  Party?  @relation(fields: [partyId], references: [id], onDelete: SetNull)\n\n  @@map(\"asset_vendors\")"
+  },
+  {
+    "schema": "public",
+    "table": "asset_photos",
+    "model": "AssetPhoto",
+    "source": "legacy-service/prisma/schema.prisma",
+    "line": 618,
+    "definition": "id               String   @id @default(cuid())\n  assetId          String   @map(\"asset_id\")\n  originalFilename String   @map(\"original_filename\") @db.VarChar(255)\n  storagePath      String   @map(\"storage_path\")\n  mimeType         String   @map(\"mime_type\")\n  sizeBytes        Int      @map(\"size_bytes\")\n  createdAt        DateTime @default(now()) @map(\"created_at\")\n\n  asset Asset @relation(fields: [assetId], references: [id], onDelete: Cascade)\n\n  @@index([assetId])\n  @@map(\"asset_photos\")"
+  },
+  {
+    "schema": "public",
+    "table": "Asset",
+    "model": "Asset",
+    "source": "legacy-service/prisma/schema.prisma",
+    "line": 633,
+    "definition": "id           String         @id @default(cuid())\n  /// Unique tag used on the asset (e.g. LAP-001).\n  assetTag     String         @unique @map(\"asset_tag\") @db.VarChar(64)\n  /// Display name (e.g. MacBook Pro M2).\n  name         String\n  /// Model / variant line (optional; may match name).\n  model        String?        @db.VarChar(255)\n  /// Manufacturer serial; unique when set.\n  serialNumber String?        @unique @map(\"serial_number\") @db.VarChar(128)\n  categoryId   String?        @map(\"category_id\")\n  condition    AssetCondition @default(NEW)\n  status       AssetStatus    @default(AVAILABLE)\n\n  vendorId         String?   @map(\"vendor_id\")\n  /// Purchase / financial\n  purchaseOrder    String?   @map(\"purchase_order\") @db.VarChar(128)\n  invoiceNumber    String?   @map(\"invoice_number\") @db.VarChar(128)\n  purchaseDate     DateTime? @map(\"purchase_date\") @db.Date\n  purchaseValue    Decimal?  @map(\"purchase_value\") @db.Decimal(14, 2)\n  /// Useful life in months (e.g. 36).\n  usefulLifeMonths Int?      @map(\"useful_life_months\")\n  warrantyEndDate  DateTime? @map(\"warranty_end_date\") @db.Date\n\n  /// Location & assignment line (e.g. desk, site, or \u201cRemote \u2014 Priya\u201d).\n  location     String  @db.VarChar(512)\n  departmentId String? @map(\"department_id\")\n  notes        String  @db.Text\n\n  createdAt DateTime @default(now()) @map(\"created_at\")\n  updatedAt DateTime @updatedAt @map(\"updated_at\")\n\n  category            AssetCategory?       @relation(fields: [categoryId], references: [id], onDelete: SetNull)\n  vendor              AssetVendor?         @relation(fields: [vendorId], references: [id], onDelete: SetNull)\n  department          Department?          @relation(fields: [departmentId], references: [id], onDelete: SetNull)\n  assignments         AssetAssignment[]\n  lostDamageIncidents LostDamageIncident[]\n  photos              AssetPhoto[]\n\n  @@index([categoryId])\n  @@index([status])\n  @@index([vendorId])\n  @@index([departmentId])\n  @@map(\"Asset\")"
+  },
+  {
+    "schema": "public",
+    "table": "AssetAssignment",
+    "model": "AssetAssignment",
+    "source": "legacy-service/prisma/schema.prisma",
+    "line": 679,
+    "definition": "id         String    @id @default(cuid())\n  assetId    String    @map(\"asset_id\")\n  employeeId String    @map(\"employee_id\")\n  assignedAt DateTime  @default(now()) @map(\"assigned_at\")\n  returnedAt DateTime? @map(\"returned_at\")\n  /// Optional note when allocating (e.g. desk location, project).\n  notes      String?   @db.Text\n  createdAt  DateTime  @default(now()) @map(\"created_at\")\n  updatedAt  DateTime  @updatedAt @map(\"updated_at\")\n\n  asset          Asset                @relation(fields: [assetId], references: [id], onDelete: Cascade)\n  employee       Employee             @relation(fields: [employeeId], references: [id], onDelete: Cascade)\n  returnRequests AssetReturnRequest[]\n\n  @@index([assetId])\n  @@index([employeeId])\n  @@index([returnedAt])"
+  },
+  {
+    "schema": "public",
+    "table": "asset_return_requests",
+    "model": "AssetReturnRequest",
+    "source": "legacy-service/prisma/schema.prisma",
+    "line": 700,
+    "definition": "id                 String                   @id @default(cuid())\n  assetAssignmentId  String                   @map(\"asset_assignment_id\")\n  requestedAt        DateTime                 @default(now()) @map(\"requested_at\")\n  expectedReturnDate DateTime                 @map(\"expected_return_date\") @db.Date\n  reason             String                   @db.Text\n  status             AssetReturnRequestStatus @default(PENDING_APPROVAL)\n  createdAt          DateTime                 @default(now()) @map(\"created_at\")\n  updatedAt          DateTime                 @updatedAt @map(\"updated_at\")\n\n  assetAssignment AssetAssignment @relation(fields: [assetAssignmentId], references: [id], onDelete: Cascade)\n\n  @@index([assetAssignmentId])\n  @@index([status])\n  @@map(\"asset_return_requests\")"
+  },
+  {
+    "schema": "public",
+    "table": "lost_damage_incidents",
+    "model": "LostDamageIncident",
+    "source": "legacy-service/prisma/schema.prisma",
+    "line": 718,
+    "definition": "id                 String                 @id @default(cuid())\n  /// Display ref e.g. INC-2026-001\n  incidentNumber     String                 @unique @map(\"incident_number\") @db.VarChar(32)\n  assetId            String                 @map(\"asset_id\")\n  reporterEmployeeId String                 @map(\"reporter_employee_id\")\n  incidentType       LostDamageIncidentType @map(\"incident_type\")\n  incidentDate       DateTime               @map(\"incident_date\") @db.Date\n  location           String                 @db.VarChar(512)\n  description        String                 @db.Text\n  /// [{ \"originalFilename\": string, \"storagePath\": string, \"mimeType\": string, \"sizeBytes\": number }]\n  attachmentsJson    Json?                  @map(\"attachments_json\")\n  estimatedCost      Decimal?               @map(\"estimated_cost\") @db.Decimal(14, 2)\n  priority           LostDamagePriority     @default(MEDIUM)\n  status             LostDamageCaseStatus   @default(UNDER_REVIEW)\n  createdAt          DateTime               @default(now()) @map(\"created_at\")\n  updatedAt          DateTime               @updatedAt @map(\"updated_at\")\n\n  asset    Asset    @relation(fields: [assetId], references: [id], onDelete: Restrict)\n  reporter Employee @relation(\"LostDamageReporter\", fields: [reporterEmployeeId], references: [id], onDelete: Restrict)\n\n  @@index([assetId])\n  @@index([status])\n  @@index([reporterEmployeeId])\n  @@index([createdAt])\n  @@map(\"lost_damage_incidents\")"
+  },
+  {
+    "schema": "public",
+    "table": "lost_damage_policy_guidelines",
+    "model": "LostDamagePolicyGuideline",
+    "source": "legacy-service/prisma/schema.prisma",
+    "line": 747,
+    "definition": "id        String   @id @default(cuid())\n  sortOrder Int      @map(\"sort_order\")\n  title     String   @db.VarChar(200)\n  body      String   @db.Text\n  createdAt DateTime @default(now()) @map(\"created_at\")\n  updatedAt DateTime @updatedAt @map(\"updated_at\")\n\n  @@index([sortOrder])\n  @@map(\"lost_damage_policy_guidelines\")"
+  },
+  {
+    "schema": "public",
+    "table": "lost_damage_workflow_steps",
+    "model": "LostDamageWorkflowStep",
+    "source": "legacy-service/prisma/schema.prisma",
+    "line": 760,
+    "definition": "id          String                   @id @default(cuid())\n  sortOrder   Int                      @map(\"sort_order\")\n  title       String                   @db.VarChar(200)\n  description String                   @db.Text\n  visual      LostDamageWorkflowVisual @map(\"visual\")\n  createdAt   DateTime                 @default(now()) @map(\"created_at\")\n  updatedAt   DateTime                 @updatedAt @map(\"updated_at\")\n\n  @@index([sortOrder])\n  @@map(\"lost_damage_workflow_steps\")"
+  },
+  {
+    "schema": "public",
+    "table": "attendance_policies",
+    "model": "AttendancePolicy",
+    "source": "legacy-service/prisma/schema.prisma",
+    "line": 786,
+    "definition": "id        String                   @id @default(cuid())\n  category  AttendancePolicyCategory\n  name      String                   @db.VarChar(200)\n  status    AttendancePolicyStatus   @default(ACTIVE)\n  sortOrder Int                      @default(0) @map(\"sort_order\")\n  config    Json\n  createdAt DateTime                 @default(now()) @map(\"created_at\")\n  updatedAt DateTime                 @updatedAt @map(\"updated_at\")\n\n  @@index([category, sortOrder])\n  @@map(\"attendance_policies\")"
+  },
+  {
+    "schema": "public",
+    "table": "AttendanceRecord",
+    "model": "AttendanceRecord",
+    "source": "legacy-service/prisma/schema.prisma",
+    "line": 800,
+    "definition": "id         String    @id @default(cuid())\n  employeeId String    @map(\"employee_id\")\n  workDate   DateTime  @map(\"work_date\") @db.Date\n  checkIn    DateTime? @map(\"check_in\")\n  checkOut   DateTime? @map(\"check_out\")\n  createdAt  DateTime  @default(now()) @map(\"created_at\")\n  updatedAt  DateTime  @updatedAt @map(\"updated_at\")\n\n  employee Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)\n\n  @@unique([employeeId, workDate])"
+  },
+  {
+    "schema": "public",
+    "table": "ExitRequest",
+    "model": "ExitRequest",
+    "source": "legacy-service/prisma/schema.prisma",
+    "line": 814,
+    "definition": "id                  String            @id @default(cuid())\n  employeeId          String            @map(\"employee_id\")\n  status              ExitRequestStatus @default(PENDING)\n  /// e.g. Resignation, Termination, Retirement\n  exitType            String?           @map(\"exit_type\")\n  resignationDate     DateTime?         @map(\"resignation_date\") @db.Date\n  lastWorkingDate     DateTime?         @map(\"last_working_date\") @db.Date\n  /// Primary exit reason label (dropdown)\n  reason              String?\n  additionalNotes     String?           @map(\"additional_notes\") @db.Text\n  noticeWaived        Boolean           @default(false) @map(\"notice_waived\")\n  /// Snapshot of editable employee info captured at filing time (Submit Resignation form)\n  employeeCodeEntered String?           @map(\"employee_code_entered\")\n  fullNameEntered     String?           @map(\"full_name_entered\")\n  departmentEntered   String?           @map(\"department_entered\")\n  managerEntered      String?           @map(\"manager_entered\")\n  contactEmail        String?           @map(\"contact_email\")\n  policyAccepted      Boolean           @default(false) @map(\"policy_accepted\")\n  isDraft             Boolean           @default(false) @map(\"is_draft\")\n  /// [{ \"fileName\": string, \"relativePath\": string }]\n  attachmentsJson     Json?             @map(\"attachments_json\")\n  /// Per-department clearance workflow state (IT / Admin / Finance / HR):\n  /// { departments: [{ key, label, status: \"Pending\"|\"Approved\"|\"Rejected\", items: [{id,label,done}], comments, decidedBy?, decidedAt? }] }\n  clearanceJson       Json?             @map(\"clearance_json\")\n  /// Optional FK to the offboarding template the admin applied to this exit.\n  appliedTemplateId   String?           @map(\"applied_template_id\")\n  /// Snapshot of the template's stages_json at the moment it was applied,\n  /// with task `done` flags initialized to false. Edits to the source\n  /// template after apply do NOT mutate this snapshot.\n  appliedTemplateJson Json?             @map(\"applied_template_json\")\n  createdAt           DateTime          @default(now()) @map(\"created_at\")\n  updatedAt           DateTime          @updatedAt @map(\"updated_at\")\n\n  employee        Employee                 @relation(fields: [employeeId], references: [id], onDelete: Cascade)\n  appliedTemplate ExitOffboardingTemplate? @relation(fields: [appliedTemplateId], references: [id], onDelete: SetNull)\n  fnfSettlements  FnfSettlement[]"
+  },
+  {
+    "schema": "public",
+    "table": "fnf_settlements",
+    "model": "FnfSettlement",
+    "source": "legacy-service/prisma/schema.prisma",
+    "line": 854,
+    "definition": "id                    String              @id @default(cuid())\n  employeeId            String              @map(\"employee_id\")\n  exitRequestId         String?             @map(\"exit_request_id\")\n  exitDate              DateTime            @map(\"exit_date\") @db.Date\n  /// Department label at time of settlement (matches UI column).\n  departmentLabel       String              @map(\"department_label\") @db.VarChar(255)\n  /// Amounts in paise (1 INR = 100 paise).\n  netAmountPaise        Int                 @map(\"net_amount_paise\")\n  companyPayoutPaise    Int?                @map(\"company_payout_paise\")\n  employeeRecoveryPaise Int?                @map(\"employee_recovery_paise\")\n  status                FnfSettlementStatus @default(DRAFT)\n  notes                 String?             @db.Text\n  createdAt             DateTime            @default(now()) @map(\"created_at\")\n  updatedAt             DateTime            @updatedAt @map(\"updated_at\")\n\n  employee    Employee     @relation(fields: [employeeId], references: [id], onDelete: Cascade)\n  exitRequest ExitRequest? @relation(fields: [exitRequestId], references: [id], onDelete: SetNull)\n\n  @@index([employeeId])\n  @@index([status])\n  @@index([exitDate])\n  @@map(\"fnf_settlements\")"
+  },
+  {
+    "schema": "public",
+    "table": "exit_offboarding_templates",
+    "model": "ExitOffboardingTemplate",
+    "source": "legacy-service/prisma/schema.prisma",
+    "line": 880,
+    "definition": "id              String   @id @default(cuid())\n  name            String   @db.VarChar(255)\n  roleLabel       String?  @map(\"role_label\") @db.VarChar(255)\n  departmentLabel String?  @map(\"department_label\") @db.VarChar(255)\n  locationLabel   String?  @map(\"location_label\") @db.VarChar(255)\n  description     String?  @db.Text\n  /// Stages with tasks: [{ id, title, days, stageDescription, isDefault?, taskItems: [{ id, title, owner, dueLabel }] }]\n  stagesJson      Json     @map(\"stages_json\")\n  /// Denormalized for list API (avoid loading large `stages_json` on every GET).\n  stageCount      Int      @default(0) @map(\"stage_count\")\n  taskCount       Int      @default(0) @map(\"task_count\")\n  totalDays       Int      @default(0) @map(\"total_days\")\n  createdAt       DateTime @default(now()) @map(\"created_at\")\n  updatedAt       DateTime @updatedAt @map(\"updated_at\")\n\n  appliedToExits ExitRequest[]\n\n  @@index([name])\n  @@map(\"exit_offboarding_templates\")"
+  },
+  {
+    "schema": "public",
+    "table": "employee_documents",
+    "model": "EmployeeDocument",
+    "source": "legacy-service/prisma/schema.prisma",
+    "line": 903,
+    "definition": "id               String         @id @default(cuid())\n  employeeId       String         @map(\"employee_id\")\n  /// Optional slug (driver-license / passport / ssn / bank-account / general \u2026)\n  category         String         @default(\"general\")\n  title            String\n  originalFilename String         @map(\"original_filename\")\n  storagePath      String         @map(\"storage_path\")\n  mimeType         String         @map(\"mime_type\")\n  sizeBytes        Int            @map(\"size_bytes\")\n  documentType     String?        @map(\"document_type\")\n  expiresAt        DateTime?      @map(\"expires_at\") @db.Date\n  status           DocumentStatus @default(PENDING)\n  rejectionReason  String?        @map(\"rejection_reason\") @db.Text\n  uploadedAt       DateTime       @default(now()) @map(\"uploaded_at\")\n  updatedAt        DateTime       @updatedAt @map(\"updated_at\")\n\n  employee Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)\n\n  @@index([employeeId])\n  @@index([employeeId, category])\n  @@map(\"employee_documents\")"
+  },
+  {
+    "schema": "public",
+    "table": "organization_company_profile",
+    "model": "OrganizationCompanyProfile",
+    "source": "legacy-service/prisma/schema.prisma",
+    "line": 928,
+    "definition": "id String @id\n\n  /// Relative path under `uploads/` (served via `/api/uploads/...`).\n  logoStoragePath String? @map(\"logo_storage_path\")\n\n  companyName String @default(\"\") @map(\"company_name\") @db.VarChar(255)\n  industry    String @default(\"\") @db.VarChar(255)\n  email       String @default(\"\") @db.VarChar(255)\n  phone       String @default(\"\") @db.VarChar(64)\n  website     String @default(\"\") @db.VarChar(512)\n  taxId       String @default(\"\") @map(\"tax_id\") @db.VarChar(128)\n  description String @default(\"\") @db.Text\n\n  streetAddress String  @default(\"\") @map(\"street_address\") @db.VarChar(512)\n  city          String  @default(\"\") @db.VarChar(255)\n  state         String? @db.VarChar(255)\n  zipCode       String? @map(\"zip_code\") @db.VarChar(32)\n  country       String? @db.VarChar(255)\n\n  defaultCurrency String  @default(\"\") @map(\"default_currency\") @db.VarChar(128)\n  timezone        String? @db.VarChar(128)\n  workStartTime   String? @map(\"work_start_time\") @db.VarChar(8)\n  workEndTime     String? @map(\"work_end_time\") @db.VarChar(8)\n\n  createdAt DateTime @default(now()) @map(\"created_at\")\n  updatedAt DateTime @updatedAt @map(\"updated_at\")\n\n  @@map(\"organization_company_profile\")"
+  },
+  {
+    "schema": "public",
+    "table": "privacy_policies",
+    "model": "PrivacyPolicy",
+    "source": "legacy-service/prisma/schema.prisma",
+    "line": 960,
+    "definition": "id             String              @id @default(cuid())\n  title          String\n  policyType     String              @map(\"policy_type\")\n  applicableTo   String              @map(\"applicable_to\")\n  description    String              @db.Text\n  content        String              @db.Text\n  regionSpecific Boolean             @default(false) @map(\"region_specific\")\n  status         PrivacyPolicyStatus @default(DRAFT)\n  createdAt      DateTime            @default(now()) @map(\"created_at\")\n  updatedAt      DateTime            @updatedAt @map(\"updated_at\")\n\n  @@map(\"privacy_policies\")"
+  },
+  {
+    "schema": "public",
+    "table": "support_tickets",
+    "model": "SupportTicket",
+    "source": "legacy-service/prisma/schema.prisma",
+    "line": 976,
+    "definition": "id                   String    @id @default(cuid())\n  /// Public identifier shown in the UI (e.g. TKT-0001). Auto-numbered on create.\n  ticketNumber         String    @unique @map(\"ticket_number\")\n  employeeId           String    @map(\"employee_id\")\n  /// \"Open\" | \"In Progress\" | \"Resolved\" | \"Closed\" | \"Escalated\"\n  status               String    @default(\"Open\")\n  /// \"Low\" | \"Medium\" | \"High\" | \"Critical\"\n  priority             String    @default(\"Medium\")\n  /// Free-form category label (e.g. \"HR\", \"Payroll\", \"IT Support\")\n  category             String\n  /// Department bucket used for the admin distribution chart (HR / Payroll / IT / Leave / Other)\n  department           String?\n  title                String\n  description          String    @db.Text\n  /// Optional ETA timestamp shown as \"Xh left\" / \"Xd left\"\n  dueAt                DateTime? @map(\"due_at\")\n  resolvedAt           DateTime? @map(\"resolved_at\")\n  closedAt             DateTime? @map(\"closed_at\")\n  /// Agent the ticket is assigned to (nullable = unassigned)\n  assignedToEmployeeId String?   @map(\"assigned_to_employee_id\")\n  createdAt            DateTime  @default(now()) @map(\"created_at\")\n  updatedAt            DateTime  @updatedAt @map(\"updated_at\")\n\n  employee   Employee  @relation(\"SupportTicketEmployee\", fields: [employeeId], references: [id], onDelete: Cascade)\n  assignedTo Employee? @relation(\"SupportTicketAssignedTo\", fields: [assignedToEmployeeId], references: [id], onDelete: SetNull)\n\n  @@index([employeeId])\n  @@index([assignedToEmployeeId])\n  @@index([status])\n  @@map(\"support_tickets\")"
+  },
+  {
+    "schema": "public",
+    "table": "knowledge_base_articles",
+    "model": "KnowledgeBaseArticle",
+    "source": "legacy-service/prisma/schema.prisma",
+    "line": 1010,
+    "definition": "id              String                  @id @default(cuid())\n  title           String                  @db.VarChar(512)\n  excerpt         String                  @db.Text\n  content         String                  @db.Text\n  tag             KnowledgeBaseArticleTag @default(GENERAL)\n  /// Granular display category shown as FAQ filter tabs, e.g. \"IT - Network\".\n  category        String                  @default(\"\") @db.VarChar(128)\n  /// Free-form chips on the article card (JSON string[]), e.g. [\"VPN\",\"Network\"].\n  tags            Json                    @default(\"[]\")\n  views           Int                     @default(0)\n  helpful         Int                     @default(0)\n  readTimeMinutes Int                     @default(3) @map(\"read_time_minutes\")\n  isPublished     Boolean                 @default(true) @map(\"is_published\")\n  publishedAt     DateTime?               @map(\"published_at\")\n  createdAt       DateTime                @default(now()) @map(\"created_at\")\n  updatedAt       DateTime                @updatedAt @map(\"updated_at\")\n\n  @@index([isPublished])\n  @@index([tag])\n  @@index([views])\n  @@map(\"knowledge_base_articles\")"
+  },
+  {
+    "schema": "public",
+    "table": "knowledge_base_faqs",
+    "model": "KnowledgeBaseFaq",
+    "source": "legacy-service/prisma/schema.prisma",
+    "line": 1035,
+    "definition": "id          String   @id @default(cuid())\n  question    String   @db.VarChar(512)\n  answer      String   @db.Text\n  isPublished Boolean  @default(true) @map(\"is_published\")\n  sortOrder   Int      @default(0) @map(\"sort_order\")\n  createdAt   DateTime @default(now()) @map(\"created_at\")\n  updatedAt   DateTime @updatedAt @map(\"updated_at\")\n\n  @@index([isPublished])\n  @@index([sortOrder])\n  @@map(\"knowledge_base_faqs\")"
+  },
+  {
+    "schema": "public",
+    "table": "performance_feedback",
+    "model": "PerformanceFeedback",
+    "source": "legacy-service/prisma/schema.prisma",
+    "line": 1050,
+    "definition": "id             String   @id @default(cuid())\n  fromEmployeeId String   @map(\"from_employee_id\")\n  toEmployeeId   String   @map(\"to_employee_id\")\n  /// 1\u20135\n  rating         Int\n  comment        String   @db.Text\n  /// \"Positive\" | \"Negative\" | null\n  sentiment      String?\n  createdAt      DateTime @default(now()) @map(\"created_at\")\n  updatedAt      DateTime @updatedAt @map(\"updated_at\")\n\n  fromEmployee Employee @relation(\"FeedbackFrom\", fields: [fromEmployeeId], references: [id], onDelete: Cascade)\n  toEmployee   Employee @relation(\"FeedbackTo\", fields: [toEmployeeId], references: [id], onDelete: Cascade)\n\n  @@index([fromEmployeeId])\n  @@index([toEmployeeId])\n  @@map(\"performance_feedback\")"
+  },
+  {
+    "schema": "public",
+    "table": "employee_shifts",
+    "model": "EmployeeShift",
+    "source": "legacy-service/prisma/schema.prisma",
+    "line": 1083,
+    "definition": "id         String    @id @default(cuid())\n  employeeId String    @map(\"employee_id\")\n  shiftDate  DateTime  @map(\"shift_date\") @db.Date\n  shiftType  ShiftType @default(MORNING) @map(\"shift_type\")\n  /// Display labels, e.g. \"9.00 AM\" / \"6.00 PM\".\n  startLabel String    @map(\"start_label\") @db.VarChar(32)\n  endLabel   String    @map(\"end_label\") @db.VarChar(32)\n  location   String    @default(\"\") @db.VarChar(128)\n  createdAt  DateTime  @default(now()) @map(\"created_at\")\n  updatedAt  DateTime  @updatedAt @map(\"updated_at\")\n\n  employee Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)\n\n  @@unique([employeeId, shiftDate])\n  @@index([employeeId, shiftDate])\n  @@map(\"employee_shifts\")"
+  },
+  {
+    "schema": "public",
+    "table": "performance_goals",
+    "model": "PerformanceGoal",
+    "source": "legacy-service/prisma/schema.prisma",
+    "line": 1103,
+    "definition": "id          String                @id @default(cuid())\n  employeeId  String                @map(\"employee_id\")\n  title       String                @db.VarChar(255)\n  description String                @default(\"\") @db.Text\n  /// 0\u2013100\n  progress    Int                   @default(0)\n  /// Weight as a percentage (0\u2013100).\n  weight      Int                   @default(0)\n  /// Optional measurable target shown in appraisals (e.g. \"200ms\", \"12 sections\").\n  target      String?               @db.VarChar(128)\n  dueDate     DateTime?             @map(\"due_date\") @db.Date\n  status      PerformanceGoalStatus @default(ACTIVE)\n  /// JSON string[] of tag labels.\n  tags        Json                  @default(\"[]\")\n  createdAt   DateTime              @default(now()) @map(\"created_at\")\n  updatedAt   DateTime              @updatedAt @map(\"updated_at\")\n\n  employee Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)\n\n  @@index([employeeId])\n  @@index([employeeId, status])\n  @@map(\"performance_goals\")"
+  },
+  {
+    "schema": "public",
+    "table": "performance_appraisals",
+    "model": "PerformanceAppraisal",
+    "source": "legacy-service/prisma/schema.prisma",
+    "line": 1129,
+    "definition": "id                   String    @id @default(cuid())\n  employeeId           String    @map(\"employee_id\")\n  /// e.g. \"Q4 2024\"\n  cycleLabel           String    @map(\"cycle_label\") @db.VarChar(64)\n  /// e.g. \"Oct \u2013 Dec 2024\"\n  periodLabel          String?   @map(\"period_label\") @db.VarChar(64)\n  /// Overall status: \"Not Started\" | \"Under Review\" | \"Completed\" | \u2026\n  status               String    @default(\"Not Started\") @db.VarChar(64)\n  selfAssessmentStatus String    @default(\"Pending\") @map(\"self_assessment_status\") @db.VarChar(64)\n  selfScore            Float?    @map(\"self_score\")\n  managerReviewStatus  String    @default(\"Pending\") @map(\"manager_review_status\") @db.VarChar(64)\n  managerReviewDue     DateTime? @map(\"manager_review_due\") @db.Date\n  submittedAt          DateTime? @map(\"submitted_at\")\n  // Self-reflection answers (Appraisal \u2192 Self Reflection section)\n  keyAchievements      String?   @map(\"key_achievements\") @db.Text\n  challengesOvercome   String?   @map(\"challenges_overcome\") @db.Text\n  areasForGrowth       String?   @map(\"areas_for_growth\") @db.Text\n  supportNeed          String?   @map(\"support_need\") @db.Text\n  /// Per-goal performance ratings: [{ goalId, rating (0\u20135), comment }]\n  goalRatingsJson      Json?     @map(\"goal_ratings_json\")\n  createdAt            DateTime  @default(now()) @map(\"created_at\")\n  updatedAt            DateTime  @updatedAt @map(\"updated_at\")\n\n  employee Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)\n\n  @@index([employeeId])\n  @@map(\"performance_appraisals\")"
+  },
+  {
+    "schema": "public",
+    "table": "employee_self_service_requests",
+    "model": "EmployeeSelfServiceRequest",
+    "source": "legacy-service/prisma/schema.prisma",
+    "line": 1160,
+    "definition": "id            String                      @id @default(cuid())\n  employeeId    String                      @map(\"employee_id\")\n  requestType   SelfServiceRequestType      @map(\"request_type\")\n  initiatedBy   SelfServiceRequestInitiator @map(\"initiated_by\")\n  status        SelfServiceRequestStatus    @default(PENDING)\n  submittedAt   DateTime                    @default(now()) @map(\"submitted_at\")\n  notes         String?                     @db.Text\n  /// Stable search token (e.g. SSR-A1B2C3D4).\n  referenceCode String                      @unique @map(\"reference_code\")\n  /// Proposed changes for PROFILE_UPDATE requests \u2014 the diff the employee submitted, awaiting admin approval.\n  payloadJson   Json?                       @map(\"payload_json\")\n  /// When an admin approved or rejected the request.\n  reviewedAt    DateTime?                   @map(\"reviewed_at\")\n  /// The admin/HR user who reviewed the request.\n  reviewedById  String?                     @map(\"reviewed_by_id\")\n  /// Admin's reason / comment when rejecting (optional on approve).\n  reviewNote    String?                     @map(\"review_note\") @db.Text\n  createdAt     DateTime                    @default(now()) @map(\"created_at\")\n  updatedAt     DateTime                    @updatedAt @map(\"updated_at\")\n\n  employee   Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)\n  reviewedBy User?    @relation(\"SelfServiceRequestReviewer\", fields: [reviewedById], references: [id])\n\n  @@index([employeeId])\n  @@index([status])\n  @@index([submittedAt])\n  @@index([employeeId, requestType, status])\n  @@map(\"employee_self_service_requests\")"
+  },
+  {
+    "schema": "public",
+    "table": "employee_profiles",
+    "model": "EmployeeProfile",
+    "source": "legacy-service/prisma/schema.prisma",
+    "line": 1192,
+    "definition": "id         String @id @default(cuid())\n  employeeId String @unique @map(\"employee_id\")\n\n  // Basic information\n  dateOfBirth       DateTime? @map(\"date_of_birth\") @db.Date\n  nationality       String?\n  maritalStatus     String?   @map(\"marital_status\")\n  /// Preferred display name in self-service (optional; falls back to Employee name).\n  displayName       String?   @map(\"display_name\")\n  gender            String?\n  country           String?\n  state             String?\n  preferredLanguage String?   @map(\"preferred_language\")\n  timeZone          String?   @map(\"time_zone\") @db.VarChar(512)\n\n  // Contact information\n  personalEmail    String? @map(\"personal_email\")\n  personalPhone    String? @map(\"personal_phone\")\n  homeAddress      String? @map(\"home_address\") @db.Text\n  permanentAddress String? @map(\"permanent_address\") @db.Text\n\n  // Emergency contact\n  emergencyName         String? @map(\"emergency_name\")\n  emergencyPhone        String? @map(\"emergency_phone\")\n  emergencyEmail        String? @map(\"emergency_email\")\n  emergencyRelationship String? @map(\"emergency_relationship\")\n\n  // Government IDs\n  socialSecurityNumber String? @map(\"social_security_number\")\n  driversLicense       String? @map(\"drivers_license\")\n  passportNumber       String? @map(\"passport_number\")\n\n  // Past experience\n  pastCompanyName      String? @map(\"past_company_name\")\n  pastJobTitle         String? @map(\"past_job_title\")\n  pastEmploymentType   String? @map(\"past_employment_type\")\n  pastStartDate        String? @map(\"past_start_date\")\n  pastEndDate          String? @map(\"past_end_date\")\n  pastLocation         String? @map(\"past_location\")\n  pastResponsibilities String? @map(\"past_responsibilities\") @db.Text\n\n  // Educational details\n  degree       String?\n  fieldOfStudy String? @map(\"field_of_study\")\n  institution  String?\n  eduStartDate String? @map(\"edu_start_date\")\n  eduEndDate   String? @map(\"edu_end_date\")\n  grade        String?\n  modeOfStudy  String? @map(\"mode_of_study\")\n  eduLocation  String? @map(\"edu_location\")\n\n  // Job details (supplements core Employee fields)\n  workSchedule      String? @map(\"work_schedule\")\n  lastPromotionDate String? @map(\"last_promotion_date\")\n\n  // Compensation\n  salaryBand   String? @map(\"salary_band\")\n  payFrequency String? @map(\"pay_frequency\")\n\n  // Bank information\n  bankName          String? @map(\"bank_name\")\n  bankAccountNumber String? @map(\"bank_account_number\")\n  bankRoutingNumber String? @map(\"bank_routing_number\")\n\n  /// JSON array of benefit labels (Json for flexible list editing).\n  benefits Json?\n\n  createdAt DateTime @default(now()) @map(\"created_at\")\n  updatedAt DateTime @updatedAt @map(\"updated_at\")\n\n  employee Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)\n\n  @@map(\"employee_profiles\")"
+  },
+  {
+    "schema": "public",
+    "table": "announcements",
+    "model": "Announcement",
+    "source": "legacy-service/prisma/schema.prisma",
+    "line": 1269,
+    "definition": "id          String   @id @default(cuid())\n  title       String   @db.VarChar(255)\n  body        String   @db.Text\n  /// Short category pill (e.g. \"HR\", \"Events\", \"Development\").\n  tag         String   @default(\"General\") @db.VarChar(64)\n  /// Posting team label (e.g. \"HR department\").\n  department  String?  @db.VarChar(128)\n  isActive    Boolean  @default(true) @map(\"is_active\")\n  publishedAt DateTime @default(now()) @map(\"published_at\")\n  createdAt   DateTime @default(now()) @map(\"created_at\")\n  updatedAt   DateTime @updatedAt @map(\"updated_at\")\n\n  @@index([isActive, publishedAt])\n  @@map(\"announcements\")"
+  },
+  {
+    "schema": "public",
+    "table": "admin_schedule_items",
+    "model": "AdminScheduleItem",
+    "source": "legacy-service/prisma/schema.prisma",
+    "line": 1288,
+    "definition": "id        String                @id @default(cuid())\n  itemType  AdminScheduleItemType @map(\"item_type\")\n  title     String                @db.VarChar(200)\n  location  String                @db.VarChar(200)\n  startAt   DateTime              @map(\"start_at\")\n  endAt     DateTime              @map(\"end_at\")\n  createdAt DateTime              @default(now()) @map(\"created_at\")\n  updatedAt DateTime              @updatedAt @map(\"updated_at\")\n\n  @@index([itemType, startAt])\n  @@index([startAt])\n  @@map(\"admin_schedule_items\")"
+  },
+  {
+    "schema": "public",
+    "table": "job_openings",
+    "model": "JobOpening",
+    "source": "legacy-service/prisma/schema.prisma",
+    "line": 1326,
+    "definition": "id         String         @id @default(cuid())\n  title      String         @db.VarChar(255)\n  type       JobOpeningType @default(FULL_TIME)\n  salaryMin  Float          @default(0) @map(\"salary_min\")\n  salaryMax  Float          @default(0) @map(\"salary_max\")\n  company    String         @default(\"\") @db.VarChar(255)\n  location   String         @default(\"\") @db.VarChar(255)\n  department String         @default(\"\") @db.VarChar(128)\n  /// Display logo key rendered by the card: \"google\" | \"facebook\" | \"default\".\n  logo       String         @default(\"default\") @db.VarChar(32)\n  isActive   Boolean        @default(true) @map(\"is_active\")\n  createdAt  DateTime       @default(now()) @map(\"created_at\")\n  updatedAt  DateTime       @updatedAt @map(\"updated_at\")\n\n  applications JobApplication[]\n  referrals    JobReferral[]\n\n  @@index([isActive])\n  @@index([department])\n  @@map(\"job_openings\")"
+  },
+  {
+    "schema": "public",
+    "table": "job_applications",
+    "model": "JobApplication",
+    "source": "legacy-service/prisma/schema.prisma",
+    "line": 1350,
+    "definition": "id           String               @id @default(cuid())\n  jobOpeningId String               @map(\"job_opening_id\")\n  employeeId   String               @map(\"employee_id\")\n  status       JobApplicationStatus @default(APPLIED)\n  coverLetter  String?              @map(\"cover_letter\") @db.Text\n  appliedAt    DateTime             @default(now()) @map(\"applied_at\")\n  createdAt    DateTime             @default(now()) @map(\"created_at\")\n  updatedAt    DateTime             @updatedAt @map(\"updated_at\")\n\n  jobOpening JobOpening @relation(fields: [jobOpeningId], references: [id], onDelete: Cascade)\n  employee   Employee   @relation(fields: [employeeId], references: [id], onDelete: Cascade)\n\n  @@unique([jobOpeningId, employeeId])\n  @@index([employeeId])\n  @@index([jobOpeningId])\n  @@index([status])\n  @@map(\"job_applications\")"
+  },
+  {
+    "schema": "public",
+    "table": "job_referrals",
+    "model": "JobReferral",
+    "source": "legacy-service/prisma/schema.prisma",
+    "line": 1371,
+    "definition": "id                   String            @id @default(cuid())\n  referredByEmployeeId String            @map(\"referred_by_employee_id\")\n  jobOpeningId         String?           @map(\"job_opening_id\")\n  candidateName        String            @map(\"candidate_name\") @db.VarChar(255)\n  candidateEmail       String            @map(\"candidate_email\") @db.VarChar(255)\n  role                 String            @db.VarChar(255)\n  status               JobReferralStatus @default(PENDING)\n  referredAt           DateTime          @default(now()) @map(\"referred_at\")\n  createdAt            DateTime          @default(now()) @map(\"created_at\")\n  updatedAt            DateTime          @updatedAt @map(\"updated_at\")\n\n  referredBy Employee    @relation(\"JobReferralReferrer\", fields: [referredByEmployeeId], references: [id], onDelete: Cascade)\n  jobOpening JobOpening? @relation(fields: [jobOpeningId], references: [id], onDelete: SetNull)\n\n  @@index([referredByEmployeeId])\n  @@index([status])\n  @@map(\"job_referrals\")"
+  },
+  {
+    "schema": "public",
+    "table": "rms_job_openings",
+    "model": "RmsJobOpening",
+    "source": "legacy-service/prisma/schema.prisma",
+    "line": 1403,
+    "definition": "id             Int       @id @default(autoincrement())\n  jobTitle       String?   @map(\"job_title\") @db.VarChar(255)\n  companyName    String?   @map(\"company_name\") @db.VarChar(255)\n  recruiter      String?   @db.Text\n  status         String?   @default(\"\") @db.VarChar(50)\n  hiringDueDate  DateTime? @map(\"hiring_due_date\") @db.Timestamp(6)\n  jobId          String?   @map(\"job_id\") @db.VarChar(100)\n  jobType        String?   @map(\"job_type\") @db.VarChar(100)\n  workMode       String?   @map(\"work_mode\") @db.VarChar(100)\n  jobDescription String?   @map(\"job_description\") @db.Text\n  jobLink        String?   @map(\"job_link\") @db.Text\n  budget         Float?\n  noOfOpenings   Int?      @map(\"no_of_openings\")\n  extraFields    Json?     @map(\"extra_fields\")\n  location       String?   @db.Text\n  candidateIds   String[]  @map(\"candidate_ids\") @db.VarChar(100)\n  hiringFlow     String?   @map(\"hiring_flow\") @db.Text\n  requiredSkills String[]  @map(\"required_skills\") @db.VarChar\n  createdBy      String?   @map(\"created_by\") @db.VarChar(100)\n  createdAt      DateTime  @default(now()) @map(\"created_at\") @db.Timestamp(6)\n  updatedAt      DateTime? @default(now()) @updatedAt @map(\"updated_at\") @db.Timestamp(6)\n\n  @@map(\"rms_job_openings\")"
+  },
+  {
+    "schema": "public",
+    "table": "rms_section_value",
+    "model": "RmsSectionValue",
+    "source": "legacy-service/prisma/schema.prisma",
+    "line": 1430,
+    "definition": "id        Int       @id @default(autoincrement())\n  value     String?   @db.VarChar(255)\n  object    Json?\n  createdAt DateTime  @default(now()) @map(\"created_at\") @db.Timestamp(6)\n  updatedAt DateTime? @default(now()) @updatedAt @map(\"updated_at\") @db.Timestamp(6)\n\n  @@map(\"rms_section_value\")"
+  },
+  {
+    "schema": "public",
+    "table": "rms_hiring_flow",
+    "model": "RmsHiringFlow",
+    "source": "legacy-service/prisma/schema.prisma",
+    "line": 1441,
+    "definition": "id        Int       @id @default(autoincrement())\n  value     String?   @db.VarChar\n  createdAt DateTime  @default(now()) @map(\"created_at\") @db.Timestamp(6)\n  updatedAt DateTime? @default(now()) @updatedAt @map(\"updated_at\") @db.Timestamp(6)\n\n  @@map(\"rms_hiring_flow\")"
+  },
+  {
+    "schema": "public",
+    "table": "rms_template",
+    "model": "RmsTemplate",
+    "source": "legacy-service/prisma/schema.prisma",
+    "line": 1451,
+    "definition": "id        Int      @id @default(autoincrement())\n  subject   String   @db.Text\n  body      String   @db.Text\n  createdAt DateTime @default(now()) @map(\"created_at\") @db.Timestamp(6)\n  updatedAt DateTime @default(now()) @updatedAt @map(\"updated_at\") @db.Timestamp(6)\n\n  @@map(\"rms_template\")"
+  },
+  {
+    "schema": "public",
+    "table": "rms_candidate_form_details",
+    "model": "RmsCandidateFormDetail",
+    "source": "legacy-service/prisma/schema.prisma",
+    "line": 1462,
+    "definition": "id                 Int       @id @default(autoincrement())\n  jobOpeningId       Int       @map(\"job_opening_id\")\n  firstName          String?   @default(\"\") @map(\"first_name\") @db.VarChar(100)\n  lastName           String?   @default(\"\") @map(\"last_name\") @db.VarChar(100)\n  gender             String?   @default(\"\") @db.VarChar(50)\n  dateOfBirth        DateTime? @map(\"date_of_birth\") @db.Timestamp(6)\n  mobile             String?   @default(\"\") @db.VarChar(50)\n  email              String?   @default(\"\") @db.VarChar(255)\n  noticePeriod       String?   @default(\"\") @map(\"notice_period\") @db.VarChar(100)\n  currentJobTitle    String?   @default(\"\") @map(\"current_job_title\") @db.VarChar(255)\n  currentCTC         String?   @default(\"\") @map(\"current_ctc\") @db.VarChar(100)\n  expectedCTC        String?   @default(\"\") @map(\"expected_ctc\") @db.VarChar(100)\n  currentCompany     String?   @default(\"\") @map(\"current_company\") @db.VarChar(255)\n  currentLocation    String?   @default(\"\") @map(\"current_location\") @db.VarChar(255)\n  linkedInID         String?   @default(\"\") @map(\"linkedin_id\") @db.VarChar(255)\n  referredBy         String?   @default(\"\") @map(\"referred_by\") @db.VarChar(255)\n  availableTime      String?   @default(\"\") @map(\"available_time\") @db.VarChar(100)\n  locationPreference String?   @default(\"\") @map(\"location_preference\") @db.VarChar(255)\n  uploadResume       String?   @default(\"\") @map(\"upload_resume\") @db.VarChar(500)\n  extraField         Json?     @default(\"{}\") @map(\"extra_field\")\n  questions          Json?     @default(\"{}\")\n  createdAt          DateTime  @default(now()) @map(\"created_at\") @db.Timestamp(6)\n  updatedAt          DateTime? @default(now()) @updatedAt @map(\"updated_at\") @db.Timestamp(6)\n\n  @@map(\"rms_candidate_form_details\")"
+  },
+  {
+    "schema": "public",
+    "table": "rms_question",
+    "model": "RmsQuestion",
+    "source": "legacy-service/prisma/schema.prisma",
+    "line": 1491,
+    "definition": "id           Int       @id @default(autoincrement())\n  candidateId  Int       @map(\"candidate_id\")\n  question     String?   @db.Text\n  questionType String?   @default(\"\") @map(\"question_type\") @db.VarChar(100)\n  createdAt    DateTime  @default(now()) @map(\"created_at\") @db.Timestamp(6)\n  updatedAt    DateTime? @default(now()) @updatedAt @map(\"updated_at\") @db.Timestamp(6)\n\n  @@map(\"rms_question\")"
+  },
+  {
+    "schema": "public",
+    "table": "rms_candidate",
+    "model": "RmsCandidate",
+    "source": "legacy-service/prisma/schema.prisma",
+    "line": 1504,
+    "definition": "id           Int       @id @default(autoincrement())\n  jobOpeningId Int       @map(\"job_opening_id\")\n  object       Json?     @default(\"{}\")\n  updatedBy    String?   @default(\"\") @map(\"updated_by\") @db.VarChar(255)\n  status       String?   @default(\"\") @db.VarChar(50)\n  contacted    String?   @default(\"Not contacted\") @db.VarChar(50)\n  questions    Json?     @default(\"{}\")\n  createdAt    DateTime  @default(now()) @map(\"created_at\") @db.Timestamp(6)\n  updatedAt    DateTime? @default(now()) @updatedAt @map(\"updated_at\") @db.Timestamp(6)\n\n  @@map(\"rms_candidate\")"
+  },
+  {
+    "schema": "public",
+    "table": "rms_interview",
+    "model": "RmsInterview",
+    "source": "legacy-service/prisma/schema.prisma",
+    "line": 1520,
+    "definition": "id              Int       @id @default(autoincrement())\n  companyName     String?   @default(\"\") @map(\"company_name\") @db.VarChar(255)\n  jobId           Int       @map(\"job_id\")\n  candidateId     Int?      @map(\"candidate_id\")\n  interviewDate   DateTime  @map(\"interview_date\") @db.Timestamp(6)\n  interviewTime   String?   @default(\"\") @map(\"interview_time\") @db.VarChar(50)\n  duration        String?   @default(\"\") @db.VarChar(100)\n  panelMembers    String?   @default(\"\") @map(\"panel_members\") @db.VarChar(100)\n  candidateName   String?   @default(\"\") @map(\"candidate_name\") @db.VarChar(255)\n  meetingPlatform String?   @default(\"\") @map(\"meeting_platform\") @db.VarChar(100)\n  interviewType   String?   @default(\"\") @map(\"interview_type\") @db.VarChar(100)\n  email           String?   @default(\"\") @db.Text\n  hiringFlow      Json?     @default(\"{}\") @map(\"hiring_flow\")\n  S2              String?   @map(\"s2\") @db.Text\n  S3              String?   @map(\"s3\") @db.Text\n  S4              String?   @map(\"s4\") @db.Text\n  F1              String?   @map(\"f1\") @db.Text\n  F2              String?   @map(\"f2\") @db.Text\n  F3              String?   @map(\"f3\") @db.Text\n  F4              String?   @map(\"f4\") @db.Text\n  F5              String?   @map(\"f5\") @db.Text\n  createdAt       DateTime  @default(now()) @map(\"created_at\") @db.Timestamp(6)\n  updatedAt       DateTime? @default(now()) @updatedAt @map(\"updated_at\") @db.Timestamp(6)\n\n  @@map(\"rms_interview\")"
+  },
+  {
+    "schema": "public",
+    "table": "rms_interview_schedule",
+    "model": "RmsInterviewSchedule",
+    "source": "legacy-service/prisma/schema.prisma",
+    "line": 1549,
+    "definition": "id              Int       @id @default(autoincrement())\n  interviewId     Int       @map(\"interview_id\")\n  jobId           Int       @map(\"job_id\")\n  candidateId     Int?      @map(\"candidate_id\")\n  interviewDate   DateTime  @map(\"interview_date\") @db.Timestamp(6)\n  interviewTime   String?   @default(\"\") @map(\"interview_time\") @db.VarChar(50)\n  duration        String?   @default(\"\") @db.VarChar(100)\n  panelMembers    String?   @default(\"\") @map(\"panel_members\") @db.VarChar(100)\n  meetingPlatform String?   @default(\"\") @map(\"meeting_platform\") @db.VarChar(100)\n  interviewType   String?   @default(\"\") @map(\"interview_type\") @db.VarChar(100)\n  email           String?   @default(\"\") @db.Text\n  createdAt       DateTime  @default(now()) @map(\"created_at\") @db.Timestamp(6)\n  updatedAt       DateTime? @default(now()) @updatedAt @map(\"updated_at\") @db.Timestamp(6)\n\n  @@map(\"rms_interview_schedule\")"
+  },
+  {
+    "schema": "public",
+    "table": "rms_feedback",
+    "model": "RmsFeedback",
+    "source": "legacy-service/prisma/schema.prisma",
+    "line": 1568,
+    "definition": "id                  Int       @id @default(autoincrement())\n  interviewerName     String?   @map(\"interviewer_name\") @db.VarChar(255)\n  date                DateTime? @db.Timestamp(6)\n  time                String?   @db.VarChar(50)\n  interviewMode       String?   @map(\"interview_mode\") @db.VarChar(100)\n  overallRating       Int?      @map(\"overall_rating\")\n  finalRecommendation String?   @map(\"final_recommendation\") @db.Text\n  description         String?   @db.Text\n  interviewId         Int?      @map(\"interview_id\")\n  candidateId         Int?      @map(\"candidate_id\")\n  level               Int?\n  jobId               Int?      @map(\"job_id\")\n  createdAt           DateTime  @default(now()) @map(\"created_at\") @db.Timestamp(6)\n  updatedAt           DateTime? @default(now()) @updatedAt @map(\"updated_at\") @db.Timestamp(6)\n\n  @@map(\"rms_feedback\")"
+  },
+  {
+    "schema": "public",
+    "table": "client_subscription_requests",
+    "model": "ClientSubscriptionRequest",
+    "source": "legacy-service/prisma/schema.prisma",
+    "line": 1613,
+    "definition": "id String @id @default(cuid())\n\n  // --- 1. Company information ---\n  companyName                String  @map(\"company_name\") @db.VarChar(255)\n  legalEntityName            String? @map(\"legal_entity_name\") @db.VarChar(255)\n  industry                   String? @db.VarChar(160)\n  companyRegistrationNumber  String? @map(\"company_registration_number\") @db.VarChar(120)\n  gstNumber                  String? @map(\"gst_number\") @db.VarChar(60)\n  panNumber                  String? @map(\"pan_number\") @db.VarChar(30)\n  cinNumber                  String? @map(\"cin_number\") @db.VarChar(60)\n  companyWebsite             String? @map(\"company_website\") @db.VarChar(255)\n  yearOfEstablishment        Int?    @map(\"year_of_establishment\")\n  numberOfEmployees          Int?    @map(\"number_of_employees\")\n  numberOfBranches           Int?    @map(\"number_of_branches\")\n  headquartersLocation       String? @map(\"headquarters_location\") @db.VarChar(255)\n\n  // --- 2. Primary contact ---\n  primaryContactName        String  @map(\"primary_contact_name\") @db.VarChar(160)\n  primaryContactDesignation String? @map(\"primary_contact_designation\") @db.VarChar(160)\n  primaryContactEmail       String  @map(\"primary_contact_email\") @db.VarChar(255)\n  primaryContactMobile      String  @map(\"primary_contact_mobile\") @db.VarChar(40)\n\n  // --- 2b. Alternate contact (optional) ---\n  alternateContactName        String? @map(\"alternate_contact_name\") @db.VarChar(160)\n  alternateContactDesignation String? @map(\"alternate_contact_designation\") @db.VarChar(160)\n  alternateContactEmail       String? @map(\"alternate_contact_email\") @db.VarChar(255)\n  alternateContactMobile      String? @map(\"alternate_contact_mobile\") @db.VarChar(40)\n\n  // --- 3. Registered office ---\n  registeredAddress String? @map(\"registered_address\") @db.Text\n  registeredCity    String? @map(\"registered_city\") @db.VarChar(120)\n  registeredState   String? @map(\"registered_state\") @db.VarChar(120)\n  registeredCountry String? @map(\"registered_country\") @db.VarChar(120)\n  registeredPinCode String? @map(\"registered_pin_code\") @db.VarChar(20)\n\n  // --- 3b. Corporate office (only stored when it differs) ---\n  corporateSameAsRegistered Boolean @default(false) @map(\"corporate_same_as_registered\")\n  corporateAddress          String? @map(\"corporate_address\") @db.Text\n  corporateCity             String? @map(\"corporate_city\") @db.VarChar(120)\n  corporateState            String? @map(\"corporate_state\") @db.VarChar(120)\n  corporateCountry          String? @map(\"corporate_country\") @db.VarChar(120)\n  corporatePinCode          String? @map(\"corporate_pin_code\") @db.VarChar(20)\n\n  // --- 4\u20138. Subscription details ---\n  productRequired    SubscriptionProduct @map(\"product_required\")\n  subscriptionPlan   SubscriptionPlan    @map(\"subscription_plan\")\n  /// Seats requested for RMS; null when RMS was not selected.\n  rmsUserCount       Int?                @map(\"rms_user_count\")\n  /// Seats requested for HRMS; null when HRMS was not selected.\n  hrmsUserCount      Int?                @map(\"hrms_user_count\")\n  expectedGoLiveDate DateTime?           @map(\"expected_go_live_date\") @db.Date\n\n  // --- Internal triage ---\n  status        SubscriptionRequestStatus @default(NEW)\n  /// Free-form notes added by the team while following up.\n  internalNotes String?                   @map(\"internal_notes\") @db.Text\n\n  createdAt DateTime @default(now()) @map(\"created_at\")\n  updatedAt DateTime @updatedAt @map(\"updated_at\")\n\n  @@index([status])\n  @@index([createdAt])\n  @@index([primaryContactEmail])\n  @@map(\"client_subscription_requests\")"
+  },
+  {
+    "schema": "public",
+    "table": "parties",
+    "model": "Party",
+    "source": "legacy-service/prisma/schema.prisma",
+    "line": 1711,
+    "definition": "id          String      @id @default(cuid())\n  auth0UserId String?     @unique @map(\"auth0_user_id\")\n  code        String?     @unique @db.VarChar(64)\n  name        String      @db.VarChar(255)\n  legalName   String?     @map(\"legal_name\") @db.VarChar(255)\n  partyType   PartyType   @default(ORGANIZATION) @map(\"party_type\")\n  status      PartyStatus @default(ACTIVE)\n  taxId       String?     @map(\"tax_id\") @db.VarChar(100)\n  gstin       String?     @db.VarChar(60)\n  pan         String?     @db.VarChar(30)\n  email       String?     @db.VarChar(255)\n  phone       String?     @db.VarChar(50)\n  website     String?     @db.VarChar(255)\n  currency    String      @default(\"USD\") @db.VarChar(10)\n  notes       String?     @db.Text\n  createdAt   DateTime    @default(now()) @map(\"created_at\")\n  updatedAt   DateTime    @updatedAt @map(\"updated_at\")\n\n  roles          PartyRole[]\n  userRoles      PartyUserRole[]\n  contactPersons PartyContactPerson[]\n  addresses      PartyAddress[]\n  bankDetails    PartyBankDetail[]\n  assetVendors   AssetVendor[]\n\n  @@index([status])\n  @@index([partyType])\n  @@index([name])\n  @@map(\"parties\")"
+  },
+  {
+    "schema": "public",
+    "table": "party_roles",
+    "model": "PartyRole",
+    "source": "legacy-service/prisma/schema.prisma",
+    "line": 1743,
+    "definition": "id        String        @id @default(cuid())\n  partyId   String        @map(\"party_id\")\n  roleType  PartyRoleType @map(\"role_type\")\n  status    PartyStatus   @default(ACTIVE)\n  notes     String?       @db.Text\n  createdAt DateTime      @default(now()) @map(\"created_at\")\n  updatedAt DateTime      @updatedAt @map(\"updated_at\")\n\n  party Party @relation(fields: [partyId], references: [id], onDelete: Cascade)\n\n  @@unique([partyId, roleType])\n  @@map(\"party_roles\")"
+  },
+  {
+    "schema": "public",
+    "table": "roles",
+    "model": "Role",
+    "source": "legacy-service/prisma/schema.prisma",
+    "line": 1759,
+    "definition": "id          String   @id @default(cuid())\n  code        String   @unique\n  name        String\n  description String?  @db.Text\n  createdAt   DateTime @default(now()) @map(\"created_at\")\n  updatedAt   DateTime @updatedAt @map(\"updated_at\")\n\n  userRoles   PartyUserRole[]\n  roleModules RoleModule[]\n\n  @@map(\"roles\")"
+  },
+  {
+    "schema": "public",
+    "table": "party_user_roles",
+    "model": "PartyUserRole",
+    "source": "legacy-service/prisma/schema.prisma",
+    "line": 1774,
+    "definition": "id        String   @id @default(cuid())\n  partyId   String   @map(\"party_id\")\n  roleId    String   @map(\"role_id\")\n  createdAt DateTime @default(now()) @map(\"created_at\")\n\n  party Party @relation(fields: [partyId], references: [id], onDelete: Cascade)\n  role  Role  @relation(fields: [roleId], references: [id], onDelete: Cascade)\n\n  @@unique([partyId, roleId])\n  @@index([partyId])\n  @@index([roleId])\n  @@map(\"party_user_roles\")"
+  },
+  {
+    "schema": "public",
+    "table": "modules",
+    "model": "Module",
+    "source": "legacy-service/prisma/schema.prisma",
+    "line": 1790,
+    "definition": "id          String   @id @default(cuid())\n  code        String   @unique\n  name        String\n  description String?  @db.Text\n  createdAt   DateTime @default(now()) @map(\"created_at\")\n  updatedAt   DateTime @updatedAt @map(\"updated_at\")\n\n  roleModules RoleModule[]\n\n  @@map(\"modules\")"
+  },
+  {
+    "schema": "public",
+    "table": "role_modules",
+    "model": "RoleModule",
+    "source": "legacy-service/prisma/schema.prisma",
+    "line": 1804,
+    "definition": "id        String   @id @default(cuid())\n  roleId    String   @map(\"role_id\")\n  moduleId  String   @map(\"module_id\")\n  createdAt DateTime @default(now()) @map(\"created_at\")\n\n  role   Role   @relation(fields: [roleId], references: [id], onDelete: Cascade)\n  module Module @relation(fields: [moduleId], references: [id], onDelete: Cascade)\n\n  @@unique([roleId, moduleId])\n  @@index([roleId])\n  @@index([moduleId])\n  @@map(\"role_modules\")"
+  },
+  {
+    "schema": "public",
+    "table": "party_contact_persons",
+    "model": "PartyContactPerson",
+    "source": "legacy-service/prisma/schema.prisma",
+    "line": 1820,
+    "definition": "id          String   @id @default(cuid())\n  partyId     String   @map(\"party_id\")\n  name        String   @db.VarChar(160)\n  designation String?  @db.VarChar(160)\n  email       String?  @db.VarChar(255)\n  phone       String?  @db.VarChar(50)\n  isPrimary   Boolean  @default(false) @map(\"is_primary\")\n  createdAt   DateTime @default(now()) @map(\"created_at\")\n  updatedAt   DateTime @updatedAt @map(\"updated_at\")\n\n  party Party @relation(fields: [partyId], references: [id], onDelete: Cascade)\n\n  @@map(\"party_contact_persons\")"
+  },
+  {
+    "schema": "public",
+    "table": "party_addresses",
+    "model": "PartyAddress",
+    "source": "legacy-service/prisma/schema.prisma",
+    "line": 1836,
+    "definition": "id           String      @id @default(cuid())\n  partyId      String      @map(\"party_id\")\n  addressType  AddressType @default(OFFICE) @map(\"address_type\")\n  addressLine1 String      @map(\"address_line1\") @db.Text\n  addressLine2 String?     @map(\"address_line2\") @db.Text\n  city         String      @db.VarChar(120)\n  state        String      @db.VarChar(120)\n  postalCode   String      @map(\"postal_code\") @db.VarChar(30)\n  country      String      @default(\"USA\") @db.VarChar(120)\n  isPrimary    Boolean     @default(false) @map(\"is_primary\")\n  createdAt    DateTime    @default(now()) @map(\"created_at\")\n  updatedAt    DateTime    @updatedAt @map(\"updated_at\")\n\n  party Party @relation(fields: [partyId], references: [id], onDelete: Cascade)\n\n  @@map(\"party_addresses\")"
+  },
+  {
+    "schema": "public",
+    "table": "party_bank_details",
+    "model": "PartyBankDetail",
+    "source": "legacy-service/prisma/schema.prisma",
+    "line": 1855,
+    "definition": "id            String   @id @default(cuid())\n  partyId       String   @map(\"party_id\")\n  bankName      String   @map(\"bank_name\") @db.VarChar(160)\n  accountNumber String   @map(\"account_number\") @db.VarChar(100)\n  accountName   String   @map(\"account_name\") @db.VarChar(160)\n  ifscSwift     String?  @map(\"ifsc_swift\") @db.VarChar(50)\n  branchName    String?  @map(\"branch_name\") @db.VarChar(160)\n  isPrimary     Boolean  @default(false) @map(\"is_primary\")\n  createdAt     DateTime @default(now()) @map(\"created_at\")\n  updatedAt     DateTime @updatedAt @map(\"updated_at\")\n\n  party Party @relation(fields: [partyId], references: [id], onDelete: Cascade)\n\n  @@map(\"party_bank_details\")"
+  },
+  {
+    "schema": "hirava_core",
+    "table": "users",
+    "model": "User",
+    "source": "app/core/models.py",
+    "line": 9,
+    "definition": "class User(Record):\n    __tablename__ = \"users\"\n    __table_args__ = (UniqueConstraint(\"customer_id\", \"email\"), UniqueConstraint(\"customer_id\", \"auth_subject\"))\n    email: Mapped[str] = mapped_column(String(320))\n    name: Mapped[str] = mapped_column(String(200))\n    role: Mapped[str] = mapped_column(String(30))\n    password_hash: Mapped[str | None] = mapped_column(Text)\n    auth_subject: Mapped[str | None] = mapped_column(String(255))\n    active: Mapped[bool] = mapped_column(Boolean, default=True)\n    token_version: Mapped[int] = mapped_column(Integer, default=1)\n    failed_logins: Mapped[int] = mapped_column(Integer, default=0)\n    locked_until: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))"
+  },
+  {
+    "schema": "hirava_core",
+    "table": "audit_events",
+    "model": "AuditEvent",
+    "source": "app/core/models.py",
+    "line": 23,
+    "definition": "class AuditEvent(Record):\n    __tablename__ = \"audit_events\"\n    actor_id: Mapped[str | None] = mapped_column(ForeignKey(\"users.id\"))\n    action: Mapped[str] = mapped_column(String(100))\n    resource_type: Mapped[str] = mapped_column(String(100))\n    resource_id: Mapped[str] = mapped_column(String(36))\n    correlation_id: Mapped[str] = mapped_column(String(36))\n    details: Mapped[dict] = mapped_column(JSON, default=dict)"
+  },
+  {
+    "schema": "hirava_core",
+    "table": "outbox_events",
+    "model": "OutboxEvent",
+    "source": "app/core/models.py",
+    "line": 33,
+    "definition": "class OutboxEvent(Record):\n    __tablename__ = \"outbox_events\"\n    topic: Mapped[str] = mapped_column(String(100))\n    payload: Mapped[dict] = mapped_column(JSON)\n    status: Mapped[str] = mapped_column(String(20), default=\"pending\")\n    attempts: Mapped[int] = mapped_column(Integer, default=0)\n    last_error: Mapped[str | None] = mapped_column(String(100))"
+  },
+  {
+    "schema": "hirava_core",
+    "table": "notifications",
+    "model": "Notification",
+    "source": "app/core/models.py",
+    "line": 42,
+    "definition": "class Notification(Record):\n    __tablename__ = \"notifications\"\n    __table_args__ = (UniqueConstraint(\"event_id\"),)\n    event_id: Mapped[str] = mapped_column(ForeignKey(\"outbox_events.id\"))\n    user_id: Mapped[str] = mapped_column(ForeignKey(\"users.id\"))\n    message: Mapped[str] = mapped_column(String(250))\n    read: Mapped[bool] = mapped_column(Boolean, default=False)"
+  },
+  {
+    "schema": "hirava_core",
+    "table": "policies",
+    "model": "Policy",
+    "source": "app/core/models.py",
+    "line": 51,
+    "definition": "class Policy(Record):\n    __tablename__ = \"policies\"\n    title: Mapped[str] = mapped_column(String(200))\n    content: Mapped[str] = mapped_column(Text)\n    revision: Mapped[int] = mapped_column(Integer, default=1)"
+  },
+  {
+    "schema": "hirava_core",
+    "table": "policy_acknowledgements",
+    "model": "Acknowledgement",
+    "source": "app/core/models.py",
+    "line": 58,
+    "definition": "class Acknowledgement(Record):\n    __tablename__ = \"policy_acknowledgements\"\n    __table_args__ = (UniqueConstraint(\"policy_id\", \"user_id\", \"revision\"),)\n    policy_id: Mapped[str] = mapped_column(ForeignKey(\"policies.id\"))\n    user_id: Mapped[str] = mapped_column(ForeignKey(\"users.id\"))\n    revision: Mapped[int] = mapped_column(Integer)"
+  },
+  {
+    "schema": "hirava_core",
+    "table": "documents",
+    "model": "Document",
+    "source": "app/core/models.py",
+    "line": 66,
+    "definition": "class Document(Record):\n    __tablename__ = \"documents\"\n    owner_id: Mapped[str] = mapped_column(ForeignKey(\"users.id\"))\n    domain: Mapped[str] = mapped_column(String(20))\n    filename: Mapped[str] = mapped_column(String(255))\n    storage_key: Mapped[str] = mapped_column(String(36), unique=True)\n    size: Mapped[int] = mapped_column(Integer)\n    sha256: Mapped[str] = mapped_column(String(64))"
+  },
+  {
+    "schema": "hirava_core",
+    "table": "expense_claims",
+    "model": "ExpenseClaim",
+    "source": "app/modules/claims/models.py",
+    "line": 7,
+    "definition": "class ExpenseClaim(Record):\n    __tablename__ = \"expense_claims\"\n    requester_id: Mapped[str] = mapped_column(ForeignKey(\"users.id\"))\n    category: Mapped[str] = mapped_column(String(100))\n    expense_type: Mapped[str] = mapped_column(String(150))\n    expense_date: Mapped[date] = mapped_column(Date)\n    amount: Mapped[str] = mapped_column(String(30))\n    currency: Mapped[str] = mapped_column(String(3))\n    description: Mapped[str] = mapped_column(Text)\n    receipt_id: Mapped[str | None] = mapped_column(ForeignKey(\"documents.id\"))\n    status: Mapped[str] = mapped_column(String(20), default=\"draft\")\n    reviewed_by: Mapped[str | None] = mapped_column(ForeignKey(\"users.id\"))\n    decision_reason: Mapped[str | None] = mapped_column(Text)"
+  },
+  {
+    "schema": "hirava_core",
+    "table": "conversions",
+    "model": "Conversion",
+    "source": "app/modules/conversion/models.py",
+    "line": 6,
+    "definition": "class Conversion(Record):\n    __tablename__ = \"conversions\"\n    __table_args__ = (UniqueConstraint(\"offer_id\"), UniqueConstraint(\"customer_id\", \"idempotency_key\"))\n    offer_id: Mapped[str] = mapped_column(ForeignKey(\"offers.id\"))\n    worker_id: Mapped[str] = mapped_column(ForeignKey(\"workers.id\"))\n    employment_id: Mapped[str] = mapped_column(ForeignKey(\"employments.id\"))\n    approved_by: Mapped[str] = mapped_column(ForeignKey(\"users.id\"))\n    idempotency_key: Mapped[str] = mapped_column(String(100))\n    request_hash: Mapped[str] = mapped_column(String(64))"
+  },
+  {
+    "schema": "hirava_core",
+    "table": "hr_cases",
+    "model": "HRCase",
+    "source": "app/modules/hr_service/models.py",
+    "line": 6,
+    "definition": "class HRCase(Record):\n    __tablename__ = \"hr_cases\"\n    requester_id: Mapped[str] = mapped_column(ForeignKey(\"users.id\"))\n    assigned_to: Mapped[str | None] = mapped_column(ForeignKey(\"users.id\"))\n    subject: Mapped[str] = mapped_column(String(200))\n    description: Mapped[str] = mapped_column(Text)\n    status: Mapped[str] = mapped_column(String(30), default=\"open\")"
+  },
+  {
+    "schema": "hirava_core",
+    "table": "case_notes",
+    "model": "CaseNote",
+    "source": "app/modules/hr_service/models.py",
+    "line": 15,
+    "definition": "class CaseNote(Record):\n    __tablename__ = \"case_notes\"\n    case_id: Mapped[str] = mapped_column(ForeignKey(\"hr_cases.id\"))\n    author_id: Mapped[str] = mapped_column(ForeignKey(\"users.id\"))\n    content: Mapped[str] = mapped_column(Text)"
+  },
+  {
+    "schema": "hirava_core",
+    "table": "improvement_plans",
+    "model": "ImprovementPlan",
+    "source": "app/modules/improvement/models.py",
+    "line": 7,
+    "definition": "class ImprovementPlan(Record):\n    __tablename__ = \"improvement_plans\"\n    employee_id: Mapped[str] = mapped_column(ForeignKey(\"users.id\"))\n    author_id: Mapped[str] = mapped_column(ForeignKey(\"users.id\"))\n    title: Mapped[str] = mapped_column(String(200))\n    reason: Mapped[str] = mapped_column(Text)\n    start_date: Mapped[date] = mapped_column(Date)\n    end_date: Mapped[date] = mapped_column(Date)\n    milestones: Mapped[list] = mapped_column(JSON, default=list)\n    reviews: Mapped[list] = mapped_column(JSON, default=list)\n    status: Mapped[str] = mapped_column(String(30), default=\"draft\")\n    acknowledged_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))\n    outcome: Mapped[str | None] = mapped_column(Text)"
+  },
+  {
+    "schema": "hirava_core",
+    "table": "interviews",
+    "model": "Interview",
+    "source": "app/modules/interviews/models.py",
+    "line": 7,
+    "definition": "class Interview(Record):\n    __tablename__ = \"interviews\"\n    application_id: Mapped[str] = mapped_column(ForeignKey(\"applications.id\"))\n    interviewer_id: Mapped[str] = mapped_column(ForeignKey(\"users.id\"))\n    scheduled_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))\n    duration_minutes: Mapped[int] = mapped_column(Integer)\n    status: Mapped[str] = mapped_column(String(20), default=\"scheduled\")"
+  },
+  {
+    "schema": "hirava_core",
+    "table": "scorecards",
+    "model": "Scorecard",
+    "source": "app/modules/interviews/models.py",
+    "line": 16,
+    "definition": "class Scorecard(Record):\n    __tablename__ = \"scorecards\"\n    __table_args__ = (UniqueConstraint(\"interview_id\"),)\n    interview_id: Mapped[str] = mapped_column(ForeignKey(\"interviews.id\"))\n    interviewer_id: Mapped[str] = mapped_column(ForeignKey(\"users.id\"))\n    competency: Mapped[str] = mapped_column(String(200))\n    score: Mapped[int] = mapped_column(Integer)\n    evidence: Mapped[str] = mapped_column(Text)"
+  },
+  {
+    "schema": "hirava_core",
+    "table": "courses",
+    "model": "Course",
+    "source": "app/modules/learning/models.py",
+    "line": 6,
+    "definition": "class Course(Record):\n    __tablename__ = \"courses\"\n    title: Mapped[str] = mapped_column(String(200))\n    reference_url: Mapped[str] = mapped_column(Text)"
+  },
+  {
+    "schema": "hirava_core",
+    "table": "learning_assignments",
+    "model": "LearningAssignment",
+    "source": "app/modules/learning/models.py",
+    "line": 12,
+    "definition": "class LearningAssignment(Record):\n    __tablename__ = \"learning_assignments\"\n    __table_args__ = (UniqueConstraint(\"course_id\", \"worker_id\"),)\n    course_id: Mapped[str] = mapped_column(ForeignKey(\"courses.id\"))\n    worker_id: Mapped[str] = mapped_column(ForeignKey(\"workers.id\"))\n    status: Mapped[str] = mapped_column(String(30), default=\"assigned\")\n    evidence: Mapped[str | None] = mapped_column(Text)"
+  },
+  {
+    "schema": "hirava_core",
+    "table": "leave_types",
+    "model": "LeaveType",
+    "source": "app/modules/leave/models.py",
+    "line": 7,
+    "definition": "class LeaveType(Record):\n    __tablename__ = \"leave_types\"\n    __table_args__ = (UniqueConstraint(\"customer_id\", \"name\"),)\n    name: Mapped[str] = mapped_column(String(100))"
+  },
+  {
+    "schema": "hirava_core",
+    "table": "leave_balances",
+    "model": "LeaveBalance",
+    "source": "app/modules/leave/models.py",
+    "line": 13,
+    "definition": "class LeaveBalance(Record):\n    __tablename__ = \"leave_balances\"\n    __table_args__ = (UniqueConstraint(\"worker_id\", \"leave_type_id\", \"year\"),\n                      CheckConstraint(\"granted >= 0 AND used >= 0 AND used <= granted\"))\n    worker_id: Mapped[str] = mapped_column(ForeignKey(\"workers.id\"))\n    leave_type_id: Mapped[str] = mapped_column(ForeignKey(\"leave_types.id\"))\n    year: Mapped[int] = mapped_column(Integer)\n    granted: Mapped[int] = mapped_column(Integer)\n    used: Mapped[int] = mapped_column(Integer, default=0)"
+  },
+  {
+    "schema": "hirava_core",
+    "table": "leave_requests",
+    "model": "LeaveRequest",
+    "source": "app/modules/leave/models.py",
+    "line": 24,
+    "definition": "class LeaveRequest(Record):\n    __tablename__ = \"leave_requests\"\n    worker_id: Mapped[str] = mapped_column(ForeignKey(\"workers.id\"))\n    leave_type_id: Mapped[str] = mapped_column(ForeignKey(\"leave_types.id\"))\n    start_date: Mapped[date] = mapped_column(Date)\n    end_date: Mapped[date] = mapped_column(Date)\n    days: Mapped[int] = mapped_column(Integer)\n    reason: Mapped[str] = mapped_column(Text)\n    status: Mapped[str] = mapped_column(String(30), default=\"pending\")\n    decided_by: Mapped[str | None] = mapped_column(ForeignKey(\"users.id\"))\n    decision_reason: Mapped[str | None] = mapped_column(Text)"
+  },
+  {
+    "schema": "hirava_core",
+    "table": "offers",
+    "model": "Offer",
+    "source": "app/modules/offers/models.py",
+    "line": 8,
+    "definition": "class Offer(Record):\n    __tablename__ = \"offers\"\n    __table_args__ = (UniqueConstraint(\"application_id\"),)\n    application_id: Mapped[str] = mapped_column(ForeignKey(\"applications.id\"))\n    annual_salary: Mapped[Decimal] = mapped_column(Numeric(14, 2))\n    currency: Mapped[str] = mapped_column(String(3))\n    start_date: Mapped[date] = mapped_column(Date)\n    status: Mapped[str] = mapped_column(String(30), default=\"draft\")\n    created_by: Mapped[str] = mapped_column(ForeignKey(\"users.id\"))\n    approved_by: Mapped[str | None] = mapped_column(ForeignKey(\"users.id\"))\n    acceptance_evidence: Mapped[str | None] = mapped_column(Text)"
+  },
+  {
+    "schema": "hirava_core",
+    "table": "organization_units",
+    "model": "OrganizationUnit",
+    "source": "app/modules/organization/models.py",
+    "line": 6,
+    "definition": "class OrganizationUnit(Record):\n    __tablename__ = \"organization_units\"\n    name: Mapped[str] = mapped_column(String(200))\n    kind: Mapped[str] = mapped_column(String(30))\n    parent_id: Mapped[str | None] = mapped_column(ForeignKey(\"organization_units.id\"))"
+  },
+  {
+    "schema": "hirava_core",
+    "table": "positions",
+    "model": "Position",
+    "source": "app/modules/organization/models.py",
+    "line": 13,
+    "definition": "class Position(Record):\n    __tablename__ = \"positions\"\n    __table_args__ = (CheckConstraint(\"capacity > 0 AND occupied >= 0 AND occupied <= capacity\"),)\n    title: Mapped[str] = mapped_column(String(200))\n    unit_id: Mapped[str] = mapped_column(ForeignKey(\"organization_units.id\"))\n    capacity: Mapped[int] = mapped_column(Integer)\n    occupied: Mapped[int] = mapped_column(Integer, default=0)\n    manager_id: Mapped[str | None] = mapped_column(ForeignKey(\"users.id\"))"
+  },
+  {
+    "schema": "hirava_core",
+    "table": "performance_goals",
+    "model": "Goal",
+    "source": "app/modules/performance/models.py",
+    "line": 7,
+    "definition": "class Goal(Record):\n    __tablename__ = \"performance_goals\"\n    worker_id: Mapped[str] = mapped_column(ForeignKey(\"workers.id\"))\n    title: Mapped[str] = mapped_column(String(200))\n    due_date: Mapped[date] = mapped_column(Date)\n    status: Mapped[str] = mapped_column(String(30), default=\"open\")"
+  },
+  {
+    "schema": "hirava_core",
+    "table": "performance_reviews",
+    "model": "Review",
+    "source": "app/modules/performance/models.py",
+    "line": 15,
+    "definition": "class Review(Record):\n    __tablename__ = \"performance_reviews\"\n    worker_id: Mapped[str] = mapped_column(ForeignKey(\"workers.id\"))\n    reviewer_id: Mapped[str] = mapped_column(ForeignKey(\"users.id\"))\n    period: Mapped[str] = mapped_column(String(100))\n    feedback: Mapped[str] = mapped_column(Text)\n    acknowledged: Mapped[bool] = mapped_column(default=False)"
+  },
+  {
+    "schema": "hirava_core",
+    "table": "job_references",
+    "model": "JobReference",
+    "source": "app/modules/recruiting/models.py",
+    "line": 7,
+    "definition": "class JobReference(Base):\n    \"\"\"Stable legacy aliases only; job content remains on Requisition.\"\"\"\n    __tablename__ = \"job_references\"\n    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)\n    requisition_id: Mapped[str] = mapped_column(ForeignKey(\"requisitions.id\"), unique=True)"
+  },
+  {
+    "schema": "hirava_core",
+    "table": "requisitions",
+    "model": "Requisition",
+    "source": "app/modules/recruiting/models.py",
+    "line": 14,
+    "definition": "class Requisition(Record):\n    __tablename__ = \"requisitions\"\n    position_id: Mapped[str] = mapped_column(ForeignKey(\"positions.id\"))\n    title: Mapped[str] = mapped_column(String(200))\n    description: Mapped[str] = mapped_column(Text)\n    requested_by: Mapped[str] = mapped_column(ForeignKey(\"users.id\"))\n    approved_by: Mapped[str | None] = mapped_column(ForeignKey(\"users.id\"))\n    status: Mapped[str] = mapped_column(String(30), default=\"draft\")\n    # Typed by JobDetails at the command boundary. Kept on the existing\n    # requisition so richer job forms do not create another vacancy master.\n    job_details: Mapped[dict] = mapped_column(JSON, default=dict, nullable=False)"
+  },
+  {
+    "schema": "hirava_core",
+    "table": "candidates",
+    "model": "Candidate",
+    "source": "app/modules/recruiting/models.py",
+    "line": 27,
+    "definition": "class Candidate(Record):\n    __tablename__ = \"candidates\"\n    __table_args__ = (UniqueConstraint(\"customer_id\", \"email\"),)\n    name: Mapped[str] = mapped_column(String(200))\n    email: Mapped[str] = mapped_column(String(320))\n    consent_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))\n    consent_notice: Mapped[str] = mapped_column(String(100))"
+  },
+  {
+    "schema": "hirava_core",
+    "table": "applications",
+    "model": "Application",
+    "source": "app/modules/recruiting/models.py",
+    "line": 36,
+    "definition": "class Application(Record):\n    __tablename__ = \"applications\"\n    __table_args__ = (UniqueConstraint(\"candidate_id\", \"requisition_id\"),)\n    candidate_id: Mapped[str] = mapped_column(ForeignKey(\"candidates.id\"))\n    requisition_id: Mapped[str] = mapped_column(ForeignKey(\"requisitions.id\"))\n    status: Mapped[str] = mapped_column(String(30), default=\"applied\")\n    disposition_reason: Mapped[str | None] = mapped_column(Text)"
+  },
+  {
+    "schema": "hirava_core",
+    "table": "workers",
+    "model": "Worker",
+    "source": "app/modules/workforce/models.py",
+    "line": 7,
+    "definition": "class Worker(Record):\n    __tablename__ = \"workers\"\n    __table_args__ = (UniqueConstraint(\"customer_id\", \"email\"), UniqueConstraint(\"user_id\"))\n    name: Mapped[str] = mapped_column(String(200))\n    email: Mapped[str] = mapped_column(String(320))\n    user_id: Mapped[str | None] = mapped_column(ForeignKey(\"users.id\"))"
+  },
+  {
+    "schema": "hirava_core",
+    "table": "employments",
+    "model": "Employment",
+    "source": "app/modules/workforce/models.py",
+    "line": 15,
+    "definition": "class Employment(Record):\n    __tablename__ = \"employments\"\n    worker_id: Mapped[str] = mapped_column(ForeignKey(\"workers.id\"), unique=True)\n    position_id: Mapped[str] = mapped_column(ForeignKey(\"positions.id\"))\n    manager_id: Mapped[str | None] = mapped_column(ForeignKey(\"users.id\"))\n    start_date: Mapped[date] = mapped_column(Date)\n    end_date: Mapped[date | None] = mapped_column(Date)\n    status: Mapped[str] = mapped_column(String(30), default=\"prehire\")"
+  },
+  {
+    "schema": "hirava_core",
+    "table": "lifecycle_cases",
+    "model": "LifecycleCase",
+    "source": "app/modules/workforce/models.py",
+    "line": 25,
+    "definition": "class LifecycleCase(Record):\n    __tablename__ = \"lifecycle_cases\"\n    __table_args__ = (UniqueConstraint(\"employment_id\", \"kind\"),)\n    employment_id: Mapped[str] = mapped_column(ForeignKey(\"employments.id\"))\n    kind: Mapped[str] = mapped_column(String(30))\n    status: Mapped[str] = mapped_column(String(30), default=\"open\")"
+  },
+  {
+    "schema": "hirava_core",
+    "table": "tasks",
+    "model": "Task",
+    "source": "app/modules/workforce/models.py",
+    "line": 33,
+    "definition": "class Task(Record):\n    __tablename__ = \"tasks\"\n    case_id: Mapped[str] = mapped_column(ForeignKey(\"lifecycle_cases.id\"))\n    title: Mapped[str] = mapped_column(String(200))\n    owner_id: Mapped[str] = mapped_column(ForeignKey(\"users.id\"))\n    status: Mapped[str] = mapped_column(String(20), default=\"pending\")\n    evidence: Mapped[str | None] = mapped_column(Text)"
+  },
+  {
+    "schema": "hirava_core",
+    "table": "profile_changes",
+    "model": "ProfileChange",
+    "source": "app/modules/workforce/models.py",
+    "line": 42,
+    "definition": "class ProfileChange(Record):\n    __tablename__ = \"profile_changes\"\n    worker_id: Mapped[str] = mapped_column(ForeignKey(\"workers.id\"))\n    requested_by: Mapped[str] = mapped_column(ForeignKey(\"users.id\"))\n    proposed_name: Mapped[str] = mapped_column(String(200))\n    reason: Mapped[str] = mapped_column(Text)\n    status: Mapped[str] = mapped_column(String(30), default=\"pending\")\n    decided_by: Mapped[str | None] = mapped_column(ForeignKey(\"users.id\"))"
+  }
+]

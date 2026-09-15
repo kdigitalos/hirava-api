@@ -14,7 +14,7 @@ def process_batch(sessions, customer_id, limit=50):
     for _ in range(limit):
         with sessions.begin() as db:
             event = db.scalar(select(OutboxEvent).where(OutboxEvent.customer_id == customer_id,
-                OutboxEvent.status == "pending").order_by(OutboxEvent.created_at).with_for_update(skip_locked=True).limit(1))
+                OutboxEvent.status == "pending", OutboxEvent.topic != "imported.storage.delete").order_by(OutboxEvent.created_at).with_for_update(skip_locked=True).limit(1))
             if event is None:
                 break
             event.attempts += 1

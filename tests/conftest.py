@@ -30,11 +30,32 @@ def password_hash():
 
 
 @pytest.fixture
-def api(tmp_path):
+def api(tmp_path, monkeypatch):
     database_url = os.environ.get("HIRAVA_TEST_POSTGRES_URL", f"sqlite:///{tmp_path / 'test.db'}")
     settings = Settings(_env_file=None, environment="test", database_url=database_url,
-                        customer_id="customer-a", jwt_secret="test-secret-" * 5, storage_path=tmp_path / "storage")
+                        customer_id="customer-a", jwt_secret="test-secret-" * 5, aws_bucket_name="synthetic-bucket")
+    from io import BytesIO
+    from botocore.response import StreamingBody
+    from botocore.exceptions import ClientError
+    from app.core import object_storage, imported_storage
+    objects = {}
+    class FakeS3:
+        def put_object(self, Bucket, Key, Body, ContentType='application/octet-stream', **kwargs):
+            objects[Key] = (Body.read() if hasattr(Body, 'read') else Body, ContentType)
+        def upload_fileobj(self, file, bucket, key, ExtraArgs=None):
+            self.put_object(bucket, key, file, **(ExtraArgs or {}))
+        def get_object(self, Bucket, Key):
+            if Key not in objects:
+                raise ClientError({'Error': {'Code': 'NoSuchKey'}}, 'GetObject')
+            content, mime = objects[Key]
+            return {'Body': StreamingBody(BytesIO(content), len(content)), 'ContentType': mime}
+        def delete_object(self, Bucket, Key):
+            objects.pop(Key, None)
+    fake_s3 = FakeS3()
+    monkeypatch.setattr(object_storage, 's3_client', lambda settings: fake_s3)
+    monkeypatch.setattr(imported_storage, 's3_client', lambda settings: fake_s3)
     app = create_app(settings)
+    app.state.test_s3_objects = objects
     if database_url.startswith("postgresql"):
         schema = "test_" + uuid4().hex
         with app.state.engine.begin() as connection:

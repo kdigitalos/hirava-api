@@ -1,7 +1,14 @@
 from datetime import datetime
-from sqlalchemy import DateTime, ForeignKey, String, Text, UniqueConstraint
+from sqlalchemy import JSON, DateTime, ForeignKey, Integer, String, Text, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column
-from app.data.database import Record
+from app.data.database import Base, Record
+
+
+class JobReference(Base):
+    """Stable legacy aliases only; job content remains on Requisition."""
+    __tablename__ = "job_references"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    requisition_id: Mapped[str] = mapped_column(ForeignKey("requisitions.id"), unique=True)
 
 
 class Requisition(Record):
@@ -12,6 +19,9 @@ class Requisition(Record):
     requested_by: Mapped[str] = mapped_column(ForeignKey("users.id"))
     approved_by: Mapped[str | None] = mapped_column(ForeignKey("users.id"))
     status: Mapped[str] = mapped_column(String(30), default="draft")
+    # Typed by JobDetails at the command boundary. Kept on the existing
+    # requisition so richer job forms do not create another vacancy master.
+    job_details: Mapped[dict] = mapped_column(JSON, default=dict, nullable=False)
 
 
 class Candidate(Record):

@@ -1,0 +1,2601 @@
+[
+  {
+    "source_path": "api/admin/attendance-records/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/admin/create-user/route.ts",
+    "kind": "route",
+    "methods": [
+      "POST"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/admin/dashboard/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/admin/employee-tasks/route.ts",
+    "kind": "route",
+    "methods": [
+      "POST"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/admin/employees-pending-access/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/admin/exit-dashboard/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/admin/job-applications/[id]/route.ts",
+    "kind": "route",
+    "methods": [
+      "PATCH"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/admin/job-applications/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/admin/job-openings/[id]/route.ts",
+    "kind": "route",
+    "methods": [
+      "PATCH",
+      "DELETE"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/admin/job-openings/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/admin/job-referrals/[id]/route.ts",
+    "kind": "route",
+    "methods": [
+      "PATCH"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/admin/job-referrals/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/admin/onboarding-dashboard/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/admin/payroll-activities/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/admin/provision-employee-access/route.ts",
+    "kind": "route",
+    "methods": [
+      "POST"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/admin/schedule-items/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/admin/self-service-requests/[id]/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET",
+      "PATCH"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/admin/self-service-requests/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/admin/support-tickets/by-id/[id]/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET",
+      "PATCH"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/admin/support-tickets/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/admin/support-tickets/stats/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/ask-me/faqs/[id]/route.ts",
+    "kind": "route",
+    "methods": [
+      "PATCH",
+      "DELETE"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/ask-me/faqs/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/ask-me/knowledge-base/[id]/route.ts",
+    "kind": "route",
+    "methods": [
+      "PATCH",
+      "DELETE"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/ask-me/knowledge-base/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/ask-me/reports/export/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/ask-me/reports/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/ask-me/settings/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET",
+      "PUT"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/ask-me/tickets/agents/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/ask-me/tickets/by-id/[id]/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET",
+      "PATCH",
+      "DELETE"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/ask-me/tickets/employees/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/ask-me/tickets/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/ask-me/tickets/self-employee/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/asset-assignments/[id]/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET",
+      "PATCH",
+      "DELETE"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/asset-assignments/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/asset-assignments/timeline/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/asset-categories/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/asset-return-requests/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/assets/[id]/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET",
+      "PATCH",
+      "DELETE"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/assets/available/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/assets/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/attendance-policies/[id]/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET",
+      "PATCH",
+      "DELETE"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/attendance-policies/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/attendance-policy-stats/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/attendance-records/[id]/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET",
+      "PATCH",
+      "DELETE"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/attendance-records/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/attendance-tracker/reports/pdf/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/attendance-tracker/reports/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/attendance-tracker/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/branches/[id]/route.ts",
+    "kind": "route",
+    "methods": [
+      "PATCH",
+      "DELETE"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/branches/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/candidate/candidateNames/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/candidate/chart/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/candidate/count/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/candidate/hiringChart/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/candidate/jobOpenings/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/candidate/recent/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/candidate/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET",
+      "POST",
+      "PUT",
+      "DELETE"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/candidateFormDetails/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET",
+      "POST",
+      "PUT",
+      "DELETE"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/dashboard/chart/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/dashboard/count/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/dashboard/detailPerformanceMetrics/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/dashboard/metrics/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/departments/[id]/designations/route.ts",
+    "kind": "route",
+    "methods": [
+      "POST"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/departments/[id]/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET",
+      "PATCH",
+      "DELETE"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/departments/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/designations/[id]/route.ts",
+    "kind": "route",
+    "methods": [
+      "PATCH",
+      "DELETE"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/documents/[id]/download/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/documents/deadlines/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/documents/recent-activity/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/documents/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/documents/stats/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/documents/upload/route.ts",
+    "kind": "route",
+    "methods": [
+      "POST"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/employee-documents/[id]/download/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/employee-documents/[id]/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET",
+      "DELETE"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/employee-documents/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/employee-self-service/dashboard/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/employee-tasks/[id]/route.ts",
+    "kind": "route",
+    "methods": [
+      "PATCH"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/employee-tasks/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/employees/[id]/assets/[assignmentId]/route.ts",
+    "kind": "route",
+    "methods": [
+      "DELETE"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/employees/[id]/assets/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/employees/[id]/attendance/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/employees/[id]/documents/[docId]/download/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/employees/[id]/documents/[docId]/route.ts",
+    "kind": "route",
+    "methods": [
+      "PATCH",
+      "DELETE"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/employees/[id]/documents/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/employees/[id]/job-details/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET",
+      "PATCH"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/employees/[id]/lifecycle/[eventId]/route.ts",
+    "kind": "route",
+    "methods": [
+      "PATCH",
+      "DELETE"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/employees/[id]/lifecycle/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/employees/[id]/payroll/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET",
+      "PATCH"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/employees/[id]/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET",
+      "PATCH",
+      "DELETE"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/employees/peers/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/employees/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/exit-offboarding-templates/[id]/apply/route.ts",
+    "kind": "route",
+    "methods": [
+      "POST"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/exit-offboarding-templates/[id]/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/exit-offboarding-templates/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/exit-requests/[id]/attachments/route.ts",
+    "kind": "route",
+    "methods": [
+      "POST"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/exit-requests/[id]/clearance/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET",
+      "PATCH"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/exit-requests/[id]/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET",
+      "PATCH",
+      "DELETE"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/exit-requests/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/feedback/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET",
+      "POST",
+      "PUT",
+      "DELETE"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/fnf-settlements/[id]/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET",
+      "PATCH",
+      "DELETE"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/fnf-settlements/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/health/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/hiringFlow/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET",
+      "POST",
+      "PUT",
+      "DELETE"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/interview/levelCounts/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/interview/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET",
+      "POST",
+      "PUT",
+      "DELETE"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/interview/upcomming/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/interviewSchedule/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET",
+      "POST",
+      "PUT",
+      "DELETE"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/job-applications/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/job-openings/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/job-referrals/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/job-titles/[id]/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET",
+      "PATCH",
+      "DELETE"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/job-titles/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/jobOpenings/active/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/jobOpenings/candidate/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/jobOpenings/chart/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/jobOpenings/drops/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/jobOpenings/interview/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/jobOpenings/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET",
+      "POST",
+      "PUT",
+      "DELETE"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/leave-attendance/logs/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/leave-attendance/overview/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/leave-balances/[id]/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET",
+      "PATCH",
+      "DELETE"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/leave-balances/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/leave-manager/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/leave-requests/[id]/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET",
+      "PATCH",
+      "DELETE"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/leave-requests/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/leave-types/[id]/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET",
+      "PATCH",
+      "DELETE"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/leave-types/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/lost-damage-incidents/[id]/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET",
+      "PATCH"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/lost-damage-incidents/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/lost-damage-policy/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/manager-mapping/bulk/route.ts",
+    "kind": "route",
+    "methods": [
+      "POST"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/manager-mapping/import/route.ts",
+    "kind": "route",
+    "methods": [
+      "POST"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/manager-mapping/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/manager-mapping/template/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/my-profile/pending-request/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/my-profile/photo/route.ts",
+    "kind": "route",
+    "methods": [
+      "POST",
+      "DELETE"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/my-profile/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET",
+      "POST",
+      "PATCH",
+      "PUT",
+      "DELETE"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/onboarding-candidates/[id]/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET",
+      "PATCH",
+      "DELETE"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/onboarding-candidates/bulk/route.ts",
+    "kind": "route",
+    "methods": [
+      "POST"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/onboarding-candidates/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/onboarding-groups/[id]/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET",
+      "PATCH",
+      "DELETE"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/onboarding-groups/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/onboarding-templates/[id]/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET",
+      "PATCH",
+      "DELETE"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/onboarding-templates/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/organization/company-profile/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET",
+      "PATCH",
+      "POST"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/organization/roles/[id]/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET",
+      "PATCH",
+      "DELETE"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/organization/roles/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/organization/setup-dashboard/actions/route.ts",
+    "kind": "route",
+    "methods": [
+      "POST"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/organization/setup-dashboard/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/parties/[id]/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET",
+      "PUT",
+      "DELETE"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/parties/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/performance-feedback/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/performance-hub/appraisal/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET",
+      "PATCH"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/performance-hub/goals/[id]/route.ts",
+    "kind": "route",
+    "methods": [
+      "PATCH"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/performance-hub/goals/route.ts",
+    "kind": "route",
+    "methods": [
+      "POST"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/performance-hub/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/privacy-policies/[id]/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET",
+      "PATCH",
+      "DELETE"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/privacy-policies/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/probation-records/[id]/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET",
+      "PATCH"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/probation-records/filter-options/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/probation-records/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/probation-settings/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET",
+      "PUT"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/question/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET",
+      "POST",
+      "PUT",
+      "DELETE"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/reporting-hierarchy/employees/[id]/route.ts",
+    "kind": "route",
+    "methods": [
+      "DELETE"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/reporting-hierarchy/employees/route.ts",
+    "kind": "route",
+    "methods": [
+      "POST"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/reporting-hierarchy/reorder/route.ts",
+    "kind": "route",
+    "methods": [
+      "POST"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/reporting-hierarchy/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/search/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/secttionValue/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET",
+      "POST",
+      "PUT",
+      "DELETE"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/sendEmails/route.ts",
+    "kind": "route",
+    "methods": [
+      "POST"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/session/employee/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/subscription-requests/route.ts",
+    "kind": "route",
+    "methods": [
+      "POST"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/support-tickets/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/template/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET",
+      "POST",
+      "PUT",
+      "DELETE"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/upload/route.ts",
+    "kind": "route",
+    "methods": [
+      "POST"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/uploads/[...path]/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/users/[id]/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET",
+      "PATCH"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/users/me/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/users/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "api/vendors/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "auth/profile/route.ts",
+    "kind": "route",
+    "methods": [
+      "GET"
+    ],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/(aliases)/admin/dashboard/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/(aliases)/admin/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/(aliases)/employee/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Admin/AskMe/dashboard/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Admin/AskMe/knowledge-base/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Admin/AskMe/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Admin/AskMe/reports/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Admin/AskMe/roles-permissions/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Admin/AskMe/settings/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Admin/AskMe/tickets/new/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Admin/AskMe/tickets/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Admin/AssetManagement/add-asset/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Admin/AssetManagement/allocation-returns/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Admin/AssetManagement/asset-categories/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Admin/AssetManagement/lost-damage-assets/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Admin/AssetManagement/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Admin/AttendanceLeave/approval-queue/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Admin/AttendanceLeave/leave-manager/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Admin/AttendanceLeave/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Admin/AttendanceLeave/policy-configuration/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Admin/AttendanceLeave/times-attendance-tracker/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Admin/AttendanceLeave/times-attendance-tracker/reports/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Admin/dashboard/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Admin/EmployeeManagement/document-repository/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Admin/EmployeeManagement/employee-directory/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Admin/EmployeeManagement/probation-management/[recordId]/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Admin/EmployeeManagement/probation-management/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Admin/EmployeeManagement/profile-management/[employeeId]/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Admin/EmployeeManagement/profile-management/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Admin/EmployeeManagement/self-service-requests/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Admin/EmployeeSelfService/dashboard/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Admin/EmployeeSelfService/job-openings/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Admin/EmployeeSelfService/leaves-management/[leaveId]/edit/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Admin/EmployeeSelfService/leaves-management/attendance/[logId]/edit/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Admin/EmployeeSelfService/leaves-management/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Admin/EmployeeSelfService/my-profile/edit/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Admin/EmployeeSelfService/my-profile/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Admin/EmployeeSelfService/my-tasks/[taskId]/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Admin/EmployeeSelfService/my-tasks/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Admin/EmployeeSelfService/payslips-docs/[payslipId]/edit/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Admin/EmployeeSelfService/payslips-docs/[payslipId]/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Admin/EmployeeSelfService/payslips-docs/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Admin/EmployeeSelfService/performance-hub/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Admin/EmployeeSelfService/reimbursements-claims/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Admin/ExitManagement/dashboard/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Admin/ExitManagement/exit-employees/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Admin/ExitManagement/full-final-settlement/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Admin/ExitManagement/templates/create/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Admin/ExitManagement/templates/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Admin/Onboarding/candidates/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Admin/Onboarding/dashboard/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": true,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Admin/Onboarding/groups/create/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Admin/Onboarding/groups/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Admin/Onboarding/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Admin/Onboarding/templates/create/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Admin/Onboarding/templates/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Admin/OrganizationSetup/branches/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Admin/OrganizationSetup/company-profile/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Admin/OrganizationSetup/dashboard/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Admin/OrganizationSetup/departments/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Admin/OrganizationSetup/manager-mapping/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Admin/OrganizationSetup/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Admin/OrganizationSetup/privacy-policy/[id]/edit/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Admin/OrganizationSetup/privacy-policy/new/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Admin/OrganizationSetup/privacy-policy/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": true,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Admin/OrganizationSetup/reporting-hierarchy/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Admin/OrganizationSetup/roles-permissions/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": true,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Admin/OrganizationSetup/user-access/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Admin/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Admin/PartyManagement/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Admin/Recruitment/job-openings/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/dashboard/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Employee/ask-me/dashboard/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Employee/ask-me/knowledge-base/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Employee/ask-me/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Employee/ask-me/reports/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Employee/ask-me/roles-permissions/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Employee/ask-me/settings/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Employee/ask-me/tickets/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": true,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Employee/Dashboard/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Employee/job-openings/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Employee/leaves-management/[leaveId]/edit/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Employee/leaves-management/attendance/[logId]/edit/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Employee/leaves-management/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": true,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Employee/my-profile/edit/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Employee/my-profile/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Employee/my-tasks/[taskId]/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Employee/my-tasks/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Employee/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Employee/payslips-docs/[payslipId]/edit/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Employee/payslips-docs/[payslipId]/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Employee/payslips-docs/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": true,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Employee/performance-hub/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Employee/performance-improvement-plan/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": true,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/Employee/reimbursements-claims/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": true,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "HRMS/payroll/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "RMS/analytics/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "RMS/candidate/apply/[id]/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "RMS/candidate/apply/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "RMS/candidate/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "RMS/candidates/[details]/[id]/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "RMS/candidates/[details]/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "RMS/candidates/create/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "RMS/candidates/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "RMS/dashboard/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "RMS/feedback/apply/[id]/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "RMS/feedback/apply/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "RMS/feedback/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "RMS/interviews/[details]/[id]/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "RMS/interviews/[details]/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "RMS/interviews/create/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "RMS/interviews/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "RMS/job-openings/[id]/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "RMS/job-openings/new/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "RMS/job-openings/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "subscription/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  },
+  {
+    "source_path": "systems/page.tsx",
+    "kind": "page",
+    "methods": [],
+    "has_demo_marker": false,
+    "status": "Source present; individual acceptance pending"
+  }
+]
