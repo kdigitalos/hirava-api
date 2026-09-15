@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Literal
 
-from pydantic import Field, SecretStr, model_validator
+from pydantic import AliasChoices, Field, SecretStr, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -11,7 +11,8 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=ROOT / ".env", extra="ignore")
 
     environment: Literal["local", "test", "production"] = "local"
-    database_url: str = f"sqlite:///{(ROOT / 'hirava.db').as_posix()}"
+    database_url: str = Field(default=f"sqlite:///{(ROOT / 'hirava.db').as_posix()}",
+                              validation_alias=AliasChoices("HIRAVA_DATABASE_URL", "DATABASE_URL", "database_url"))
     customer_id: str = Field(default="local-customer", min_length=1, max_length=100, pattern="^[A-Za-z0-9][A-Za-z0-9_-]*$")
     auth_mode: Literal["local", "auth0"] = "local"
     jwt_secret: SecretStr = SecretStr("")
