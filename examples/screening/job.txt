@@ -1,0 +1,2 @@
+This synthetic test role requires Python API development and SQL experience.
+Work with engineers to maintain backend services.

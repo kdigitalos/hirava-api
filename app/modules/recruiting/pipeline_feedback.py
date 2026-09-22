@@ -3,7 +3,7 @@ from datetime import datetime, timezone
 
 from fastapi import Depends, HTTPException, Query
 from pydantic import BaseModel, ConfigDict, Field
-from sqlalchemy import Column, DateTime, Integer, MetaData, String, Table, select
+from sqlalchemy import delete, Column, DateTime, Integer, MetaData, String, Table, select
 
 from app.core.compatibility_routing import APIRouter
 from app.data.database import get_db
@@ -130,6 +130,11 @@ def delete_interviews(ids: str, user=Depends(write), db=Depends(get_db)):
     for child in (interview_table(db, True), feedback_table(db)):
         if db.execute(select(child.c.id).where(child.c.interviewId.in_(deleted))).first():
             raise HTTPException(409, "Remove the interview's stages and feedback before deleting it")
+    from app.agents.models import InterviewQuestionSet, InterviewPanelFeedback, InterviewReservation
+    db.execute(delete(InterviewReservation).where(InterviewReservation.customer_id == user.customer_id, InterviewReservation.interview_id.in_(deleted)))
+    db.execute(delete(InterviewPanelFeedback).where(InterviewPanelFeedback.customer_id == user.customer_id, InterviewPanelFeedback.interview_id.in_(deleted)))
+    db.execute(delete(InterviewQuestionSet).where(InterviewQuestionSet.customer_id == user.customer_id,
+                                                 InterviewQuestionSet.interview_id.in_(deleted)))
     db.execute(table.delete().where(table.c.id.in_(deleted)))
     return {"message": "Deleted successfully", "deletedIds": deleted}
 

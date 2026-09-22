@@ -134,7 +134,22 @@ def publish_requisition(record_id: str, request: Request, user=Depends(recruiter
     state_is(record, "approved")
     record.status = "published"
     audit(db, user, "requisition.published", record, request)
-    return view(record)
+    from app.agents.job_matching import recommendations
+    matches = recommendations(db, record)
+    audit(db, user, "requisition.candidates_matched", record, request,
+          matched_count=matches["matching_candidates"], method=matches["method"])
+    return {**view(record), "candidate_recommendations": matches}
+
+
+@router.get("/requisitions/{record_id}/recommendations")
+def candidate_recommendations(record_id: str, user=Depends(require("recruiter", "hr", module="rms")),
+                              db: Session = Depends(get_db)):
+    record = scoped_requisition(db, record_id, user)
+    state_is(record, "draft", "submitted", "approved", "published")
+    from app.agents.job_matching import recommendations
+    # Recomputed on read: edited requirements, profiles and deleted candidates never
+    # leave a stale persisted recommendation on the job.
+    return recommendations(db, record)
 
 
 @router.post("/requisitions/{record_id}/close")

@@ -63,6 +63,9 @@ class SlotPatch(BaseModel):
     interviewTime: str | None = Field(None, max_length=50)
     duration: str | None = Field(None, max_length=100)
     panelMembers: str | list[str] | None = None
+    reviewer_ids: list[str] | None = Field(None, max_length=20)
+    feedback_due_at: datetime | None = None
+    starts_at: datetime | None = None
     meetingPlatform: str | None = Field(None, max_length=100)
     interviewType: str | None = Field(None, max_length=100)
     email: str | None = Field(None, max_length=2000)
@@ -79,7 +82,7 @@ class SchedulePatch(SlotPatch):
 
 
 def values(body):
-    data = body.model_dump(exclude_unset=True)
+    data = body.model_dump(exclude_unset=True, exclude={"reviewer_ids", "feedback_due_at", "starts_at"})
     for key in ("jobId", "candidateId", "interviewId", "interviewDate"):
         if key in data and data[key] is None:
             raise HTTPException(422, f"{key} cannot be empty")
@@ -145,7 +148,12 @@ def create_interview(body: InterviewPatch, user=Depends(write), db=Depends(get_d
         raise HTTPException(409, "Interview already scheduled for this candidate and job")
     data = values(body)
     row = db.execute(table.insert().values(**data, createdAt=data["updatedAt"]).returning(table)).mappings().one()
-    return {"message": "Interview created", "data": as_dict(table, row)}
+    created = as_dict(table, row)
+    sync_reviewers(db, user, created, 1, body)
+    _, created = get_record(db, user, created["id"])
+    from app.agents.tracking import activity
+    activity(db, user.customer_id, user.id, "interview_scheduled", created["candidateId"], created["jobId"])
+    return {"message": "Interview created", "data": created}
 
 
 @router.put("/interview")
@@ -153,7 +161,10 @@ def update_interview(body: InterviewPatch, id: int = Query(..., gt=0), user=Depe
     table, existing = get_record(db, user, id, lock=True)
     same_owner(body, existing, ("jobId", "candidateId"))
     row = db.execute(table.update().where(table.c.id == id).values(**values(body)).returning(table)).mappings().one()
-    return {"message": "Updated successfully", "data": as_dict(table, row)}
+    updated = as_dict(table, row)
+    sync_reviewers(db, user, updated, 1, body)
+    _, updated = get_record(db, user, id)
+    return {"message": "Updated successfully", "data": updated}
 
 
 @router.get("/interviewSchedule")
@@ -188,6 +199,10 @@ def create_schedule(body: SchedulePatch, user=Depends(write), db=Depends(get_db)
                          .values(**{stage: str(created["id"]), "updatedAt": data["updatedAt"]}))
     if updated.rowcount != 1:
         raise HTTPException(409, "Interview changed; reload and retry")
+    sync_reviewers(db, user, {**parent, stage: str(created["id"])}, int(stage[1:]), body)
+    _, created = get_record(db, user, created["id"], schedule=True)
+    from app.agents.tracking import activity
+    activity(db, user.customer_id, user.id, "interview_scheduled", created["candidateId"], created["jobId"])
     return {"message": "Interview Schedule created", "data": created,
             "updatedInterview": {**parent, stage: str(created["id"])}, "result": {"count": 1}}
 
@@ -202,7 +217,10 @@ def update_schedule(body: SchedulePatch, id: int = Query(..., gt=0), user=Depend
     row = db.execute(table.update().where(table.c.id == id).values(**values(body)).returning(table)).mappings().first()
     if row is None:
         raise HTTPException(409, "Schedule changed; reload and retry")
-    return {"message": "Updated successfully", "data": as_dict(table, row)}
+    level = next(int(key[1:]) for key in STAGES if parent[key] == str(id))
+    sync_reviewers(db, user, parent, level, body)
+    _, updated = get_record(db, user, id, schedule=True)
+    return {"message": "Updated successfully", "data": updated}
 
 
 def parse_ids(ids):
@@ -224,6 +242,19 @@ def delete_schedules(ids: str, user=Depends(write), db=Depends(get_db)):
         removed = {str(row["id"]) for row in rows if row["interviewId"] == parent_id}
         patch = {key: None for key in STAGES if parent[key] in removed}
         if patch:
+            from app.agents.models import InterviewPanelFeedback
+            references = [f"L{key[1:]}:{parent[key]}" for key in patch]
+            tasks = db.scalars(select(InterviewPanelFeedback).where(
+                InterviewPanelFeedback.customer_id == user.customer_id,
+                InterviewPanelFeedback.interview_id == parent_id,
+                InterviewPanelFeedback.slot_ref.in_(references)).with_for_update()).all()
+            from app.agents.models import InterviewReservation
+            from sqlalchemy import delete
+            db.execute(delete(InterviewReservation).where(InterviewReservation.customer_id == user.customer_id,
+                InterviewReservation.interview_id == parent_id, InterviewReservation.slot_ref.in_(references)))
+            for task in tasks:
+                # Preserve history but permanently detach it, even if a database reuses IDs.
+                task.slot_ref = f"removed:{task.id}"
             db.execute(parent_table.update().where(parent_table.c.id == parent_id).values(**patch))
     deleted_ids = [row["id"] for row in rows]
     db.execute(table.delete().where(table.c.id.in_(deleted_ids)))
@@ -243,3 +274,27 @@ def level_counts(jobId: int | None = Query(None, gt=0), priority: Literal["week"
     rows = [as_dict(table, row) for row in db.execute(query).mappings()]
     counts = {"totalL1": len(rows), **{f"totalL{i}": sum(row[f"S{i}"] is not None for row in rows) for i in (2, 3, 4)}}
     return {"jobId": str(jobId), "jobTitle": parent.title, "levelCounts": counts} if parent else counts
+
+
+def sync_reviewers(db, user, parent, level, body):
+    from app.agents.models import InterviewReservation
+    from app.agents.interview_panel import slot_ref
+    reservation = db.scalar(select(InterviewReservation).where(
+        InterviewReservation.customer_id == user.customer_id,
+        InterviewReservation.interview_id == parent["id"],
+        InterviewReservation.slot_ref == slot_ref(parent, level)).limit(1))
+    if reservation and body.starts_at is None and {"interviewDate", "interviewTime", "duration"} & body.model_fields_set:
+        raise HTTPException(422, "Include the timezone-aware interview start when changing a reserved interview time.")
+    if body.reviewer_ids is None and body.starts_at is not None:
+        from app.agents.models import InterviewPanelFeedback
+        from app.agents.interview_panel import slot_ref
+        from app.agents.calendar_slots import reserve
+        ids = db.scalars(select(InterviewPanelFeedback.reviewer_id).where(
+            InterviewPanelFeedback.customer_id == user.customer_id,
+            InterviewPanelFeedback.interview_id == parent["id"],
+            InterviewPanelFeedback.slot_ref == slot_ref(parent, level),
+            InterviewPanelFeedback.cancelled.is_(False))).all()
+        if ids: reserve(db,user,parent,level,ids,body.starts_at,body.duration)
+    if body.reviewer_ids is not None:
+        from app.agents.interview_panel import synchronize
+        synchronize(db, user, parent, level, body.reviewer_ids, body.feedback_due_at, body.starts_at, body.duration)

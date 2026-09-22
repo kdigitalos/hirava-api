@@ -3,6 +3,7 @@ from datetime import datetime, timezone
 from io import BytesIO
 from time import monotonic
 from uuid import uuid4
+import logging
 
 from fastapi import Depends, HTTPException, Request
 from fastapi.responses import StreamingResponse
@@ -48,14 +49,14 @@ async def submit_public(alias: int, request: Request, db=Depends(get_db)):
         if len(attempts) >= 20:
             raise HTTPException(429, "Too many applications at once. Please wait a minute and try again.")
         request.app.state.public_intake_attempts = attempts + [now]
-    published_job(db, alias, settings)
+    parent = published_job(db, alias, settings)
     limit = min(settings.max_upload_bytes, 5 * 1024 * 1024)
     # Bound the entire multipart body, including requests without Content-Length.
     body = bytearray()
     async for chunk in request.stream():
         body.extend(chunk)
         if len(body) > limit + 64 * 1024:
-            raise HTTPException(413, "Your resume must be a PDF no larger than 5 MB.")
+            raise HTTPException(413, "Your resume must be a PDF, PNG or JPEG no larger than 5 MB.")
     request._body = bytes(body)
     async with request.form(max_files=1, max_fields=6) as form:
         name, email, phone = (str(form.get(k, "")).strip() for k in ("name", "email", "phone"))
@@ -69,12 +70,21 @@ async def submit_public(alias: int, request: Request, db=Depends(get_db)):
             raise HTTPException(422, "Enter a valid phone number, including your country code.")
         if form.get("consent") != "on":
             raise HTTPException(422, "Please agree to share your details with the hiring team.")
+        ai_consent = str(form.get("ai_consent", ""))
         resume = form.get("resume")
-        if not isinstance(resume, UploadFile) or not (resume.filename or "").lower().endswith(".pdf"):
-            raise HTTPException(422, "Attach your resume as a PDF file.")
+        if not isinstance(resume, UploadFile) or not (resume.filename or "").lower().endswith((".pdf", ".png", ".jpg", ".jpeg")):
+            raise HTTPException(422, "Attach your resume as a PDF, PNG or JPEG file.")
         content = await resume.read(limit + 1)
         if len(content) > limit:
             raise HTTPException(413, "Your resume must be no larger than 5 MB.")
+        if not (resume.filename or "").lower().endswith(".pdf"):
+            from app.agents.ocr import image_pdf
+            try:
+                content = image_pdf(content)
+            except Exception:
+                raise HTTPException(422, "Use a valid single PNG or JPEG image of at most 20 megapixels.") from None
+            if len(content) > limit:
+                raise HTTPException(413, "Converted resume exceeds 5 MB. Upload a smaller image.")
         if not content.startswith(b"%PDF-") or b"%%EOF" not in content[-2048:]:
             raise HTTPException(422, "This file is not a valid PDF. Please choose a PDF resume.")
     table = pipeline_table(db)
@@ -90,14 +100,33 @@ async def submit_public(alias: int, request: Request, db=Depends(get_db)):
     object_storage.upload(settings, key, BytesIO(content))
     now = datetime.now(timezone.utc)
     first, _, last = name.partition(" ")
+    from app.agents.intake import intake_offer, queue_intake
+    offer = intake_offer(settings, db) if 50 <= len((parent.description or "").strip()) <= 20000 else None
+    opted_in = bool(offer and ai_consent == offer["consent_token"])
+    consent_text = (f"Agreed to resume and job-description processing by {offer['provider']}; "
+                    f"{offer['notice_version']}; {now.isoformat()}" if opted_in else "Not opted in to automatic AI screening.")
     profile = [field("firstName", "First name", first), field("lastName", "Last name", last),
         field("email", "Email", email, "email"), field("mobile", "Phone", phone, "tel"),
         {**field("resume", "Resume", f"/api/v1/careers/resumes/{receipt}", "file"), "fileName": "resume.pdf"},
-        field("consent", "Application consent", "Agreed to share profile with the hiring team for this application; careers-application-v1; " + now.isoformat())]
+        field("consent", "Application consent", "Agreed to share profile with the hiring team for this application; careers-application-v1; " + now.isoformat()),
+        field("aiConsent", "Automatic AI screening consent", consent_text)]
     try:
-        db.execute(table.insert().values(job_opening_id=alias, object=profile, questions=[],
+        inserted = db.execute(table.insert().values(job_opening_id=alias, object=profile, questions=[],
             status="", contacted="Not contacted", updated_by="public-application",
-            created_at=now, updated_at=now))
+            created_at=now, updated_at=now).returning(table)).mappings().one()
+        from app.agents.tracking import activity
+        activity(db, settings.customer_id, None, "application_created", inserted["id"], alias, after="Unassessed")
+        if opted_in:
+            try:
+                with db.begin_nested():
+                    queue_intake(db, request, parent, inserted, offer, consent_text)
+            except Exception:
+                # A queue outage must not discard an otherwise valid application.
+                logging.getLogger(__name__).error("Intake screening queue failed; application retained for manual review")
+                from app.core.models import AuditEvent
+                db.add(AuditEvent(customer_id=settings.customer_id, actor_id=None,
+                    action="screening.intake_queue_failed", resource_type="candidate", resource_id=str(inserted["id"]),
+                    correlation_id=request.state.correlation_id, details={"manual_review_required": True}))
         db.commit()  # Commit before acknowledging; remove an orphan object on a failed write.
     except Exception:
         db.rollback()

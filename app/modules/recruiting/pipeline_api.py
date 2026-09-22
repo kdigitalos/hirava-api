@@ -113,6 +113,8 @@ def create_candidate(body: CandidatePatch, user=Depends(write), db=Depends(get_d
               **patch_values(body), "updated_by": user.id, "created_at": now, "updated_at": now}
     table = pipeline_table(db)
     row = db.execute(table.insert().values(**values).returning(table)).mappings().one()
+    from app.agents.tracking import activity
+    activity(db, user.customer_id, user.id, "application_created", row["id"], body.jobOpeningId, after=row["status"] or "Unassessed")
     return {"message": "Candidate created", "data": serialize(row)}
 
 
@@ -124,6 +126,9 @@ def update_candidate(body: CandidatePatch, id: int = Query(..., gt=0), user=Depe
         raise HTTPException(409, "Create an application for the other job instead of moving this candidate")
     values = {**patch_values(body), "updated_by": user.id, "updated_at": datetime.now(timezone.utc)}
     row = db.execute(table.update().where(table.c.id == id).values(**values).returning(table)).mappings().one()
+    if "status" in values and (existing["status"] or "Unassessed") != (row["status"] or "Unassessed"):
+        from app.agents.tracking import activity
+        activity(db, user.customer_id, user.id, "stage_changed", id, row["job_opening_id"], existing["status"] or "Unassessed", row["status"] or "Unassessed")
     return {"message": "Updated successfully", "data": serialize(row)}
 
 

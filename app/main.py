@@ -24,8 +24,19 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     @asynccontextmanager
     async def lifespan(application):
+        if settings.ai_voice_interviews_enabled and settings.environment != 'test':
+            from app.agents.voice_realtime import recover
+            await asyncio.to_thread(recover, application)
         stop = asyncio.Event()
         task = None
+        screening_task = None
+        operations_task = None
+        if settings.recruitment_operations_enabled and settings.environment != "test":
+            from app.agents.operations_worker import run_operations
+            operations_task = asyncio.create_task(run_operations(application, stop))
+        if settings.ai_screening_enabled and settings.environment != 'test':
+            from app.agents.application import run_screening
+            screening_task = asyncio.create_task(run_screening(application, stop))
         if settings.imported_storage_cleanup_enabled and settings.environment != 'test':
             from app.workers.imported_storage_cleanup import run_cleanup
             task = asyncio.create_task(run_cleanup(application, stop))
@@ -33,8 +44,14 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             yield
         finally:
             stop.set()
+            from app.agents.voice_realtime import shutdown
+            await asyncio.to_thread(shutdown, application)
             if task:
                 await task
+            if screening_task:
+                await screening_task
+            if operations_task:
+                await operations_task
             engine.dispose()
 
     application = FastAPI(
@@ -79,6 +96,17 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         return JSONResponse(status_code=503, content={"detail": "Database unavailable or busy; retry later"})
 
     application.include_router(api_router, prefix="/api/v1")
+    from app.agents.application import router as screening_router
+    application.include_router(screening_router)
+    from app.agents.recruiter_tools import router as recruiter_tools_router
+    application.include_router(recruiter_tools_router)
+    from app.agents.interview_panel import router as interview_panel_router
+    application.include_router(interview_panel_router)
+    from app.agents.operations import router as operations_router
+    application.include_router(operations_router)
+    from app.agents.voice import router as voice_router
+    from app.agents import voice_realtime  # register live endpoints
+    application.include_router(voice_router)
     from app.modules.recruiting.pipeline_api import router as pipeline_router
     application.include_router(pipeline_router)
     from app.modules.recruiting.pipeline_interviews import router as interview_pipeline_router

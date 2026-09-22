@@ -23,8 +23,28 @@ class Settings(BaseSettings):
     auth0_web_client_id: str = ""
     auth0_connection: str = "Username-Password-Authentication"
     rms_enabled: bool = True
+    ai_screening_enabled: bool = False
+    ai_recruiter_tools_enabled: bool = False
+    ai_screening_on_intake: bool = False
+    ai_screening_intake_actor_id: str = ""
+    ai_screening_provider: Literal["openai", "groq"] = "openai"
+    ai_provider: Literal["openai", "groq"] | None = None
+    openai_model: str | None = None
+    groq_model: str | None = None
+    groq_api_key: SecretStr = SecretStr("")
+    groq_screening_model: str = ""
+    openai_api_key: SecretStr = SecretStr("")
+    openai_screening_model: str = ""
+    ai_timeout_seconds: int = Field(default=60, ge=5, le=180)
     hrms_enabled: bool = True
     cors_origins: list[str] = ["http://localhost:3000", "http://127.0.0.1:3000"]
+    recruitment_operations_enabled: bool = False
+    ai_voice_interviews_enabled: bool = False
+    voice_realtime_model: str = "gpt-realtime-mini"
+    voice_realtime_max_minutes: int = Field(default=5, ge=1, le=15)
+    voice_transcription_model: str = "gpt-4o-mini-transcribe"
+    voice_speech_model: str = "gpt-4o-mini-tts"
+    voice_name: str = "coral"
     imported_storage_cleanup_enabled: bool = True
     max_upload_bytes: int = Field(default=10 * 1024 * 1024, ge=1, le=50 * 1024 * 1024)
     expose_docs: bool = True

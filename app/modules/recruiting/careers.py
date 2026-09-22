@@ -54,8 +54,11 @@ def public_job(alias: int, request: Request, db: Session = Depends(get_db)):
     if not record:
         raise HTTPException(404, "This job is not available for applications")
     details = record.job_details or {}
+    from app.agents.intake import intake_offer
+    screening = intake_offer(request.app.state.settings, db) if 50 <= len((record.description or "").strip()) <= 20000 else None
     return {"id": record.id, "title": record.title, "description": record.description,
-            "company": details.get("company_name", ""), "location": details.get("location", "")}
+            "company": details.get("company_name", ""), "location": details.get("location", ""),
+            **({"ai_screening": screening} if screening else {})}
 
 
 @router.post("/register", status_code=201, dependencies=[Depends(require_rms)])

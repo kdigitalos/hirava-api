@@ -1,0 +1,11 @@
+{
+  "rubric_version": "junior-data-analyst-draft-v1",
+  "criteria": [
+    {"id": "sql", "description": "Basic SQL knowledge evidenced through listed skills, coursework or projects; do not require professional experience.", "jd_quote": "SQL, Excel", "weight": 1},
+    {"id": "excel", "description": "Basic Excel knowledge evidenced through listed skills, coursework or projects.", "jd_quote": "Excel", "weight": 1},
+    {"id": "data_analytics", "description": "Evidence of data analysis, preparing reports or identifying trends, including academic projects.", "jd_quote": "Data Analytics", "weight": 1},
+    {"id": "python", "description": "Basic Python knowledge evidenced through listed skills, coursework or projects.", "jd_quote": "Python basics", "weight": 1},
+    {"id": "visualization", "description": "Evidence of creating charts, dashboards or other data visualizations; no specific tool is mandatory.", "jd_quote": "Data visualization", "weight": 1},
+    {"id": "problem_solving", "description": "Evidence of solving a concrete problem in a project or work example. Do not infer personality or ability from demographics or writing style.", "jd_quote": "Problem-solving", "weight": 1}
+  ]
+}

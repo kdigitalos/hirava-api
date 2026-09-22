@@ -1,0 +1,7 @@
+{
+  "rubric_version": "synthetic-manual-test-v1",
+  "criteria": [
+    {"id": "python", "description": "Python API development", "jd_quote": "Python API development", "weight": 3},
+    {"id": "sql", "description": "SQL experience", "jd_quote": "SQL experience", "weight": 1}
+  ]
+}

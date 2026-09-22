@@ -1,0 +1,9 @@
+Company: ABC Technologies
+Role: Junior Data Analyst
+Experience: 0-1 years
+
+Job Description:
+We are looking for a Junior Data Analyst to analyze business data, prepare reports, identify trends, and support data-driven decision-making. The candidate should have basic knowledge of SQL, Excel, data analytics, and programming.
+
+Required Skills:
+SQL, Excel, Data Analytics, Python basics, Data visualization, Problem-solving

@@ -1,5 +1,6 @@
 import hashlib
 import hmac
+import logging
 import secrets
 from datetime import timedelta
 from functools import lru_cache
@@ -14,6 +15,7 @@ from app.core.models import User
 from app.data.database import get_db, utcnow
 
 bearer = HTTPBearer(auto_error=False)
+logger = logging.getLogger(__name__)
 
 
 def hash_password(password: str) -> str:
@@ -55,6 +57,7 @@ def current_user(request: Request, credentials: HTTPAuthorizationCredentials | N
                  db: Session = Depends(get_db)) -> User:
     unauthorized = HTTPException(401, "Invalid or expired credentials", headers={"WWW-Authenticate": "Bearer"})
     if credentials is None:
+        logger.warning("Authentication rejected: missing bearer credentials")
         raise unauthorized
     settings = request.app.state.settings
     try:
@@ -73,9 +76,12 @@ def current_user(request: Request, credentials: HTTPAuthorizationCredentials | N
             query = select(User).where(User.auth_subject == claims["sub"])
         user = db.scalar(query.where(User.customer_id == settings.customer_id, User.active.is_(True)))
         if user is None:
+            logger.warning("Authentication rejected: no active account for verified identity and customer")
             raise unauthorized
         return user
-    except jwt.PyJWTError:
+    except jwt.PyJWTError as exc:
+        # Exception types identify the failure without exposing tokens or claims.
+        logger.warning("Authentication rejected: %s", type(exc).__name__)
         raise unauthorized from None
 
 
