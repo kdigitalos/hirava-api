@@ -100,6 +100,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     application.include_router(screening_router)
     from app.agents.recruiter_tools import router as recruiter_tools_router
     application.include_router(recruiter_tools_router)
+    from app.agents.job_distribution import router as job_distribution_router
+    application.include_router(job_distribution_router)
     from app.agents.interview_panel import router as interview_panel_router
     application.include_router(interview_panel_router)
     from app.agents.operations import router as operations_router
@@ -199,6 +201,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     application.include_router(imported_subscriptions_router)
     from app.modules.workforce.imported_setup import router as imported_setup_router
     application.include_router(imported_setup_router)
+    from app.modules.payroll.router import router as payroll_router
+    application.include_router(payroll_router)
     return application
 
 

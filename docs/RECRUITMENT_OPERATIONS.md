@@ -21,7 +21,7 @@ The selected scope has 12 agents. The following is a capability map, not a claim
 | Selected capability | Available foundation | Remaining end-to-end work |
 | --- | --- | --- |
 | Hiring conversion improvement | Stage snapshots, newly recorded transitions, application-to-hired timing | Complete historical cohorts and validated conversion analysis |
-| Multi-platform job poster | Hirava job publication and public careers link | Employer API credentials, destination adapters, publish/update/close delivery tracking |
+| Multi-platform job poster | Hirava careers publication; saved destination preparation and explicitly manual listing/closure tracking (see JOB_DISTRIBUTION.md) | Approved platform access, destination adapters, automatic publish/update/close delivery, refresh and provider metrics |
 | CV screening | Existing resume extraction, OCR, screening and evidence review | Manual acceptance tests on representative resumes and provider outputs |
 | Job matching | Saved-skill rediscovery and optional AI comparison to chosen roles | Broader semantic retrieval at scale and acceptance validation |
 | Passive candidate finder | No external sourcing adapter in this batch | Approved source, access credentials where required, source import and verification workflow |

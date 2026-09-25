@@ -13,3 +13,4 @@ from app.modules.performance.models import *  # noqa: F403
 from app.modules.learning.models import *  # noqa: F403
 from app.modules.claims.models import *  # noqa: F403
 from app.modules.improvement.models import *  # noqa: F403
+from app.modules.payroll.models import *  # noqa: F403

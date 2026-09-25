@@ -1,0 +1,1 @@
+"""Configurable payroll foundations."""

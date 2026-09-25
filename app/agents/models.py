@@ -7,6 +7,18 @@ from sqlalchemy.orm import Mapped, mapped_column
 from app.data.database import Record
 
 
+class JobDistribution(Record):
+    __tablename__ = "job_distributions"
+    __table_args__ = (UniqueConstraint("requisition_id", "destination"),)
+    requisition_id: Mapped[str] = mapped_column(ForeignKey("requisitions.id"))
+    destination: Mapped[str] = mapped_column(String(30))
+    status: Mapped[str] = mapped_column(String(30), default="prepared")
+    snapshot: Mapped[dict] = mapped_column(JSON, default=dict)
+    external_url: Mapped[str | None] = mapped_column(String(2000))
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    actor_id: Mapped[str] = mapped_column(ForeignKey("users.id"))
+
+
 class VoiceInterview(Record):
     __tablename__ = "voice_interviews"
     interview_id: Mapped[int] = mapped_column(Integer, index=True)
