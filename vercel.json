@@ -1,0 +1,12 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "fastapi",
+  "installCommand": "uv sync --locked --extra ai",
+  "functions": {
+    "app/main.py": { "maxDuration": 800 }
+  },
+  "crons": [
+    { "path": "/api/internal/cron/maintenance", "schedule": "* * * * *" },
+    { "path": "/api/internal/cron/screening", "schedule": "* * * * *" }
+  ]
+}

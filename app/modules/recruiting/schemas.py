@@ -15,6 +15,7 @@ class JobDetails(Input):
     location: str = Field(default="", max_length=2000)
     job_type: str = Field(default="", max_length=100)
     work_mode: str = Field(default="", max_length=100)
+    experience_years: int | None = Field(default=None, ge=0, le=50)
     recruiter_id: str | None = Field(default=None, min_length=1, max_length=36)
     hiring_due_date: date | None = None
     date_opened: date | None = None
@@ -44,7 +45,7 @@ class JobDetails(Input):
 
 
 class RequisitionCreate(Input):
-    position_id: str
+    position_id: str | None = Field(default=None, min_length=1, max_length=36)
     title: str = Field(min_length=1, max_length=200)
     description: str = Field(min_length=1, max_length=20000)
     job_details: JobDetails = Field(default_factory=JobDetails)

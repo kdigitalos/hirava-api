@@ -30,6 +30,14 @@ Use localhost on this laptop for testing. Remote candidates need an HTTPS fronte
 6. Click End interview, or complete the questions. The microphone should stop. Return to the recruiter page and Refresh to review the automatic transcript. Generate a summary if needed.
 7. Check a withdrawn link fails, a used link cannot start a second call, and the session ends at its deadline. A failed setup consumes its one connection attempt; create a new link only after addressing the failure.
 
+## Troubleshooting setup
+
+Keep the browser SDP unchanged, including its final newline. The offer schema deliberately disables the normal text-whitespace trimming; removing the terminator causes a provider HTTP400 SDP parse/EOF error. Regression tests cover preservation through the request handler.
+
+A setup failure is stored as `failed`, not a completed interview. The candidate sees a failure screen and no claim that an empty transcript was saved. Older completed sessions with a setup error and no transcript also display as failed. Create a new link after resolving the problem; failed attempts are not automatically retried.
+
+The API logs `Voice setup failed` with the step (`create_call`, `save_call`, or `attach_observer`), exception class, HTTP status and an allowlisted provider error code. It does not log the provider body, SDP, authorization headers or candidate speech. Quota/access messages are shown only when supported by the provider response; a generic connection failure does not establish a billing problem.
+
 ## Storage and limits
 
 Private three-day links are stored as hashes. Anyone holding a link can use it; it does not verify identity. Call IDs and permanent API keys stay on the backend. Provider transcript events are observed and saved by the server, not uploaded as trusted text from the browser. Transcription is automatic, may arrive slightly out of order, and may contain recognition errors. The recruiter must review it; it is not verified evidence or an audio recording. Hirava does not store raw audio. Provider audio processing/data handling still applies.

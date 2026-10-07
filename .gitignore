@@ -1,4 +1,4 @@
-.venv/
+.venv*/
 __pycache__/
 *.py[cod]
 .pytest_cache/
@@ -22,3 +22,7 @@ node_modules/
 .next/
 *.tsbuildinfo
 uploads/
+.vercel/
+
+.vercel
+.env*

@@ -24,20 +24,20 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     @asynccontextmanager
     async def lifespan(application):
-        if settings.ai_voice_interviews_enabled and settings.environment != 'test':
+        if settings.ai_voice_interviews_enabled and settings.environment != 'test' and not settings.vercel:
             from app.agents.voice_realtime import recover
             await asyncio.to_thread(recover, application)
         stop = asyncio.Event()
         task = None
         screening_task = None
         operations_task = None
-        if settings.recruitment_operations_enabled and settings.environment != "test":
+        if settings.recruitment_operations_enabled and settings.environment != "test" and not settings.vercel:
             from app.agents.operations_worker import run_operations
             operations_task = asyncio.create_task(run_operations(application, stop))
-        if settings.ai_screening_enabled and settings.environment != 'test':
+        if settings.ai_screening_enabled and settings.environment != 'test' and not settings.vercel:
             from app.agents.application import run_screening
             screening_task = asyncio.create_task(run_screening(application, stop))
-        if settings.imported_storage_cleanup_enabled and settings.environment != 'test':
+        if settings.imported_storage_cleanup_enabled and settings.environment != 'test' and not settings.vercel:
             from app.workers.imported_storage_cleanup import run_cleanup
             task = asyncio.create_task(run_cleanup(application, stop))
         try:
@@ -96,6 +96,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         return JSONResponse(status_code=503, content={"detail": "Database unavailable or busy; retry later"})
 
     application.include_router(api_router, prefix="/api/v1")
+    from app.workers.vercel_cron import router as cron_router
+    application.include_router(cron_router)
     from app.agents.application import router as screening_router
     application.include_router(screening_router)
     from app.agents.recruiter_tools import router as recruiter_tools_router

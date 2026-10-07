@@ -8,9 +8,14 @@ ROOT = Path(__file__).resolve().parents[2]
 
 
 class Settings(BaseSettings):
+    # Explicit internal account IDs; company admin role alone never grants access.
+    platform_admin_user_ids: str = ""
     model_config = SettingsConfigDict(env_file=ROOT / ".env", extra="ignore")
 
     environment: Literal["local", "test", "production"] = "local"
+    # Vercel supplies VERCEL=1. Persistent work runs through authenticated cron.
+    vercel: bool = False
+    cron_secret: SecretStr = SecretStr("")
     database_url: str = f"sqlite:///{(ROOT / 'hirava.db').as_posix()}"
     customer_id: str = Field(default="local-customer", min_length=1, max_length=100, pattern="^[A-Za-z0-9][A-Za-z0-9_-]*$")
     auth_mode: Literal["local", "auth0"] = "local"

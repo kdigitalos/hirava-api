@@ -7,6 +7,7 @@ from app.core.invitations import router as invitations_router
 from app.modules.organization.router import router as organization_router
 from app.modules.recruiting.router import router as recruiting_router
 from app.modules.recruiting.careers import router as careers_router
+from app.modules.recruiting.job_import import router as job_import_router
 from app.modules.interviews.router import router as interviews_router
 from app.modules.offers.router import router as offers_router
 from app.modules.conversion.router import router as conversion_router
@@ -22,6 +23,7 @@ from app.modules.improvement.router import router as improvement_router
 api_router = APIRouter()
 api_router.include_router(health_router)
 api_router.include_router(invitations_router)
+api_router.include_router(job_import_router)
 for router in (core_router, organization_router, recruiting_router, interviews_router, offers_router,
                conversion_router, workforce_router, leave_router, hr_service_router, performance_router,
                learning_router, reports_router, careers_router, profile_router, claims_router, improvement_router):

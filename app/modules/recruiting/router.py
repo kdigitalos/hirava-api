@@ -2,12 +2,12 @@ from app.core.routing import APIRouter
 from fastapi import Depends, HTTPException, Query, Request
 from sqlalchemy.orm import Session
 from sqlalchemy import or_, select
-from app.core.models import User
+from app.core.models import AuditEvent, User
 from app.core.schemas import Decision
 from app.core.security import require
 from app.core.service import audit, find, rows, state_is, view
 from app.data.database import get_db, utcnow
-from app.modules.organization.service import position_reference
+from app.modules.organization.models import OrganizationUnit, Position
 from app.modules.recruiting.models import Application, Candidate, JobReference, Requisition
 from app.modules.recruiting.schemas import ApplicationCreate, ApplicationTransition, CandidateCreate, RequisitionCreate, RequisitionUpdate
 
@@ -54,13 +54,31 @@ def scoped_requisition(db, record_id, user, *, lock=False):
 @router.post("/requisitions", status_code=201)
 def create_requisition(body: RequisitionCreate, request: Request,
                        user=Depends(require("recruiter", "manager", module="rms")), db: Session = Depends(get_db)):
-    position = position_reference(db, body.position_id, user.customer_id)
+    if body.position_id:
+        position = find(db, Position, body.position_id, user.customer_id, lock=True)
+    else:
+        # A job-specific headcount record removes the separate setup step. The
+        # requisition still needs a different HR/admin approver before publishing.
+        department = body.job_details.department[:200] or "Recruitment"
+        unit = db.scalar(select(OrganizationUnit).where(
+            OrganizationUnit.customer_id == user.customer_id,
+            OrganizationUnit.kind == "department", OrganizationUnit.name == department).order_by(OrganizationUnit.id))
+        if unit is None:
+            unit = OrganizationUnit(customer_id=user.customer_id, name=department, kind="department")
+            db.add(unit)
+            audit(db, user, "organization_unit.created_from_job", unit, request)
+        position = Position(customer_id=user.customer_id, title=body.title, unit_id=unit.id,
+                            capacity=body.job_details.no_of_openings,
+                            manager_id=user.id if user.role == "manager" else None)
+        db.add(position)
+        audit(db, user, "position.created_from_job", position, request)
     if user.role == "manager" and position.manager_id != user.id:
         raise HTTPException(403, "Managers can request only their own positions")
     validate_job_details(db, body.job_details, position, user)
-    record = Requisition(customer_id=user.customer_id, requested_by=user.id, **body.model_dump(mode="json"))
+    record = Requisition(customer_id=user.customer_id, requested_by=user.id,
+                         **{**body.model_dump(mode="json"), "position_id": position.id})
     db.add(record)
-    audit(db, user, "requisition.created", record, request)
+    audit(db, user, "requisition.created", record, request, managed_position=body.position_id is None)
     db.add(JobReference(requisition_id=record.id))
     db.flush()
     return job_view(db, record)
@@ -94,7 +112,20 @@ def edit_requisition(record_id: str, body: RequisitionUpdate, request: Request,
         raise HTTPException(409, "Record changed; reload before editing")
     changes = body.model_dump(mode="json", exclude_unset=True, exclude={"expected_version"})
     if body.job_details is not None:
-        position = position_reference(db, record.position_id, user.customer_id)
+        position = find(db, Position, record.position_id, user.customer_id, lock=True)
+        # Only positions created for this job can be resized here. Old/shared
+        # organization headcount retains its original capacity boundary.
+        created = db.scalar(select(AuditEvent).where(
+            AuditEvent.customer_id == user.customer_id, AuditEvent.resource_type == "requisitions",
+            AuditEvent.resource_id == record.id, AuditEvent.action == "requisition.created"))
+        managed = created is not None and created.details.get("managed_position") is True
+        if managed and body.job_details.no_of_openings != position.capacity:
+            other = db.scalar(select(Requisition.id).where(
+                Requisition.position_id == position.id, Requisition.id != record.id).limit(1))
+            if other or position.occupied:
+                raise HTTPException(409, "This position is already in use. HR must review its headcount before it changes.")
+            position.capacity = body.job_details.no_of_openings
+            audit(db, user, "position.resized_from_job", position, request, capacity=position.capacity)
         validate_job_details(db, body.job_details, position, user)
         # Whole-object replacement is explicit; omitted details leave them intact.
         changes['job_details'] = body.job_details.model_dump(mode="json")

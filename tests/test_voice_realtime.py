@@ -1,4 +1,7 @@
 import json
+import httpx
+import pytest
+from pydantic import ValidationError
 from datetime import timedelta
 from types import SimpleNamespace
 from unittest.mock import Mock
@@ -9,6 +12,12 @@ from app.data.database import utcnow
 from test_voice_interview import setup_voice, ROOT
 
 OFFER={'sdp':'v=0\r\ns=synthetic-test-offer\r\n','consent':True}
+
+
+def test_offer_preserves_sdp_line_terminators_and_rejects_unknown_fields():
+    assert live.Offer(**OFFER).sdp == OFFER['sdp']
+    with pytest.raises(ValidationError):
+        live.Offer(**OFFER, unexpected='not allowed')
 
 
 def fake_provider(monkeypatch):
@@ -36,6 +45,7 @@ def test_live_setup_requires_consent_one_call_and_private_config(api,monkeypatch
     result=client.post(ROOT+'/public/live',headers=token,json=OFFER)
     assert result.status_code==200,result.text
     assert set(result.json())=={'sdp','deadline'}
+    assert create.call_args.args[1]==OFFER['sdp']
     session=create.call_args.args[2]
     assert session['audio']['input']['turn_detection']['interrupt_response']
     assert session['audio']['input']['turn_detection']['create_response']
@@ -68,7 +78,24 @@ def test_failed_attach_hangs_up_and_consumes_attempt(api,monkeypatch):
     assert client.post(ROOT+'/public/live',headers=token,json=OFFER).status_code==409
     with app.state.sessions() as db:
         row=db.get(VoiceInterview,invite['id'])
-        assert row.status=='completed' and row.realtime_attempts==1 and not row.lease
+        assert row.status=='failed' and row.realtime_attempts==1 and not row.lease
+    state=client.post(ROOT+'/public/state',headers=token,json={}).json()
+    assert state['status']=='failed' and not state['live_transcript']
+    assert 'credits' not in state['live_error']
+
+
+def test_setup_diagnostics_do_not_expose_provider_body_or_credentials(caplog):
+    request=httpx.Request('POST','https://api.openai.com/v1/realtime/calls',
+                         headers={'Authorization':'Bearer private-test-key'})
+    response=httpx.Response(429,request=request,json={'error':{
+        'code':'insufficient_quota','message':'private provider body'}})
+    exc=httpx.HTTPStatusError('private exception text',request=request,response=response)
+    message=live.setup_failure(exc,'create_call')
+    assert 'insufficient quota' in message
+    assert 'http_status=429' in caplog.text and 'code=insufficient_quota' in caplog.text
+    assert 'private' not in caplog.text+message
+    assert 'timed out' in live.setup_failure(httpx.ReadTimeout('private timeout'),'create_call')
+    assert 'credits' not in live.setup_failure(RuntimeError('private failure'),'attach_observer')
 
 
 def test_observer_transcript_dedup_summary_and_deadline(api,monkeypatch):

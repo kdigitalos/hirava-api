@@ -12,6 +12,49 @@ from app.modules.recruiting.models import Requisition
 from test_public_intake import setup_job, submit
 
 
+def test_draft_schema_restricts_evidence_ids():
+    from app.agents.recruiter_tools import draft_format
+    from pydantic import ValidationError
+    schema = draft_format({"job": "Synthetic role", "profile-skills": "Python"})
+    body = {"sections": [{"title": "Question", "text": "Explain testing.", "source_ids": ["job"]}], "limitations": []}
+    assert schema.model_validate(body).sections[0].source_ids == ["job"]
+    for invalid in ([], ["previous_questions"], ["invented"]):
+        body["sections"][0]["source_ids"] = invalid
+        with pytest.raises(ValidationError):
+            schema.model_validate(body)
+
+
+@pytest.mark.parametrize("reason", ["incomplete", "refused"])
+def test_provider_failure_is_specific_and_private(monkeypatch, caplog, reason):
+    output = [SimpleNamespace(content=[SimpleNamespace(type="refusal", refusal="PRIVATE_PAYLOAD")])] if reason == "refused" else []
+    response = SimpleNamespace(status="incomplete", output_parsed=None, output=output)
+    closed = []
+    client = SimpleNamespace(responses=SimpleNamespace(parse=lambda **_: response), close=lambda: closed.append(True))
+    monkeypatch.setattr("app.agents.recruiter_tools.create_client", lambda *_: client)
+    settings = Settings(_env_file=None, jwt_secret="x" * 32, ai_recruiter_tools_enabled=True,
+        ai_provider="openai", openai_model="test", openai_api_key="fake")
+    with pytest.raises(HTTPException) as error:
+        generate(settings, "questions", {"job": "PRIVATE_PAYLOAD"}, {})
+    assert error.value.status_code == 502
+    assert "credits" not in error.value.detail
+    assert f"reason={reason}" in caplog.text
+    assert "PRIVATE_PAYLOAD" not in caplog.text
+    assert closed == [True]
+
+
+@pytest.mark.parametrize("code,status,reason,expected", [
+    ("insufficient_quota", 429, "quota", 503), (None, 429, "rate_limit", 503),
+    (None, 401, "access", 503), (None, 400, "request", 502),
+])
+def test_provider_error_classification(code, status, reason, expected):
+    from app.agents.recruiter_tools import draft_error
+    error = RuntimeError("PRIVATE_PROVIDER_PAYLOAD")
+    error.code, error.status_code = code, status
+    actual_reason, actual_status, message = draft_error(error)
+    assert (actual_reason, actual_status) == (reason, expected)
+    assert "PRIVATE_PROVIDER_PAYLOAD" not in message
+
+
 @pytest.mark.parametrize("provider", ["openai", "groq"])
 def test_provider_contract_and_source_rejection(monkeypatch, provider):
     captured = {}

@@ -18,12 +18,35 @@ def test_subscription_public_validation_and_server_owned_review_state(api):
     response = client.post(path, json=payload)
     assert response.status_code == 201, response.text
     assert response.json()['emailStatus'] == 'not_configured'
+    assert client.post(path, json={**payload, 'companyName': 'SYNTHETIC LEAD', 'primaryContactEmail': 'TEST@example.com'}).status_code == 409
     with app.state.sessions() as db:
         tbl = table(db, 'ClientSubscriptionRequest')
         row = db.execute(select(tbl)).mappings().one()
         assert row[tbl.c.status] == 'NEW' and row[tbl.c.internalNotes] is None
         assert row[tbl.c.corporateAddress] is None
     assert client.post(path, json={**payload, 'expectedGoLiveDate': '2026-02-30'}).status_code == 422
+
+
+def test_registration_product_choices_and_quarterly_boundary(api):
+    client, app, _, _ = api
+    with app.state.sessions.begin() as db:
+        table(db, 'ClientSubscriptionRequest').create(db.bind)
+    for product in ('RMS', 'HRMS', 'RMS_HRMS'):
+        payload = {'companyName': 'Test ' + product, 'primaryContactName': 'Test',
+                   'primaryContactEmail': 'test@example.com', 'primaryContactMobile': '9876543210',
+                   'productRequired': product, 'subscriptionPlan': 'QUARTERLY',
+                   'numberOfEmployees': '500', 'rmsUserCount': '2', 'hrmsUserCount': '3'}
+        assert client.post('/api/subscription-requests', json=payload).status_code == 422
+        response = client.post('/api/subscription-requests', json={**payload, 'numberOfEmployees': '501'})
+        assert response.status_code == 201, response.text
+    with app.state.sessions() as db:
+        tbl = table(db, 'ClientSubscriptionRequest')
+        records = db.execute(select(tbl)).mappings().all()
+        assert len(records) == 3
+        for row in records:
+            assert row['status'] == 'NEW'
+            assert (row['rmsUserCount'] is not None) == (row['productRequired'] != 'HRMS')
+            assert (row['hrmsUserCount'] is not None) == (row['productRequired'] != 'RMS')
 
 
 def test_interview_email_provider_acceptance_and_errors(api, monkeypatch):

@@ -20,6 +20,17 @@ class User(Record):
     locked_until: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
 
+class CompanyRegistrationReview(Record):
+    __tablename__ = "company_registration_reviews"
+    __table_args__ = (UniqueConstraint("customer_id", "registration_id"),)
+    registration_id: Mapped[str] = mapped_column(String(100))
+    decision: Mapped[str] = mapped_column(String(20), default="PENDING")
+    note: Mapped[str] = mapped_column(Text, default="")
+    reviewed_by: Mapped[str] = mapped_column(ForeignKey("users.id"))
+    reviewed_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    requested_terms: Mapped[dict] = mapped_column(JSON)
+
+
 class AccountInvitation(Record):
     __tablename__ = "account_invitations"
     user_id: Mapped[str] = mapped_column(ForeignKey("users.id"), unique=True)

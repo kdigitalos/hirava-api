@@ -4,6 +4,7 @@ No browser-supplied transcript is accepted. Call IDs and permanent API keys stay
 on the backend. The observer ends calls on deadline, withdrawal or shutdown.
 """
 import json
+import logging
 import re
 import threading
 import time
@@ -11,7 +12,7 @@ from datetime import timedelta
 
 import httpx
 from fastapi import Depends, Header, HTTPException, Request
-from pydantic import Field
+from pydantic import ConfigDict, Field
 from sqlalchemy import select
 from websockets.sync.client import connect
 
@@ -19,8 +20,40 @@ from app.agents.models import VoiceInterview
 from app.agents.voice import router, Strict, enabled, public_row, public_state, idle, reserve, release, aware, validate_parent
 from app.data.database import get_db, utcnow
 
+logger = logging.getLogger(__name__)
+
+
+def setup_failure(exc, stage):
+    """Log only allowlisted diagnostics, never SDP, headers or provider bodies."""
+    response = getattr(exc, 'response', None)
+    status = getattr(response, 'status_code', None)
+    code = None
+    if isinstance(response, httpx.Response):
+        try:
+            payload = response.json()
+            error = payload.get('error', {}) if isinstance(payload, dict) else {}
+            value = error.get('code') if isinstance(error, dict) else None
+            if value in ('insufficient_quota', 'invalid_api_key', 'model_not_found', 'rate_limit_exceeded'):
+                code = value
+        except ValueError:
+            pass
+    logger.warning('Voice setup failed: stage=%s exception=%s http_status=%s code=%s',
+                   stage, type(exc).__name__, status, code)
+    if code == 'insufficient_quota':
+        return 'Live setup failed because the voice service reported insufficient quota. Ask your recruiter to check billing and create a new link.'
+    if status in (401, 403) or code in ('invalid_api_key', 'model_not_found'):
+        return 'Live setup failed because the voice service denied access. Ask your recruiter to check the voice configuration and create a new link.'
+    if status == 429:
+        return 'The voice service is temporarily limiting requests. Ask your recruiter to try again later with a new link.'
+    if isinstance(exc, (httpx.TimeoutException, TimeoutError)):
+        return 'The live connection timed out. Ask your recruiter to try again with a new link.'
+    return 'The live interview could not connect. Ask your recruiter to check the connection and create a new link.'
+
 
 class Offer(Strict):
+    # SDP is a wire protocol: its final line terminator must survive validation.
+    # Inherit unknown-field rejection, but not human-text whitespace trimming.
+    model_config = ConfigDict(str_strip_whitespace=False)
     sdp: str = Field(min_length=10, max_length=100000)
     consent: bool
 
@@ -156,6 +189,8 @@ def recover(app):
 
 @router.post('/public/live')
 def live(body:Offer,request:Request,x_interview_token:str|None=Header(None),db=Depends(get_db)):
+    if request.app.state.settings.vercel:
+        raise HTTPException(503, 'Live voice interviews require a persistent transcript observer, which is not configured on this Vercel deployment.')
     enabled(request);row=public_row(db,x_interview_token);idle(row)
     if not body.consent:raise HTTPException(422,'Agree to live audio and transcript processing before starting.')
     if row.status not in ('invited','active') or row.realtime_attempts:
@@ -166,28 +201,33 @@ def live(body:Offer,request:Request,x_interview_token:str|None=Header(None),db=D
     row.status='active';row.started_at=utcnow();row.consent_at=utcnow()
     session_id=row.id;configuration=config(request.app.state.settings,row)
     lease=reserve(db,row,'realtime_attempts',1)
-    call_id=None;socket=None
+    call_id=None;socket=None;stage='create_call'
     try:
         answer,call_id=create_call(request.app.state.settings,body.sdp,configuration)
+        stage='save_call'
         # Persist the call reference before attaching the observer for recovery.
         row=release(db,session_id,lease);row.realtime_call_id=call_id;db.commit()
+        stage='attach_observer'
         socket=connect('wss://api.openai.com/v1/realtime?call_id='+call_id,
             additional_headers=headers(request.app.state.settings),open_timeout=15,max_size=2**20)
         if not hasattr(request.app.state,'voice_observers'):request.app.state.voice_observers={}
         observer=Observer(request.app,session_id,call_id,socket)
         request.app.state.voice_observers[session_id]=observer;observer.thread.start()
         return {'sdp':answer,'deadline':(aware(row.started_at)+timedelta(minutes=row.minutes)).isoformat()}
-    except Exception:
-        if socket:socket.close()
+    except Exception as exc:
+        message=setup_failure(exc,stage)
+        if socket:
+            try:socket.close()
+            except Exception:pass
         try:hangup(request.app.state.settings,call_id)
         except Exception:pass
-        db.expire_all();row=db.get(VoiceInterview,session_id)
+        db.rollback();row=db.get(VoiceInterview,session_id)
         if row:
             row.lease=None;row.lease_until=None
-            if row.status!='revoked':row.status='completed'
-            row.realtime_error='Live setup failed. Check realtime model access and credits, then create a new link.'
+            if row.status!='revoked':row.status='failed'
+            row.realtime_error=message
             db.commit()
-        raise HTTPException(502,'Unable to connect live. Ask your recruiter to check realtime model access and credits and create a new link.') from None
+        raise HTTPException(502,message) from None
 
 
 @router.post('/public/live-ready')
