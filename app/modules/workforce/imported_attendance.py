@@ -14,6 +14,20 @@ from app.modules.workforce.imported_organization import update
 from app.modules.workforce.imported_leave import Input, employee_id, output, own_or_admin, privileged, remove, staff
 
 router = APIRouter(prefix='/api', tags=['HRMS attendance compatibility'])
+from app.modules.workforce.attendance_time import local_time, display_time
+
+
+@router.get('/attendance-today')
+def attendance_today(user=Depends(staff), db=Depends(get_db)):
+    owner = employee_id(db, user)
+    if not owner:
+        raise HTTPException(403, 'No employee record linked to your account')
+    today = local_time(now()).date()
+    tbl = table(db, 'AttendanceRecord')
+    record = db.execute(select(tbl).where(tbl.c.employeeId == owner, tbl.c.workDate == today)).mappings().first()
+    return {'workDate': today.isoformat(),
+            'checkInTime': display_time(record['checkIn']) if record else None,
+            'checkOutTime': display_time(record['checkOut']) if record else None}
 
 
 def calendar_date(value):
@@ -81,7 +95,7 @@ def punch(body: Punch, user=Depends(staff), db=Depends(get_db)):
         raise HTTPException(403, 'Cannot record attendance for another employee')
     work_date = calendar_date(body.workDate)
     instant = now()
-    if not privileged(user) and work_date != instant.date():
+    if not privileged(user) and work_date != local_time(instant).date():
         raise HTTPException(422, 'Self-service punches are only allowed for today')
     find(db, 'Employee', target, lock=True)
     tbl = table(db, 'AttendanceRecord')

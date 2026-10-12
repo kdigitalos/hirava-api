@@ -67,12 +67,13 @@ def test_leave_ownership_decisions_overlap_and_balances(api):
 def test_attendance_server_time_idempotency_corrections_and_policy_validation(api):
     client, _, _, headers = api
     people = setup_people(api)
-    today = datetime.now(timezone.utc).date().isoformat()
+    from app.modules.workforce.attendance_time import local_time
+    today = local_time(datetime.now(timezone.utc)).date().isoformat()
     payload = {'workDate': today, 'checkIn': '2001-01-01T00:00:00Z'}
     response = client.post('/api/attendance-records', json=payload, headers=headers['employee'])
     assert response.status_code == 200, response.text
     record = response.json()
-    assert record['checkIn'].startswith(today)
+    assert record['checkIn'].startswith(datetime.now(timezone.utc).date().isoformat())
     again = client.post('/api/attendance-records', json=payload, headers=headers['employee']).json()
     assert again['id'] == record['id'] and again['checkIn'] == record['checkIn']
     assert client.post('/api/attendance-records', json={'workDate': '2001-01-01', 'checkIn': 'now'}, headers=headers['employee']).status_code == 422
@@ -126,7 +127,7 @@ def test_attendance_views_use_saved_records_and_keep_employee_scope(api, monkeyp
     assert response.status_code == 200, response.text
     assert response.json()['stats']['daysPresent'] == 1
     assert response.json()['recentAttendance'][0]['status'] == 'Present'
-    assert client.get('/api/leave-attendance/logs?days=7', headers=headers['employee']).json()['logs'][0]['checkIn'] == '9:00 AM UTC'
+    assert client.get('/api/leave-attendance/logs?days=7', headers=headers['employee']).json()['logs'][0]['checkIn'] == '2:30 PM IST'
     url = f"/api/employees/{people['employee']['id']}/attendance?period=monthly&year=2026&month=9"
     response = client.get(url, headers=headers['hr'])
     assert response.status_code == 200, response.text

@@ -90,6 +90,12 @@ def view(name: str, request: Request, user=Depends(staff), db=Depends(get_db)):
                        'payload': profile_payload(db, employee) if employee else None})
     if name == 'employee-profile':
         return employee_profile(db, user)
+    if name == 'employee-finances':
+        from app.modules.workforce.imported_employee_profile import payroll_payload
+        employee = linked_employee(db, user, required=False)
+        # Compensation is a saved snapshot, not evidence of a payroll payment.
+        return {'employeeLinked': employee is not None,
+                'compensation': payroll_payload(employee)['payroll'] if employee else None}
     if name == 'employee-dashboard':
         from app.modules.workforce.imported_employee_dashboard import employee_dashboard
         return employee_dashboard(db, user)

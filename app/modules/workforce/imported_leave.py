@@ -176,11 +176,16 @@ def create_request(body: RequestCreate, user=Depends(staff), db=Depends(get_db))
     owner = body.employeeId if privileged(user) and body.employeeId else own
     if not owner:
         raise HTTPException(403, 'No employee linked to account')
-    find(db, 'Employee', owner, lock=True)
+    employee = find(db, 'Employee', owner, lock=True)
     find(db, 'LeaveType', body.leaveTypeId)
     validate_dates(body.startDate, body.endDate)
     reject_overlap(db, owner, body.startDate, body.endDate)
-    return output(insert(db, 'LeaveRequest', {**body.model_dump(), 'employeeId': owner, 'reason': body.reason or None}))
+    record = insert(db, 'LeaveRequest', {**body.model_dump(), 'employeeId': owner, 'reason': body.reason or None})
+    from app.core.notifications import notify_reviewers
+    name = ' '.join(part for part in (employee['firstName'], employee['lastName']) if part)
+    notify_reviewers(db, user, f"{name} requested leave ({body.startDate} to {body.endDate}).",
+                     "/HRMS/Admin/AttendanceLeave/leave-manager")
+    return output(record)
 
 
 def can_review(db, user, record, owner=None):
@@ -228,7 +233,13 @@ def change_request(db, user, id, body):
         reject_overlap(db, current['employeeId'], start, end, id)
     if 'reason' in values:
         values['reason'] = values['reason'] or None
-    return output(update(db, 'LeaveRequest', id, values))
+    result = update(db, 'LeaveRequest', id, values)
+    if target != current['status'] and target in ('APPROVED', 'REJECTED', 'CANCELLED') and own != current['employeeId']:
+        from app.core.notifications import employee_notification
+        employee_notification(db, user, current['employeeId'],
+            f"Your leave request ({start} to {end}) was {target.lower()}.",
+            "/HRMS/Employee/leaves-management")
+    return output(result)
 
 
 @router.patch('/leave-requests/{id}')

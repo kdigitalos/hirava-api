@@ -106,6 +106,10 @@ def claim_action(record_id: str, body: ClaimAction, request: Request, user=Depen
         own(record, user)
         state_is(record, "draft" if body.action == "submit" else "pending")
         record.status = "pending" if body.action == "submit" else "draft"
+        if body.action == "submit":
+            from app.core.notifications import notify_reviewers
+            notify_reviewers(db, user, f"{user.name} submitted an expense claim for review.",
+                             "/HRMS/Admin/EmployeeSelfService/reimbursements-claims")
     else:
         if user.role not in {"hr", "admin"} or record.requester_id == user.id:
             raise HTTPException(403, "A different HR or admin reviewer is required")
@@ -114,5 +118,8 @@ def claim_action(record_id: str, body: ClaimAction, request: Request, user=Depen
             raise HTTPException(422, "Record a review reason")
         record.status = "approved" if body.action == "approve" else "rejected"
         record.reviewed_by, record.decision_reason = user.id, body.reason
+        from app.core.notifications import deliver
+        deliver(db, user, record.requester_id, f"Your expense claim was {record.status}.",
+                "/HRMS/Employee/reimbursements-claims")
     audit(db, user, f"claim.{body.action}", record, request, reason=body.reason)
     return view(record)

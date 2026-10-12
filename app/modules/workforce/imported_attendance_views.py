@@ -15,6 +15,7 @@ from app.data.imported import dto, find, table
 from app.modules.workforce.imported_assets import admin, now, rows
 from app.modules.workforce.imported_attendance import Punch, calendar_date, punch
 from app.modules.workforce.imported_leave import employee_id, output, staff
+from app.modules.workforce.attendance_time import local_time, display_time as attendance_display_time
 
 router = APIRouter(prefix='/api', tags=['HRMS attendance views'])
 
@@ -40,8 +41,7 @@ def nice_date(value):
 
 
 def display_time(value):
-    # Explicit UTC avoids the old server-local timezone changing between deployments.
-    return value.strftime('%I:%M %p').lstrip('0') + ' UTC' if value else None
+    return attendance_display_time(value)
 
 
 def late(record):
@@ -149,17 +149,17 @@ def policy_stats(user=Depends(admin), db=Depends(get_db)):
 
 
 def own_logs(db, owner, days):
-    today = now().date()
+    today = local_time(now()).date()
     records = {r['workDate']: r for r in attendance_window(db, owner, today - timedelta(days=days - 1), today)}
     data = []
     for offset in range(days):
         day = today - timedelta(days=offset)
-        if day.weekday() >= 5:
+        if day.weekday() >= 5 and day not in records:
             continue
         record = records.get(day) or {}
         data.append({'id': record.get('id', day.isoformat()), 'date': nice_date(day), 'day': day.strftime('%A'),
                      'checkIn': display_time(record.get('checkIn')) or '—', 'checkOut': display_time(record.get('checkOut')) or '—',
-                     'status': 'Absent' if not record.get('checkIn') else 'Late' if late(record) else 'Present'})
+                     'status': 'No attendance recorded' if not record.get('checkIn') else 'Present'})
     return data
 
 
@@ -174,7 +174,7 @@ def self_overview(user=Depends(staff), db=Depends(get_db)):
     owner = employee_id(db, user)
     if not owner:
         raise HTTPException(404, 'No employee record linked to your account')
-    today = now().date()
+    today = local_time(now()).date()
     start, end = month_bounds(today.year, today.month)
     records = attendance_window(db, owner, start, end)
     leaves = leave_window(db, start, end, owner)

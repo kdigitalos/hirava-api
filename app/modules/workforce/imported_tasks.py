@@ -59,6 +59,9 @@ class TaskInput(Input):
 def assign_task(body: TaskInput, user=Depends(admin), db=Depends(get_db)):
     find(db, 'Employee', body.employeeId)
     task = insert(db, 'EmployeeTask', {**body.model_dump(), 'dueDate': calendar_date(body.dueDate), 'status': 'IN_PROGRESS', 'detailKind': 'generic'})
+    from app.core.notifications import employee_notification
+    employee_notification(db, user, body.employeeId, f"New task assigned: {body.title}",
+                          f"/HRMS/Employee/my-tasks/{task['id']}")
     return {'id': task['id']}
 
 

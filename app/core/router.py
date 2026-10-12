@@ -159,6 +159,18 @@ def notifications(offset: int = Query(0, ge=0), limit: int = Query(50, ge=1, le=
     return [view(row) for row in rows(db, Notification, user.customer_id, offset, limit, Notification.user_id == user.id)]
 
 
+@router.get("/notification-inbox")
+def notification_inbox(user=Depends(current_user), db: Session = Depends(get_db)):
+    from sqlalchemy import func
+    owned = (Notification.customer_id == user.customer_id, Notification.user_id == user.id)
+    records = db.execute(select(Notification, OutboxEvent.payload).join(
+        OutboxEvent, Notification.event_id == OutboxEvent.id).where(*owned)
+        .order_by(Notification.created_at.desc(), Notification.id).limit(50)).all()
+    unread = db.scalar(select(func.count()).select_from(Notification).where(*owned, Notification.read.is_(False)))
+    return {"items": [{**view(record), "href": payload.get("href")} for record, payload in records],
+            "unread_count": unread}
+
+
 @router.post("/notifications/{record_id}/read")
 def read_notification(record_id: str, user=Depends(current_user), db: Session = Depends(get_db)):
     record = find(db, Notification, record_id, user.customer_id)

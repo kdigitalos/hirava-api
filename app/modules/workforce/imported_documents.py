@@ -136,7 +136,7 @@ def deadlines(user=Depends(admin), db=Depends(get_db)):
     return result
 
 
-async def save_document(request, db, employee_id=None, repository=False):
+async def save_document(request, db, employee_id=None, repository=False, actor=None, submitted_by=None):
     if 'multipart/form-data' not in request.headers.get('content-type', ''):
         raise HTTPException(415, 'Use multipart/form-data')
     async with request.form(max_files=1, max_fields=20) as form:
@@ -172,6 +172,14 @@ async def save_document(request, db, employee_id=None, repository=False):
         imported_storage.save(request.app.state.settings, key, content, values['mimeType'])
         saved = True
         record = insert(db, 'EmployeeDocument', {**values, 'storagePath': key})
+        if actor is not None:
+            from app.core.notifications import employee_notification
+            employee_notification(db, actor, employee_id,
+                f"HR uploaded a document: {record['title']}", "/HRMS/Employee/my-profile?tab=Document")
+        if submitted_by is not None:
+            from app.core.notifications import notify_reviewers
+            notify_reviewers(db, submitted_by, f"{full_name(employee)} uploaded a document for review.",
+                             "/HRMS/Admin/EmployeeManagement/document-repository")
         db.commit()
     except Exception:
         db.rollback()
@@ -186,7 +194,7 @@ async def save_document(request, db, employee_id=None, repository=False):
 
 @router.post('/documents/upload', status_code=201)
 async def repository_upload(request: Request, user=Depends(admin), db=Depends(get_db)):
-    return await save_document(request, db, repository=True)
+    return await save_document(request, db, repository=True, actor=user)
 
 
 @router.get('/employees/{id}/documents')
@@ -197,7 +205,7 @@ def employee_documents(id: str, user=Depends(admin), db=Depends(get_db)):
 
 @router.post('/employees/{id}/documents', status_code=201)
 async def employee_upload(id: str, request: Request, user=Depends(admin), db=Depends(get_db)):
-    return await save_document(request, db, employee_id=id)
+    return await save_document(request, db, employee_id=id, actor=user)
 
 
 @router.get('/employee-documents')
@@ -208,7 +216,7 @@ def own_documents(user=Depends(self_actor), db=Depends(get_db)):
 
 @router.post('/employee-documents', status_code=201)
 async def own_upload(request: Request, user=Depends(self_actor), db=Depends(get_db)):
-    return await save_document(request, db, employee_id=linked_employee(db, user)['id'])
+    return await save_document(request, db, employee_id=linked_employee(db, user)['id'], submitted_by=user)
 
 
 @router.get('/employee-documents/{id}')
