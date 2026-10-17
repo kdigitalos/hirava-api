@@ -21,7 +21,7 @@ _lock = Lock()
 _active = set()
 FIELDS = {"title", "company_name", "department", "location", "job_type", "work_mode",
           "job_link", "hiring_due_date", "date_opened", "target_date", "budget", "salary_min",
-          "salary_max", "currency", "no_of_openings", "required_skills", "hiring_flow", "experience_years"}
+          "salary_max", "currency", "no_of_openings", "required_skills", "hiring_flow", "experience_years", "notice_period"}
 
 
 def import_actor(user=Depends(require("recruiter", "manager", module="rms"))):

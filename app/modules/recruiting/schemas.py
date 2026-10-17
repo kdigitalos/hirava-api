@@ -16,6 +16,7 @@ class JobDetails(Input):
     job_type: str = Field(default="", max_length=100)
     work_mode: str = Field(default="", max_length=100)
     experience_years: int | None = Field(default=None, ge=0, le=50)
+    notice_period: str = Field(default="", max_length=100)
     recruiter_id: str | None = Field(default=None, min_length=1, max_length=36)
     hiring_due_date: date | None = None
     date_opened: date | None = None

@@ -97,10 +97,11 @@ def test_import_schema_allows_missing_metadata_without_invention():
 
 
 def test_document_dropdown_values_and_experience():
-    fields = form_fields(result(job_type="FULL_TIME", work_mode="Remote", experience_years="0", currency="INR"), TEXT)["fields"]
+    fields = form_fields(result(job_type="FULL_TIME", work_mode="Remote", experience_years="0", notice_period="30 days", currency="INR"), TEXT)["fields"]
     assert fields["job_type"] == "Full-Time"
     assert fields["work_mode"] == "Work from Home"
     assert fields["experience_years"] == 0
+    assert fields["notice_period"] == "30 days"
     fields = form_fields(result(job_type="freelance", work_mode="on-site", experience_years="3"), TEXT)["fields"]
     assert fields["job_type"] == "Free-lancing" and fields["work_mode"] == "Work from Office"
     assert fields["experience_years"] == 3
@@ -110,13 +111,15 @@ def test_document_dropdown_values_and_experience():
 
 def test_experience_persists_on_create_edit_and_read(api):
     job = post(api, "/rms/requisitions", {"title": "Engineer", "description": TEXT,
-        "job_details": {"experience_years": 3, "job_type": "Contract", "work_mode": "Hybrid", "currency": "USD"}})
+        "job_details": {"experience_years": 3, "notice_period": "30 days", "job_type": "Contract", "work_mode": "Hybrid", "currency": "USD"}})
     url = f"/api/v1/rms/requisitions/{job['id']}"
     assert job["job_details"]["experience_years"] == 3
+    assert job["job_details"]["notice_period"] == "30 days"
     updated = api[0].patch(url, headers=api[3]["admin"], json={"expected_version": job["version"],
-        "job_details": {**job["job_details"], "experience_years": 0}})
+        "job_details": {**job["job_details"], "experience_years": 0, "notice_period": "Immediate"}})
     assert updated.status_code == 200, updated.text
     saved = api[0].get(url, headers=api[3]["admin"]).json()["job_details"]
+    assert saved["notice_period"] == "Immediate"
     assert saved["experience_years"] == 0 and saved["job_type"] == "Contract"
     assert saved["work_mode"] == "Hybrid" and saved["currency"] == "USD"
     for invalid in (-1, 51, 1.5):

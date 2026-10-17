@@ -113,6 +113,8 @@ INSTRUCTIONS = {
 
 
 INSTRUCTIONS["job-import"] += (
+    " notice_period is also allowed: extract an explicitly stated candidate notice period or joining availability. "
+    "Use Immediate, 15 days, 30 days, 60 days, 90 days or Negotiable when equivalent; otherwise preserve the explicit wording within 100 characters. Omit if not stated. "
     " Additionally, experience_years is an allowed field: extract the explicitly required minimum whole years "
     "of experience, from 0 to 50. For an explicit range use its lower bound; preserve the original range in "
     "the source description. Omit fractional years or ambiguous requirements; never use vacancy counts as experience. "
